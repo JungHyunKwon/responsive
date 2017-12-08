@@ -396,34 +396,6 @@ try {
 						//실행등록
 						_responsive.isRun = true;
 
-						//기본값 상속
-						option = $.extend({
-							range : {
-								wide : {
-									from : 9999,
-									to : 1201
-								},
-
-								web : {
-									from : 1200,
-									to : 801
-								},
-
-								tablet : {
-									from : 800,
-									to : 641
-								},
-
-								phone : {
-									from : 640,
-									to : 0
-								}
-							},
-							lowIERun : false,
-							lowIERange : ["web"],
-							interval : 250
-						}, option);
-
 						//브라우저, 플랫폼 클래스 추가
 						_$target.addClass(_responsive.browser + " " + _responsive.platform);
 
@@ -451,11 +423,35 @@ try {
 						if(typeof option.interval == "number") {
 							_interval = option.interval;
 						}else{
-							_interval = 0;
+							_interval = 250;
 						}
 
 						//초기화면 정보
-						_range = option.range;
+						if(typeof option.range == "object" && !option.range.length) {
+							_range = option.range;
+						}else{
+							_range = {
+								wide : {
+									from : 9999,
+									to : 1201
+								},
+
+								web : {
+									from : 1200,
+									to : 801
+								},
+
+								tablet : {
+									from : 800,
+									to : 641
+								},
+
+								phone : {
+									from : 640,
+									to : 0
+								}
+							};
+						}
 
 						//초기화
 						_rangeCode = "_responsive.enter = [];\n_responsive.exit = [];\n\n";
