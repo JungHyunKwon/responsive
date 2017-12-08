@@ -405,29 +405,35 @@ try {
 						}else{
 							_$target.removeClass("scrollbar");
 						}
+					
+						//옵션이 없을경우
+						if(!option || (typeof option != "object" && option.length)) {
+							option = {};
+						}
 
 						//ie7, ie8에서 분기 실행여부
-						if(typeof option.lowIERun == "boolean") {
+						if(option.lowIERun && typeof option.lowIERun == "boolean") {
 							_responsive.lowIERun = option.lowIERun;
 						}else{
 							_responsive.lowIERun = false;
 						}
 						
 						//lowIERun을 true로 지정했을때 나타나는 분기
-						_responsive.lowIERange = _removeDuplicate(option.lowIERange);
-						if(!_responsive.lowIERange.length) {
+						if(option.lowIERange && typeof option.lowIERange == "object" && option.lowIERange.length) {
+							_responsive.lowIERange = _removeDuplicate(option.lowIERange);
+						}else{
 							_responsive.lowIERange = ["web"];
 						}
 
 						//리사이즈 종료간격 추가
-						if(typeof option.interval == "number") {
+						if(option.interval && typeof option.interval == "number") {
 							_interval = option.interval;
 						}else{
 							_interval = 250;
 						}
 
 						//초기화면 정보
-						if(typeof option.range == "object" && !option.range.length) {
+						if(option.range && typeof option.range == "object" && !option.range.length) {
 							_range = option.range;
 						}else{
 							_range = {
