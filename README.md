@@ -96,9 +96,9 @@ range객체가 없을경우 기본으로 wide(9999 ~ 1201), web(1200 ~ 801), tab
 
 이름 | 매개변수 | 반환 | 설명
 | :--: | :---- | :-- | :-- |
-$.fn.responsive.destroy |  | boolean | 플러그인을 소멸시키는 함수 입니다.
+$.responsive.destroy |  | boolean | 플러그인을 소멸시키는 함수 입니다.
 
-### $.fn.responsive.setting
+### $.responsive.setting
 
 이름 | 값 | 설명
 | :-- | :- | :-- |
@@ -140,7 +140,7 @@ platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨�
 
 이름 | 값 | 설명
 | :-- | :- | :-- |
-responsive | object | $.fn.responsive.setting설명과 같습니다.
+responsive | object | $.responsive.setting설명과 같습니다.
 state | string or array | 범위에 걸린 분기이름입니다.
 
 #### 기본
@@ -168,7 +168,7 @@ $(window).on("responsive:#", function(event) {
 * 브라우저 : ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 중에서 해당되는 브라우저로 클래스가 부여됩니다.
   * 브라우저를 찾지 못하면 unknown이라는 클래스가 나오게 됩니다.
 * 플랫폼 : pc, mobile중에서 접속한 플랫폼으로 클래스가 부여됩니다.
-* 스크롤바 : 스크롤바 넓이가 있으면 scrollbar 클래스가 부여됩니다.
+* 스크롤바 : 스크롤바 넓이가 있으면 scrollbar라는 클래스가 부여됩니다.
 * 분기 : 플러그인 옵션중 range에 적은 프로퍼티 이름이 클래스로 부여됩니다.
 
 ### 제이쿼리 개발버전
