@@ -6,19 +6,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
 	<title>responsive</title>
 	<script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
-	<script type="text/javascript" src="js/jquery.responsive.js"></script>
+	<script type="text/javascript" src="js/jquery.responsive.min.js"></script>
 	<script type="text/javascript">
 		var $window = $(window),
 			$document = $(document);
 
 		$document.on("ready.responsive", function() {
-			$window.on("responsive", function(event) {
+			console.log(1);
 
+			$window.on("responsive", function(event) {
+				console.log(3);
+				console.log(event);
+				console.log(event.responsive);
+				console.log(event.state);
 			});
+
+			$window.on("responsive:wide", function(event) {
+				console.log(4);
+				console.log(event);
+				console.log(event.responsive);
+				console.log(event.state);
+			});
+
+			$window.on("responsive:wide:test", function(event) {
+				console.log(5);
+				console.log(event);
+				console.log(event.responsive);
+				console.log(event.state);
+			});
+
+			console.log(2);
 		});
 
 		$window.on("load.responsive", function(event) {
-		   $.responsive();
+		   $.responsive({
+				range : {
+					wide : {
+						from : 9999,
+						to : 1201
+					},
+					test : {
+						from : 9999,
+						to : 1201
+					},
+					web : {
+						from : 1200,
+						to : 801
+					},
+					tablet : {
+						from : 800,
+						to : 641
+					},
+					phone : {
+						from : 640,
+						to : 0
+					}
+				},
+				lowIERun : false,
+				lowIERange : ["web"],
+				interval : 250
+			});
 		});
 	</script>
 </head>
