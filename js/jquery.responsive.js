@@ -82,6 +82,15 @@ try {
 				_interval = 0;
 
 			/**
+			 * @name 변수 형태
+			 * @param {*} variable
+			 * @return {string}
+			 */
+			function _typeOf(variable) {
+				return Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
+			}
+
+			/**
 			 * @name 가비지 컬렉션
 			 * @since 2017-12-06
 			 * @param {object} object
@@ -90,7 +99,7 @@ try {
 			function _freeObject(object) {
 				var result = {};
 
-				if(typeof object == "object" && !object.length) {
+				if(_typeOf(object) == "object") {
 					result = JSON.parse(JSON.stringify(object));
 				}
 
@@ -149,12 +158,13 @@ try {
 			 * @return {array}
 			 */
 			function _removeDuplicate(name) {
-				var result = [];
+				var result = [],
+					typeOf = _typeOf(name);
 				
-				//문자, 숫자, 배열일 경우 배열로 만든다.
-				if(name.length) {
+				//문자, 숫자, 불린일 경우 배열로 만든다.
+				if(typeOf == "string" || typeOf == "number" || typeOf == "boolean") {
 					name = $.makeArray(name);
-				}else{
+				}else if(typeOf != "array") {
 					name = [];
 				}
 				
@@ -255,7 +265,7 @@ try {
 						};
 					
 					//스크롤바 객체제거
-					$("#responsive_scrollbar").remove();
+					$("body > #responsive_scrollbar").remove();
 
 					return _freeObject(result);
 				}
@@ -398,42 +408,35 @@ try {
 
 						//브라우저, 플랫폼 클래스 추가
 						_$target.addClass(_responsive.browser + " " + _responsive.platform);
-
-						//브라우저 스크롤바가 있을때
-						if(_responsive.scrollbarWidth) {
-							_$target.addClass("scrollbar");
-						}else{
-							_$target.removeClass("scrollbar");
-						}
-					
-						//옵션이 없을경우
-						if(!option || (typeof option != "object" && option.length)) {
+						
+						//옵션이 객체가 아닐경우
+						if(_typeOf(option) != "object") {
 							option = {};
 						}
 
 						//ie7, ie8에서 분기 실행여부
-						if(option.lowIERun && typeof option.lowIERun == "boolean") {
+						if(_typeOf(option.lowIERun) == "boolean") {
 							_responsive.lowIERun = option.lowIERun;
 						}else{
 							_responsive.lowIERun = false;
 						}
 						
 						//lowIERun을 true로 지정했을때 나타나는 분기
-						if(option.lowIERange && typeof option.lowIERange == "object" && option.lowIERange.length) {
+						if(_typeOf(option.lowIERun) == "array") {
 							_responsive.lowIERange = _removeDuplicate(option.lowIERange);
 						}else{
 							_responsive.lowIERange = ["web"];
 						}
 
 						//리사이즈 종료간격 추가
-						if(option.interval && typeof option.interval == "number") {
+						if(_typeOf(option.interval) == "number") {
 							_interval = option.interval;
 						}else{
 							_interval = 250;
 						}
 
 						//초기화면 정보
-						if(option.range && typeof option.range == "object" && !option.range.length) {
+						if(_typeOf(option.range) == "object") {
 							_range = option.range;
 						}else{
 							_range = {
@@ -478,12 +481,12 @@ try {
 								_rangeProperty.push(i);
 
 								//값이 없거나 문자일 경우
-								if(!_range[i].from || typeof _range[i].from != "number") {
+								if(!_range[i].from || _typeOf(_range[i].from) != "number") {
 									_range[i].from = 9999;	
 								}
 
 								//값이 없거나 문자일 경우
-								if(!_range[i].to || typeof _range[i].to != "number") {
+								if(!_range[i].to || _typeOf(_range[i].to) != "number") {
 									_range[i].to = 0;
 								}
 							
