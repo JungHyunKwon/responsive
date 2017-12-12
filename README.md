@@ -81,7 +81,7 @@ range객체가 없을경우 기본으로 wide(9999 ~ 1201), web(1200 ~ 801), tab
 * lowIERun에 값이 없거나 프로퍼티가 없거나 boolean이 아닐경우 기본값은 false입니다.
 
 #### lowIERange
-* lowIERun을 true로 지정했을때 나타나는 분기입니다.
+* lowIERun을 true로 지정했을 때 나타나는 분기입니다.
 * range에서 지정한 분기를 몇개든 넣으면 ie7, ie8에서 지정한 분기만 보여주게 됩니다.
 * lowIERange의 값이 없거나 프로퍼티가 없을경우 배열 또는 문자가 아닐경우 기본값은 web이며 range에 web이 없을경우 none입니다.
 * 중복으로 적은 값은 제거 됩니다.
@@ -117,8 +117,8 @@ exit | array | 지정한 분기범위에 나간 이름입니다.
 lowIERange | array | 플러그인 옵션중 lowIERange의 값입니다.
 nowState | array | 현재상태에 대한 값입니다.
 prevState | array | 이전상태에 대한 값입니다.
-loadedHeight | number | 최초 로드했을때 창의 높이입니다.
-loadedWidth | number | 최초 로드했을때 창의 넓이입니다.
+loadedHeight | number | 최초로드 했을 때 창의 높이입니다.
+loadedWidth | number | 최초로드 했을 때 창의 넓이입니다.
 windowHeight | number | 창의 높이값 입니다.
 windowWidth | number | 창의 넓이값 입니다.
 scrollbarWidth | number | 브라우저의 스크롤바 넓이에 대한 값이며 모바일에서 브라우저의 스크롤바의 넓이는 0이며 컴퓨터에서 접속한 브라우저의 스크롤바의 넓이는 브라우저마다 다릅니다.
