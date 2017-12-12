@@ -117,8 +117,8 @@ exit | array | 지정한 분기범위에 나간 이름입니다.
 lowIERange | array | 플러그인 옵션중 lowIERange의 값입니다.
 nowState | array | 현재상태에 대한 값입니다.
 prevState | array | 이전상태에 대한 값입니다.
-loadedHeight | number | 최초의 창의 높이입니다.
-loadedWidth | number | 최초의 창의 넓이입니다.
+loadedHeight | number | 최초 로드했을때 창의 높이입니다.
+loadedWidth | number | 최초 로드했을때 창의 넓이입니다.
 windowHeight | number | 창의 높이값 입니다.
 windowWidth | number | 창의 넓이값 입니다.
 scrollbarWidth | number | 브라우저의 스크롤바 넓이에 대한 값이며 모바일에서 브라우저의 스크롤바의 넓이는 0이며 컴퓨터에서 접속한 브라우저의 스크롤바의 넓이는 브라우저마다 다릅니다.
