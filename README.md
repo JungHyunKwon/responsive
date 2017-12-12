@@ -83,7 +83,7 @@ range객체가 없을경우 기본으로 wide(9999 ~ 1201), web(1200 ~ 801), tab
 #### lowIERange
 * lowIERun을 true로 지정했을때 나타나는 분기입니다.
 * range에서 지정한 분기를 몇개든 넣으면 ie7, ie8에서 지정한 분기만 보여주게 됩니다.
-* lowIERange의 값이 없거나 프로퍼티가 없을경우 기본값은 web입니다.
+* lowIERange의 값이 없거나 프로퍼티가 없을경우 배열 또는 문자가 아닐경우 기본값은 web이며 range에 web이 없을경우 none입니다.
 * 중복으로 적은 값은 제거 됩니다.
 * 작성우선순위와 관련 있습니다.
 
@@ -136,12 +136,14 @@ platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨�
 8. noneAllResized
 
 ### 이벤트
-이벤트는 $(window)객체에 걸어야 합니다.
+이벤트는 $(window)에 걸어야 합니다.
 
 이름 | 값 | 설명
 | :-- | :- | :-- |
 responsive | object | $.responsive.setting설명과 같습니다.
 state | string or array | 범위에 걸린 분기이름입니다.
+
+걸린시점의 값이 떨어집니다.
 
 #### 기본
 ````

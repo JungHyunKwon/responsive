@@ -8,69 +8,13 @@
  */
 try {
 	this.jQuery = this.jQuery || undefined;
-
-	/**
-	 * @name JSON psrse, stringify
-	 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
-	 */
-	if(!this.JSON) {
-		this.JSON = {
-			parse: function(sJSON) {
-				return eval('(' + sJSON + ')');
-			},
-			stringify: (function() {
-				var toString = Object.prototype.toString;
-				var isArray = Array.isArray || function(a) {
-					return toString.call(a) === '[object Array]';
-				};
-				var escMap = {
-					'"': '\\"',
-					'\\': '\\\\',
-					'\b': '\\b',
-					'\f': '\\f',
-					'\n': '\\n',
-					'\r': '\\r',
-					'\t': '\\t'
-				};
-				var escFunc = function(m) {
-					return escMap[m] || '\\u' + (m.charCodeAt(0) + 0x10000).toString(16).substr(1);
-				};
-				var escRE = /[\\"\u0000-\u001F\u2028\u2029]/g;
-				return function stringify(value) {
-					if (value == null) {
-						return 'null';
-					} else if (typeof value === 'number') {
-						return isFinite(value) ? value.toString() : 'null';
-					} else if (typeof value === 'boolean') {
-						return value.toString();
-					} else if (typeof value === 'object') {
-						if (typeof value.toJSON === 'function') {
-							return stringify(value.toJSON());
-						} else if (isArray(value)) {
-							var res = '[';
-							for (var i = 0; i < value.length; i++)
-								res += (i ? ', ' : '') + stringify(value[i]);
-							return res + ']';
-						} else if (toString.call(value) === '[object Object]') {
-							var tmp = [];
-							for (var k in value) {
-								if (value.hasOwnProperty(k))
-									tmp.push(stringify(k) + ': ' + stringify(value[k]));
-							}
-							return '{' + tmp.join(', ') + '}';
-						}
-					}
-					return '"' + value.toString().replace(escRE, escFunc) + '"';
-				};
-			})()
-		};
-	}
 	
 	//제이쿼리가 있는지 확인
 	if(jQuery) {
 		//$ 중첩 방지
 		(function($) {
 			var _$window = $(window),
+				_$document = $(document),
 				_isWindowLoad = false,
 				_windowTempWidth = 0,
 				_windowTempHeight = 0,
@@ -79,7 +23,62 @@ try {
 				_rangeCode = "",
 				_rangeProperty = [],
 				_timeout = 0,
-				_interval = 0;
+				_interval = 0,
+				/**
+				 * @name JSON psrse, stringify
+				 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
+				 */
+				_JSON = {
+				parse: function(sJSON) {
+					return eval('(' + sJSON + ')');
+				},
+
+				stringify: (function() {
+					var toString = Object.prototype.toString;
+					var isArray = Array.isArray || function(a) {
+						return toString.call(a) === '[object Array]';
+					};
+					var escMap = {
+						'"': '\\"',
+						'\\': '\\\\',
+						'\b': '\\b',
+						'\f': '\\f',
+						'\n': '\\n',
+						'\r': '\\r',
+						'\t': '\\t'
+					};
+					var escFunc = function(m) {
+						return escMap[m] || '\\u' + (m.charCodeAt(0) + 0x10000).toString(16).substr(1);
+					};
+					var escRE = /[\\"\u0000-\u001F\u2028\u2029]/g;
+					return function stringify(value) {
+						if (value == null) {
+							return 'null';
+						} else if (typeof value === 'number') {
+							return isFinite(value) ? value.toString() : 'null';
+						} else if (typeof value === 'boolean') {
+							return value.toString();
+						} else if (typeof value === 'object') {
+							if (typeof value.toJSON === 'function') {
+								return stringify(value.toJSON());
+							} else if (isArray(value)) {
+								var res = '[';
+								for (var i = 0; i < value.length; i++)
+									res += (i ? ', ' : '') + stringify(value[i]);
+								return res + ']';
+							} else if (toString.call(value) === '[object Object]') {
+								var tmp = [];
+								for (var k in value) {
+									if (value.hasOwnProperty(k))
+										tmp.push(stringify(k) + ': ' + stringify(value[k]));
+								}
+								return '{' + tmp.join(', ') + '}';
+							}
+						}
+						return '"' + value.toString().replace(escRE, escFunc) + '"';
+					};
+				})()
+			};
 
 			/**
 			 * @name 변수 형태
@@ -100,7 +99,7 @@ try {
 				var result = {};
 
 				if(_typeOf(object) == "object") {
-					result = JSON.parse(JSON.stringify(object));
+					result = _JSON.parse(_JSON.stringify(object));
 				}
 
 				return result;
@@ -150,37 +149,37 @@ try {
 				return result;
 			}
 
-			/**
-			 * @name 배열 중복값 제거
-			 * @description name에서 중복값을 제거합니다.
-			 * @since 2017-12-06
-			 * @param {array || string} name
-			 * @return {array}
-			 */
-			function _removeDuplicate(name) {
-				var result = [],
-					typeOf = _typeOf(name);
-				
-				//문자, 숫자, 불린일 경우 배열로 만든다.
-				if(typeOf == "string" || typeOf == "number" || typeOf == "boolean") {
-					name = $.makeArray(name);
-				}else if(typeOf != "array") {
-					name = [];
-				}
-				
-				//result값에 값이 없으면 집어넣는다.
-				for(var i in name) {
-					if($.inArray(name[i], result) == -1) {
-						result.push(name[i]);
-					}
-				}
-
-				return result;
-			}
-
-			$(function() {
+			_$document.on("ready.responsive", function() {
 				var _$target = $("body"),
 					_responsive = _getDefaultObject();
+
+				/**
+				 * @name 배열 중복값 제거
+				 * @description name에서 중복값을 제거합니다.
+				 * @since 2017-12-06
+				 * @param {array || string} name
+				 * @return {array}
+				 */
+				function _removeDuplicate(name) {
+					var result = [],
+						typeOf = _typeOf(name);
+					
+					//문자, 숫자, 불린일 경우 배열로 만든다.
+					if(typeOf == "string" || typeOf == "number" || typeOf == "boolean") {
+						name = $.makeArray(name);
+					}else if(typeOf != "array") {
+						name = [];
+					}
+					
+					//result값에 값이 없으면 집어넣는다.
+					for(var i in name) {
+						if($.inArray(name[i], result) == -1) {
+							result.push(name[i]);
+						}
+					}
+
+					return result;
+				}
 
 				/**
 				 * @name 스크롤바 존재여부
@@ -189,20 +188,42 @@ try {
 				 * @return {object}
 				 */
 				function _hasScrollbar(object) {
-					var $this = $(object),
-						overflow = {
-							x : $this.css("overflow-x"),
-							y : $this.css("overflow-y")
-						},
+					var $this = $(object).first(),
+						$target = $this.add($this.parents()),
+						horizontal = [],
+						vertical = [],
 						result = {horizontal : false, vertical : false};
 					
-					//매핑한 객체의 넓이가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
-					if((object.scrollWidth > object.clientWidth && overflow.x != "hidden") || overflow.x == "scroll") {
+					//스크롤바 탐지
+					$target.each(function(index, element) {
+						var $this = $(element),
+							overflow = {
+								x : $this.css("overflow-x"),
+								y : $this.css("overflow-y")
+							};
+
+						//매핑한 객체의 넓이가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
+						if((element.scrollWidth > element.clientWidth && overflow.x != "hidden") || overflow.x == "scroll") {
+							horizontal.push(true);
+						}else{
+							horizontal.push(false);
+						}
+						
+						//매핑한 객체의 높이가가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
+						if((element.scrollHeight > element.clientHeight && overflow.y != "hidden") || overflow.y == "scroll") {
+							vertical.push(true);
+						}else{
+							vertical.push(false);
+						}
+					});
+					
+					//가로스크롤바가 하나라도 있을경우
+					if($.inArray(true, horizontal) > -1) {
 						result.horizontal = true;
 					}
 					
-					//매핑한 객체의 높이가가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
-					if((object.scrollHeight > object.clientHeight && overflow.y != "hidden") || overflow.y == "scroll") {
+					//세로스크롤바가 하나라도 있을경우
+					if($.inArray(true, vertical) > -1) {
 						result.vertical = true;
 					}
 
@@ -215,17 +236,15 @@ try {
 				 * @return {number}
 				 */
 				function _getScrollbarWidth() {
-					var result = 0,
-						$body = $("body"),
-						$scrollbar = $body.children("#responsive_scrollbar");
+					var $body = $("body"),
+						$scrollbar = $body.children("#responsive_scrollbar"),
+						result = ($scrollbar.length) ? $scrollbar[0].offsetWidth - $scrollbar[0].clientWidth : 0;
 					
 					//객체가 없을경우
 					if(!$scrollbar.length) {
 						$body.append("<div id=\"responsive_scrollbar\" style=\"visibility:hidden; overflow:scroll; position:absolute; top:-100px; left:-100px; z-index:-1; width:100px; height:100px;\">&nbsp;</div>");
-						$scrollbar = $body.children("#responsive_scrollbar");
+						result = _getScrollbarWidth();
 					}
-
-					result = $scrollbar[0].offsetWidth - $scrollbar[0].clientWidth;
 
 					return result;
 				}
@@ -292,9 +311,11 @@ try {
 							nowState.push(state[i]);
 						}
 					}
-					
+
 					//적용시킬 상태가 있으면 true
-					result = (setState.length) ? true : false;
+					if(setState.length) {
+						result = true;
+					}
 
 					if(result) {
 						//이전상태 클래스 제거
@@ -302,7 +323,7 @@ try {
 
 						//현재상태 클래스 추가
 						_$target.addClass(state.join(" "));
-
+						
 						//이전상태 갱신
 						_responsive.prevState = _responsive.nowState;
 
@@ -422,7 +443,9 @@ try {
 						}
 						
 						//lowIERun을 true로 지정했을때 나타나는 분기
-						if(_typeOf(option.lowIERun) == "array") {
+						var typeofLowIERange = _typeOf(option.lowIERange);
+
+						if(typeofLowIERange == "array" || typeofLowIERange == "string") {
 							_responsive.lowIERange = _removeDuplicate(option.lowIERange);
 						}else{
 							_responsive.lowIERange = ["web"];
@@ -471,10 +494,12 @@ try {
 						_rangeCode += "if(!_responsive.lowIERun && _responsive.isLowIE) {\n\t_responsive.enter = _responsive.lowIERange;\n}else{\n";
 
 						//range에 적은 값을 기준으로 자바스크립트 코드 생성
-						for(var i in _range) {
+						var i;
+
+						for(i in _range) {
 							//소문자 변경
 							i = i.toLowerCase();
-							
+
 							//필터링
 							if(i.substr(-7) != "resized" && i.substr(-4) != "none" && i.substr(-3) != "all" && i != "mobile" && i != "pc" && i != "scrollbar" && i != "ie7" && i != "ie8" && i != "ie9" && i != "ie10" && i != "ie11" && i != "edge" && i != "whale" && i != "samsung" && i != "opera" && i != "chrome" && i != "firefox" && i != "safari" && i != "unknown") {
 								//프로퍼티명 기입
@@ -499,7 +524,21 @@ try {
 						}
 
 						_rangeCode += "}";
+						
+						//필터링된 프로퍼티명에서 lowIERange명이 있는지 확인해서 없으면 공백처리 
+						for(i in _responsive.lowIERange) {
+							if($.inArray(_responsive.lowIERange[i], _rangeProperty) == -1) {
+								_responsive.lowIERange[i] = "none";
+							}
+						}
 
+						//하위IE에서 적용시킬 상태가 한개이면서 첫번째가 공백일경우
+						if(_responsive.lowIERange.length == 1 && _responsive.lowIERange[0] == "none") {
+							_responsive.lowIERange = ["none"];
+						}else{
+							_responsive.lowIERange = _responsive.lowIERange.join(", ").replace(/, none/g, "").split(", ");
+						}
+						
 						//rangeCode작성 끝
 
 						_$window.on("resize.responsive", function(event) {
@@ -568,8 +607,10 @@ try {
 									//화면정보 갱신
 									_setScreenInfo();
 									
+									//전체범위 함수 호출
 									_callEvent("allResized");
-
+									
+									//상태적용, 이벤트 호출
 									if(_responsive.enter.length) {
 										_callEvent((_responsive.enter.join("AllResized, ") + "AllResized").split(", "));
 									}else{
@@ -578,9 +619,6 @@ try {
 								}, _interval);
 							}
 						}).triggerHandler("resize.responsive");
-
-						//사용자 제공 객체 갱신
-						$.responsive.setting = _freeObject(_responsive);
 					}else{
 						throw "이미 실행 중 이거나 윈도우가 로드되지 않았습니다.";
 					}
