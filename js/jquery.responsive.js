@@ -84,13 +84,7 @@ try {
 			 * @return {string}
 			 */
 			function _typeOf(variable) {
-				var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
-				
-				//ie7, ie8 fixed
-				if(variable == undefined) {
-					result = "undefined";
-				}
-				return result;
+				return Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
 			}
 
 			/**
@@ -170,9 +164,9 @@ try {
 				}else if(typeOf != "array") {
 					name = [];
 				}
-				
+
 				//result값에 값이 없으면 집어넣는다.
-				for(var i in name) {
+				for(var i = 0; i < name.length; i++) {
 					if($.inArray(name[i], result) == -1) {
 						result.push(name[i]);
 					}
@@ -308,7 +302,7 @@ try {
 					state = _removeDuplicate(state);
 
 					//적용시킬 상태가 있는지 확인
-					for(var i in state) {
+					for(var i = 0; i < state.length; i++) {
 						if($.inArray(state[i], _responsive.nowState) == -1) {
 							setState.push(state[i]);
 						}else{
@@ -365,7 +359,7 @@ try {
 					//사용자 제공 객체 갱신
 					$.responsive.setting = event.responsive;
 
-					for(var i in state) {
+					for(var i = 0; i < state.length; i++) {
 						//상태기입
 						event.state = state[i];
 
@@ -527,8 +521,9 @@ try {
 
 						_rangeCode += "}";
 						
-						//필터링된 프로퍼티명에서 lowIERange명이 있는지 확인해서 없으면 공백처리 
-						for(i in _responsive.lowIERange) {
+						//필터링된 프로퍼티명에서 lowIERange명이 있는지 확인해서 없으면 공백처리
+						i = 0;
+						for(; i < _responsive.lowIERange.length; i++) {
 							if($.inArray(_responsive.lowIERange[i], _rangeProperty) == -1) {
 								_responsive.lowIERange[i] = "none";
 							}
