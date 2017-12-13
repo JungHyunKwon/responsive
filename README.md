@@ -77,8 +77,8 @@ range객체가 없을경우 기본으로 wide(9999 ~ 1201), web(1200 ~ 801), tab
 
 #### lowIERun
 * ie7, ie8에서 분기 실행여부 입니다.
-* 값은 boolean만 올 수 있습니다.
-* lowIERun에 값이 없거나 프로퍼티가 없거나 boolean이 아닐경우 기본값은 false입니다.
+* 값은 불린만 올 수 있습니다.
+* lowIERun에 값이 없거나 프로퍼티가 없거나 불린이 아닐경우 기본값은 false입니다.
 
 #### lowIERange
 * lowIERun을 true로 지정했을 때 나타나는 분기입니다.
