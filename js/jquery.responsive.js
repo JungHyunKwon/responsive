@@ -7,8 +7,6 @@
  * @version 1.0
  */
 try {
-	this.jQuery = this.jQuery || undefined;
-	
 	//제이쿼리가 있는지 확인
 	if(jQuery) {
 		//$ 중첩 방지
