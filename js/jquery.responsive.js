@@ -501,14 +501,19 @@ try {
 							if(i.substr(-7) != "resized" && i.substr(-4) != "none" && i.substr(-3) != "all" && i != "mobile" && i != "pc" && i != "scrollbar" && i != "ie7" && i != "ie8" && i != "ie9" && i != "ie10" && i != "ie11" && i != "edge" && i != "whale" && i != "samsung" && i != "opera" && i != "chrome" && i != "firefox" && i != "safari" && i != "unknown") {
 								//프로퍼티명 기입
 								_rangeProperty.push(i);
+								
+								//객체가 아닐경우
+								if(_typeOf(_range[i]) != "object") {
+									_range[i] = {};
+								}
 
 								//값이 없거나 문자일 경우
-								if(!_range[i].from || _typeOf(_range[i].from) != "number") {
+								if(_typeOf(_range[i].from) != "number") {
 									_range[i].from = 9999;	
 								}
 
 								//값이 없거나 문자일 경우
-								if(!_range[i].to || _typeOf(_range[i].to) != "number") {
+								if(_typeOf(_range[i].to) != "number") {
 									_range[i].to = 0;
 								}
 							
