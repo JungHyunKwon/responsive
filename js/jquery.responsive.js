@@ -14,7 +14,6 @@ try {
 		//$ 중첩 방지
 		(function($) {
 			var _$window = $(window),
-				_$document = $(document),
 				_isWindowLoad = false,
 				_windowTempWidth = 0,
 				_windowTempHeight = 0,
@@ -177,7 +176,7 @@ try {
 				return result;
 			}
 
-			_$document.on("ready.responsive", function() {
+			$(function() {
 				var _$target = $("body"),
 					_responsive = _getDefaultObject();
 
