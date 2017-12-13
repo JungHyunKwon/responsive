@@ -8,6 +8,8 @@
  */
 try {
 	//제이쿼리가 있는지 확인
+	this.jQuery = this.jQuery || undefined;
+
 	if(jQuery) {
 		//$ 중첩 방지
 		(function($) {
