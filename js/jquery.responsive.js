@@ -149,37 +149,37 @@ try {
 				return result;
 			}
 
+			/**
+			 * @name 배열 중복값 제거
+			 * @description name에서 중복값을 제거합니다.
+			 * @since 2017-12-06
+			 * @param {array || string} name
+			 * @return {array}
+			 */
+			function _removeDuplicate(name) {
+				var result = [],
+					typeOf = _typeOf(name);
+				
+				//문자, 숫자, 불린일 경우 배열로 만든다.
+				if(typeOf == "string" || typeOf == "number" || typeOf == "boolean") {
+					name = $.makeArray(name);
+				}else if(typeOf != "array") {
+					name = [];
+				}
+				
+				//result값에 값이 없으면 집어넣는다.
+				for(var i in name) {
+					if($.inArray(name[i], result) == -1) {
+						result.push(name[i]);
+					}
+				}
+
+				return result;
+			}
+
 			_$document.on("ready.responsive", function() {
 				var _$target = $("body"),
 					_responsive = _getDefaultObject();
-
-				/**
-				 * @name 배열 중복값 제거
-				 * @description name에서 중복값을 제거합니다.
-				 * @since 2017-12-06
-				 * @param {array || string} name
-				 * @return {array}
-				 */
-				function _removeDuplicate(name) {
-					var result = [],
-						typeOf = _typeOf(name);
-					
-					//문자, 숫자, 불린일 경우 배열로 만든다.
-					if(typeOf == "string" || typeOf == "number" || typeOf == "boolean") {
-						name = $.makeArray(name);
-					}else if(typeOf != "array") {
-						name = [];
-					}
-					
-					//result값에 값이 없으면 집어넣는다.
-					for(var i in name) {
-						if($.inArray(name[i], result) == -1) {
-							result.push(name[i]);
-						}
-					}
-
-					return result;
-				}
 
 				/**
 				 * @name 스크롤바 존재여부
@@ -311,30 +311,34 @@ try {
 							nowState.push(state[i]);
 						}
 					}
-
+				
 					//적용시킬 상태가 있으면 true
 					if(setState.length) {
 						result = true;
 					}
 
 					if(result) {
-						//이전상태 클래스 제거
-						_$target.removeClass(_responsive.nowState.join(" "));
+						//현재상태 클래스 제거
+						_$target.removeClass(nowState.join(" "));
 
-						//현재상태 클래스 추가
+						//새로운상태 클래스 추가
 						_$target.addClass(state.join(" "));
 						
-						//이전상태 갱신
-						_responsive.prevState = _responsive.nowState;
+						//이전상태 추가
+						_responsive.prevState = nowState;
 
-						//현재상태 갱신
+						//새로운상태 추가
 						_responsive.nowState = state;
 
-						//함수실행
-						_callEvent(setState);
-
-						//console에 현재상태 표기
+						//console에 새로운상태 표기
 						console.log("현재상태 : " + state.join(", "));
+					}
+					
+					//함수실행
+					_callEvent((state.join("All, ") + "All").split(", "));
+					
+					if(result) {
+						_callEvent(state);					
 					}
 
 					return result;
@@ -366,12 +370,6 @@ try {
 
 						//필터 이벤트 호출
 						_$window.triggerHandler($.Event("responsive:" + state[i], event));
-					}
-					
-					//2개이상 필터 이벤트 호출
-					if(state.length > 1) {
-						event.state = state;
-						_$window.triggerHandler($.Event("responsive:" + state.join(":"), event));
 					}
 
 					return state;
@@ -586,10 +584,8 @@ try {
 
 								//상태적용, 이벤트 호출
 								if(_responsive.enter.length) {
-									_callEvent((_responsive.enter.join("All, ") + "All").split(", "));
 									_setState(_responsive.enter);
 								}else{
-									_callEvent("noneAll");
 									_setState("none");
 								}
 

@@ -162,9 +162,7 @@ $(window).on("responsive:#", function(event) {
     console.log(event.state);
 });
 ````
-* 콜론(:)을 이어붙여 다중필터도 가능합니다.
 * #은 지정한 분기이름 입니다.
-* range객체에 적은 우선순위 대로 작성해주시면 됩니다.
 
 ### 클래스
 * 브라우저 : ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 중에서 해당되는 브라우저로 클래스가 부여됩니다.
