@@ -87,9 +87,9 @@ try {
 			function _typeOf(variable) {
 				var result = "";
 				
-				if(variable == undefined) {
+				if(variable === undefined) {
 					result = "undefined";
-				}else if(result == "number" && isNaN(variable)) {
+				}else if(typeof variable === "number" && isNaN(variable)) {
 					result = "NaN";
 				}else{
 					result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
