@@ -85,12 +85,14 @@ try {
 			 * @return {string}
 			 */
 			function _typeOf(variable) {
-				var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
+				var result = "";
 				
 				if(variable == undefined) {
 					result = "undefined";
-				}else if(isNaN(variable)) {
+				}else if(result == "number" && isNaN(variable)) {
 					result = "NaN";
+				}else{
+					result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
 				}
 
 				return result;
