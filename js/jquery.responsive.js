@@ -85,7 +85,13 @@ try {
 			 * @return {string}
 			 */
 			function _typeOf(variable) {
-				return Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
+				var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
+				
+				//ie7, ie8 fixed
+				if(variable == undefined) {
+					result = "undefined";
+				}
+				return result;
 			}
 
 			/**
