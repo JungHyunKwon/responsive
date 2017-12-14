@@ -87,9 +87,10 @@ try {
 			function _typeOf(variable) {
 				var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
 				
-				//ie7, ie8 fixed
 				if(variable == undefined) {
 					result = "undefined";
+				}else if(isNaN(variable)) {
+					result = "NaN";
 				}
 
 				return result;
