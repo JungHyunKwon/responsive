@@ -91,6 +91,7 @@ try {
 				if(variable == undefined) {
 					result = "undefined";
 				}
+
 				return result;
 			}
 
