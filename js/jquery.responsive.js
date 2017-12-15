@@ -27,7 +27,7 @@ try {
 				 * @name JSON psrse, stringify
 				 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
 				 */
-				_JSON = {
+				_JSON = window.JSON || {
 				parse: function(sJSON) {
 					return eval('(' + sJSON + ')');
 				},
