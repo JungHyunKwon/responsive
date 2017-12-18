@@ -141,7 +141,7 @@ platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨�
 이름 | 값 | 설명
 | :-- | :- | :-- |
 responsive | object | $.responsive.setting설명과 같습니다.
-state | string or array | 범위에 걸린 분기이름입니다.
+state | string | 범위에 걸린 분기이름입니다.
 
 걸린시점의 값이 떨어집니다.
 
