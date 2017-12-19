@@ -450,9 +450,9 @@ try {
 						}
 						
 						//lowIERun을 true로 지정했을때 나타나는 분기
-						var typeofLowIERange = _typeOf(option.lowIERange);
+						var lowIERangeType = _typeOf(option.lowIERange);
 
-						if(typeofLowIERange == "array" || typeofLowIERange == "string") {
+						if(lowIERangeType == "array" || lowIERangeType == "string") {
 							_responsive.lowIERange = _removeDuplicate(option.lowIERange);
 						}else{
 							_responsive.lowIERange = ["web"];
