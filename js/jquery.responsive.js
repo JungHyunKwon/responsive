@@ -306,8 +306,7 @@ try {
 				 */
 				function _setState(state) {
 					var result = false,
-						setState = [],
-						nowState = [];
+						setState = [];
 
 					//중복제거
 					state = _removeDuplicate(state);
@@ -316,8 +315,6 @@ try {
 					for(var i = 0; i < state.length; i++) {
 						if($.inArray(state[i], _responsive.nowState) == -1) {
 							setState.push(state[i]);
-						}else{
-							nowState.push(state[i]);
 						}
 					}
 				
@@ -328,13 +325,13 @@ try {
 
 					if(result) {
 						//현재상태 클래스 제거
-						_$target.removeClass(nowState.join(" "));
+						_$target.removeClass(_responsive.nowState.join(" "));
 
 						//새로운상태 클래스 추가
 						_$target.addClass(state.join(" "));
 						
 						//이전상태 추가
-						_responsive.prevState = nowState;
+						_responsive.prevState = _responsive.nowState;
 
 						//새로운상태 추가
 						_responsive.nowState = state;
