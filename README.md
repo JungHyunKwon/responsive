@@ -117,10 +117,6 @@ hasVerticalScrollbar | boolean | 세로스크롤바가 있는지 확인하는 �
 isRun | boolean | 플러그인이 실행됬는지 확인하는 변수입니다.
 isLowIE | boolean | 브라우저가 ie7 또는 ie8인지 확인하는 변수입니다.
 isResize | boolean | 리사이즈 중인지 확인하는 변수입니다.
-isScreenChage | boolean | 넓이 또는 높이가 변경되었는지 확인하는 변수입니다.
-isScreenHeightChange | boolean | 높이가 변경되었는지 확인하는 변수입니다.
-isScreenWidthChange | boolean | 넓이가 변경되었는지 확인하는 변수입니다.
-isScreenWidthAndHeightChange | boolean | 넓이와 높이가 변경되었는지 확인하는 변수입니다.
 lowIERun | boolean | 플러그인 옵션중 lowIERun의 값입니다.
 exit | array | 지정한 분기범위에 나간 이름입니다.
 nowState | array | 현재상태에 대한 값입니다.

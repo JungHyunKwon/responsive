@@ -292,10 +292,7 @@ try {
 							hasVerticalScrollbar : hasScrollbar.vertical,
 							hasHorizontalScrollbar : hasScrollbar.horizontal,
 							isLowIE : _connectedState.browser == "ie7" || _connectedState.browser == "ie8",
-							isScreenChange : false,
-							isScreenWidthChange : false,
-							isScreenHeightChange : false,
-							isScreenWidthAndHeightChange : false
+							isResize : false
 						};
 
 					return _freeObject(result);
@@ -532,39 +529,18 @@ try {
 					//rangeCode작성 끝
 
 					_$window.off("resize.responsive").on("resize.responsive", function(event) {
-						//화면이 변경되었는지 확인하는 변수
-						_responsive.isScreenChange = false;
-						_responsive.isScreenWidthChange = false;
-						_responsive.isScreenHeightChange = false;
-						_responsive.isScreenWidthAndHeightChange = false;
-						
 						//화면정보 갱신
 						_setScreenInfo();
+
+						//기존의 스크린 높이와 새로부여받은 스크린 높이가 같은지 확인
+						if(_responsive.windowHeight != windowTempHeight) {
+							windowTempHeight = _responsive.windowHeight;
+						}
 
 						//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 같은지 확인
 						if(_responsive.windowWidth != windowTempWidth) {
 							windowTempWidth = _responsive.windowWidth;
-							_responsive.isScreenWidthChange = true;
-						}
-						
-						//기존의 스크린 높이와 새로부여받은 스크린 높이가 같은지 확인
-						if(_responsive.windowHeight != windowTempHeight) {
-							windowTempHeight = _responsive.windowHeight;
-							_responsive.isScreenHeightChange = true;
-						}
-						
-						//기존 스크린 넓이와 높이가 둘다 변경되었을때
-						if(_responsive.isScreenWidthChange && _responsive.isScreenHeightChange) {
-							_responsive.isScreenWidthAndHeightChange = true;
-						}
 
-						//스크린의 넓이값 또는 세로값이 변경되었을때
-						if(_responsive.isScreenWidthChange || _responsive.isScreenHeightChange) {
-							_responsive.isScreenChange = true;
-						}
-						
-						//스크린의 넓이값이 변경되었을 때
-						if(_responsive.isScreenWidthChange) {
 							//리사이즈 확인 함수
 							_responsive.isResize = true;
 
