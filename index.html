@@ -27,13 +27,6 @@
 				console.log(event.state);
 			});
 
-			$window.on("responsive:wide:test", function(event) {
-				console.log(5);
-				console.log(event);
-				console.log(event.responsive);
-				console.log(event.state);
-			});
-
 			console.log(2);
 		});
 
@@ -41,10 +34,6 @@
 		   $.responsive({
 				range : {
 					wide : {
-						from : 9999,
-						to : 1201
-					},
-					test : {
 						from : 9999,
 						to : 1201
 					},
@@ -61,8 +50,10 @@
 						to : 0
 					}
 				},
-				lowIERun : false,
-				lowIERange : ["web"],
+				lowIE : {
+					run : false,
+					state : ["web"]
+				},
 				interval : 250
 			});
 		});
