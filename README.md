@@ -136,7 +136,6 @@ platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨�
 이름 | 형태 | 설명
 | :-- | :- | :-- |
 state | string | 범위에 걸린 분기이름입니다.
-option | object | $.responsive.setting과 같습니다.
 
 걸린시점의 값이 떨어집니다.
 
@@ -145,7 +144,6 @@ option | object | $.responsive.setting과 같습니다.
 $(window).on("responsive", function(event) {
     console.log(event);
     console.log(event.state);
-    console.log(event.option);
 });
 ````
 
@@ -154,7 +152,6 @@ $(window).on("responsive", function(event) {
 $(window).on("responsive:#", function(event) {
     console.log(event);
     console.log(event.state);
-    console.log(event.option);
 });
 ````
 * #은 지정한 분기이름 입니다.

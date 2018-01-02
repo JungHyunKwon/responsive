@@ -365,25 +365,15 @@ try {
 				 * @return {array}
 				 */
 				function _callEvent(state) {
-					var event = {
-						option : _freeObject(_option)
-					};
-
 					//중복제거
 					state = _removeDuplicate(state);
 
-					//사용자 객체 갱신
-					$.responsive.setting = event.option;
-
 					for(var i = 0; i < state.length; i++) {
-						//상태 값
-						event.state = state[i];
-
 						//모든 이벤트 호출
-						_$window.triggerHandler($.Event("responsive", event));
+						_$window.triggerHandler($.Event("responsive", {state : state[i]}));
 
 						//필터 이벤트 호출
-						_$window.triggerHandler($.Event("responsive:" + state[i], event));
+						_$window.triggerHandler($.Event("responsive:" + state[i], {state : state[i]}));
 					}
 
 					return state;
@@ -434,7 +424,7 @@ try {
 				 * @since 2017-12-06
 				 * @return {object}
 				 */
-				function _resetIsScreen() {
+				function _resetIsScreenVariable() {
 					_option.isResize = false;
 					_option.isScreenWidthChange = false;
 					_option.isScreenHeightChange = false;
@@ -559,7 +549,7 @@ try {
 
 					_$window.off("resize.responsive").on("resize.responsive", function(event) {
 						//화면이 변경되었는지 확인하는 변수들 초기화
-						_resetIsScreen();
+						_resetIsScreenVariable();
 
 						//화면정보 갱신
 						_setScreenInfo();
@@ -588,15 +578,17 @@ try {
 						if(_option.isScreenWidthChange || _option.isScreenHeightChange) {
 							_option.isScreenChange = true;
 						}
-						
-						//스크린의 넓이값이 변경되었을 때
-						if(_option.isScreenWidthChange) {
-							//최초호출
-							if(!option.init) {
-								_resetIsScreen();
-								option.init = true;
-							}
 
+						//최초호출 변수가 없을경우
+						if(!option.init) {
+							_resetIsScreenVariable();
+						}
+
+						//사용자 객체 갱신
+						$.responsive.setting = _freeObject(_option);
+
+						//스크린의 넓이값이 변경되었을 때 || 최초호출 변수가 없을 때
+						if(_option.isScreenWidthChange || !option.init) {
 							//전체범위 함수 호출
 							_callEvent("all");
 
@@ -620,6 +612,9 @@ try {
 							option.timer = setTimeout(function() {
 								//화면정보 갱신
 								_setScreenInfo();
+								
+								//사용자 객체 갱신
+								$.responsive.setting = _freeObject(_option);
 
 								//전체범위 함수 호출
 								_callEvent("allResized");
@@ -634,7 +629,10 @@ try {
 						}
 
 						//화면이 변경되었는지 확인하는 변수들 초기화
-						_resetIsScreen();
+						_resetIsScreenVariable();
+						
+						//최초호출 변수
+						option.init = true;
 					}).triggerHandler("resize.responsive");
 
 					//객체 반환
