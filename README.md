@@ -107,14 +107,14 @@ isScreenChage | boolean | 넓이 또는 높이가 변경되었는지 확인하�
 isScreenHeightChange | boolean | 높이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthChange | boolean | 넓이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthAndHeightChange | boolean | 넓이와 높이가 변경되었는지 확인하는 변수입니다.
-lowIERun | boolean | 플러그인 옵션중 lowIERun의 값입니다.
-exit | array | 지정한 분기범위에 나간 이름입니다.
+lowIERun | boolean | 플러그인 옵션중 lowIE.state가 있으면 false이고 아니면 true입니다.
+exit | array | 지정한 분기범위에서 나간 이름입니다.
 nowState | array | 현재상태에 대한 값입니다.
 prevState | array | 이전상태에 대한 값입니다.
-loadedHeight | number | 최초로드 했을 때 창의 높이입니다.
-loadedWidth | number | 최초로드 했을 때 창의 넓이입니다.
-windowHeight | number | 창의 높이값 입니다.
-windowWidth | number | 창의 넓이값 입니다.
+screenLoadedHeight | number | 최초의 창의 높이입니다.
+screenLoadedWidth | number | 최초의 창의 넓이입니다.
+screenHeight | number | 창의 높이값 입니다.
+screenWidth | number | 창의 넓이값 입니다.
 scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니다.
 browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
 platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게되며 모바일 기기에서 접속하면 mobile이라는 값이 나오게 됩니다.
@@ -136,6 +136,7 @@ platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨�
 이름 | 값 | 설명
 | :-- | :- | :-- |
 state | string | 범위에 걸린 분기이름입니다.
+option | object | $.responsive.setting과 같습니다.
 
 걸린시점의 값이 떨어집니다.
 
@@ -144,6 +145,7 @@ state | string | 범위에 걸린 분기이름입니다.
 $(window).on("responsive", function(event) {
     console.log(event);
     console.log(event.state);
+    console.log(event.option);
 });
 ````
 
@@ -152,6 +154,7 @@ $(window).on("responsive", function(event) {
 $(window).on("responsive:#", function(event) {
     console.log(event);
     console.log(event.state);
+    console.log(event.option);
 });
 ````
 * #은 지정한 분기이름 입니다.

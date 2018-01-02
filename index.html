@@ -14,17 +14,21 @@
 
 		$(function() {
 			//1
+			
+			//$.responsive.setting
 
 			$window.on("responsive", function(event) {
 				//3
-				//console.log($.responsive.setting);
+				//console.log(event);
 				//console.log(event.state);
+				//console.log(event.option);
 			});
 
 			$window.on("responsive:wide", function(event) {
 				//4
-				//console.log($.responsive.setting);
+				//console.log(event);
 				//console.log(event.state);
+				//console.log(event.option);
 			});
 
 			//2
