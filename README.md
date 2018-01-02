@@ -24,10 +24,8 @@ $.responsive({
         }
     },
     lowIE : {
-	run : false,
 	state : ["web"]
-    },
-    interval : 250
+    }
 });
 
 or
@@ -81,26 +79,14 @@ range객체가 없을경우 none이 들어갑니다.
 ie7, ie8에서의 옵션 입니다.
 ````
 lowIE : {
-    run : false,
     state : []
 }
 ````
-##### run
-* 분기 실행여부 입니다.
-* 값은 불린만 올 수 있습니다.
-* lowIE.run에 값이 없거나 프로퍼티가 없거나 불린이 아닐경우 기본값은 false입니다.
-
 ##### state
-* lowIE.run을 true로 지정했을 때 나타나는 분기입니다.
 * range에서 지정한 분기를 몇개든 넣으면 ie7, ie8에서 지정한 분기만 보여주게 됩니다.
-* lowIE.state의 값이 없거나 프로퍼티가 없을경우 또는 배열 또는 문자가 아닐경우 기본값은 none입니다.
+* lowIE.state의 지정한 분기 중에서 이름이 없으면 기본값은 none입니다.
 * 중복으로 적은 값은 제거 됩니다.
 * 작성우선순위와 관련 있습니다.
-
-#### interval
-* 리사이즈 발생 후 몇초후에 함수를 실행할지 지정하는 변수입니다.
-* interval의 값이 없거나 프로퍼티가 없거나 숫자가 아닐경우 기본값은 250입니다.
-* 밀리세컨드 단위이며 숫자만 올 수 있습니다.
 
 ### 메소드
 
@@ -117,6 +103,10 @@ hasVerticalScrollbar | boolean | 세로스크롤바가 있는지 확인하는 �
 isRun | boolean | 플러그인이 실행됬는지 확인하는 변수입니다.
 isLowIE | boolean | 브라우저가 ie7 또는 ie8인지 확인하는 변수입니다.
 isResize | boolean | 리사이즈 중인지 확인하는 변수입니다.
+isScreenChage | boolean | 넓이 또는 높이가 변경되었는지 확인하는 변수입니다.
+isScreenHeightChange | boolean | 높이가 변경되었는지 확인하는 변수입니다.
+isScreenWidthChange | boolean | 넓이가 변경되었는지 확인하는 변수입니다.
+isScreenWidthAndHeightChange | boolean | 넓이와 높이가 변경되었는지 확인하는 변수입니다.
 lowIERun | boolean | 플러그인 옵션중 lowIERun의 값입니다.
 exit | array | 지정한 분기범위에 나간 이름입니다.
 nowState | array | 현재상태에 대한 값입니다.
@@ -140,11 +130,11 @@ platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨�
 8. noneAllResized
 
 ### 이벤트
-이벤트는 $(window)에 걸어야 합니다.
+* 이벤트는 $(window)에 걸어야 합니다.
+* 넓이값이 변경되어야 이벤트가 발생됩니다.
 
 이름 | 값 | 설명
 | :-- | :- | :-- |
-responsive | object | $.responsive.setting설명과 같습니다.
 state | string | 범위에 걸린 분기이름입니다.
 
 걸린시점의 값이 떨어집니다.
@@ -153,7 +143,6 @@ state | string | 범위에 걸린 분기이름입니다.
 ````
 $(window).on("responsive", function(event) {
     console.log(event);
-    console.log(event.responsive);
     console.log(event.state);
 });
 ````
@@ -162,7 +151,6 @@ $(window).on("responsive", function(event) {
 ````
 $(window).on("responsive:#", function(event) {
     console.log(event);
-    console.log(event.responsive);
     console.log(event.state);
 });
 ````

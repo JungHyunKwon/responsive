@@ -6,28 +6,28 @@
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
 	<title>responsive</title>
 	<script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
-	<script type="text/javascript" src="js/jquery.responsive.min.js"></script>
+	<script type="text/javascript" src="js/jquery.responsive.js"></script>
 	<script type="text/javascript">
+		"use strict";
+
 		var $window = $(window);
 
 		$(function() {
-			console.log(1);
+			//1
 
 			$window.on("responsive", function(event) {
-				console.log(3);
-				console.log(event);
-				console.log(event.responsive);
-				console.log(event.state);
+				//3
+				//console.log($.responsive.setting);
+				//console.log(event.state);
 			});
 
 			$window.on("responsive:wide", function(event) {
-				console.log(4);
-				console.log(event);
-				console.log(event.responsive);
-				console.log(event.state);
+				//4
+				//console.log($.responsive.setting);
+				//console.log(event.state);
 			});
 
-			console.log(2);
+			//2
 		});
 
 		$window.on("load.responsive", function(event) {
@@ -51,10 +51,8 @@
 					}
 				},
 				lowIE : {
-					run : false,
 					state : ["web"]
-				},
-				interval : 250
+				}
 			});
 		});
 	</script>
