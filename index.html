@@ -13,46 +13,56 @@
 		var $window = $(window);
 
 		$(function() {
-			//1
+			//console.log(1);
 			//console.log($.responsive.setting);
 
 			$window.on("responsive", function(event) {
-				//3
+				//console.log(3);
 				//console.log(event);
 				//console.log(event.state);
+				//console.log(event.setting);
 			});
 
 			$window.on("responsive:wide", function(event) {
-				//4
+				//console.log(4);
 				//console.log(event);
 				//console.log(event.state);
+				//console.log(event.setting);
 			});
 
-			//2
+			//console.log(2);
 		});
 
 		$window.on("load.responsive", function(event) {
 		   $.responsive({
 				range : {
 					wide : {
-						from : 9999,
-						to : 1201
+						horizontal : {
+							from : 9999,
+							to : 1201
+						}
 					},
 					web : {
-						from : 1200,
-						to : 801
+						horizontal : {
+							from : 1200,
+							to : 801
+						}
 					},
 					tablet : {
-						from : 800,
-						to : 641
+						horizontal : {
+							from : 800,
+							to : 641
+						}
 					},
 					phone : {
-						from : 640,
-						to : 0
+						horizontal : {
+							from : 640,
+							to : 0
+						}
 					}
 				},
 				lowIE : {
-					state : ["web"]
+					property : ["web"]
 				}
 			});
 		});

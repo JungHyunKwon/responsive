@@ -6,85 +6,106 @@
 ````
 $.responsive({
     range : {
-        wide : {
-            from: 9999,
-            to: 1201
-        },
-        web : {
-            from: 1200,
-            to: 801
-        },
-        tablet : {
-            from: 800,
-            to: 641
-        },
-        phone : {
-            from: 640,
-            to: 0
-        }
+	wide : {
+	    horizontal : {
+		from : 9999,
+		to : 1201
+	    }
+	},
+	web : {
+	    horizontal : {
+		from : 1200,
+		to : 801
+	    }
+	},
+	tablet : {
+	    horizontal : {
+		from : 800,
+		to : 641
+	    }
+	},
+	phone : {
+	    horizontal : {
+		from : 640,
+		to : 0
+	    }
+	}
     },
     lowIE : {
-	state : ["web"]
+	property : ["web"]
     }
 });
-
-or
-
-$.responsive();
 ````
 $(window).triggerHandler("resize.responsive");가 기본으로 되어있고 콘솔에 현재상태가 표기됩니다.
 
 ### 옵션
 #### range
-range객체가 없을경우 none이 들어갑니다.
+range객체가 없거나 객체안에 프로퍼티가 없을경우 none이 들어갑니다.
 ````
 # : {
-    from : n,
-    to : n
+    horizontal : {
+	from : n,
+	to : n
+    },
+    vertical : {
+	from : n,
+	to : n
+    }
 }
 ````
 ##### \#
-* 분기의 이름이며 사용자가 작명하여 사용한다.
-* 반드시 소문자로만 작명해야 됩니다.
-  * 대문자 + 소문자 섞어서 작성시 모두 소문자로 치환됩니다.
-* 필터링 문자
-  * 뒤에 resized가 붙은문자 또는 resized
-  * 뒤에 none이 붙은문자 또는 none
-  * 뒤에 all이 붙은문자 또는 all
-  * pc
-  * mobile
-  * scrollbar
-  * ie7
-  * ie8
-  * ie9
-  * ie10
-  * ie11
-  * edge
-  * opera
-  * chrome
-  * firefox
-  * safari
-  * unknown
+분기의 이름이며 사용자가 작명하여 사용한다.
 
-###### from
+###### 필터링
+* 뒤에 Resized가 붙은문자
+* 뒤에 All이 붙은문자
+* all
+* none
+* property
+* pc
+* mobile
+* scrollbar
+* ie7
+* ie8
+* ie9
+* ie10
+* ie11
+* edge
+* opera
+* chrome
+* firefox
+* safari
+* unknown
+
+###### horizontal
+가로에 대한 범위 입니다.
+
+###### vertical
+세로에 대한 범위 입니다.
+
+* horizontal만 있을경우 horizontal만 참조하여 수식을 생성합니다.
+* vertical만 있을경우 vertical만 참조하여 수식을 생성합니다.
+* horizontal과 vertical이 둘다 있을경우 둘다 참조하여 수식을 생성합니다.
+
+*from*
 시작지점 입니다.
 
-###### to
+*to*
 끝지점 입니다.
 
 *n*
 값은 숫자만 사용가능하며 from에 숫자가 아니면 9999가 지정되고 to가 숫자가 아니면 0이 지정됩니다.
 
 #### lowIE
-ie7, ie8에서의 옵션 입니다.
+ie7 또는 ie8에서의 옵션 입니다.
 ````
 lowIE : {
-    state : []
+    property : ["#"]
 }
 ````
-##### state
+##### property
 * range에서 지정한 분기를 몇개든 넣으면 ie7, ie8에서 지정한 분기만 보여주게 됩니다.
-* lowIE.state의 지정한 분기 중에서 이름이 없으면 기본값은 none입니다.
+* 지정한 분기 중에서 이름이 없으면 기본값은 none입니다.
 * 중복으로 적은 값은 제거 됩니다.
 * 작성우선순위와 관련 있습니다.
 
@@ -107,17 +128,18 @@ isScreenChage | boolean | 넓이 또는 높이가 변경되었는지 확인하�
 isScreenHeightChange | boolean | 높이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthChange | boolean | 넓이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthAndHeightChange | boolean | 넓이와 높이가 변경되었는지 확인하는 변수입니다.
-lowIERun | boolean | 플러그인 옵션중 lowIE.state가 있으면 false이고 아니면 true입니다.
-exit | array | 지정한 분기범위에서 나간 이름입니다.
+lowIE | object | 
+range | object | 
+exit | array | 분기범위에서 나간 이름입니다.
 nowState | array | 현재상태에 대한 값입니다.
 prevState | array | 이전상태에 대한 값입니다.
-screenLoadedHeight | number | 최초의 창의 높이입니다.
-screenLoadedWidth | number | 최초의 창의 넓이입니다.
-screenHeight | number | 창의 높이값 입니다.
+screenLoadedWidth | number | 최초실행 했을때 창의 넓이입니다.
+screenLoadedHeight | number | 최초실행 했을때 창의 높이입니다.
 screenWidth | number | 창의 넓이값 입니다.
+screenHeight | number | 창의 높이값 입니다.
 scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니다.
 browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
-platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게되며 모바일 기기에서 접속하면 mobile이라는 값이 나오게 됩니다.
+platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게되며 그 이외로는 mobile이라는 값이 나오게 됩니다.
 
 ### 상태, 우선순위
 1. all
@@ -131,27 +153,29 @@ platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨�
 
 ### 이벤트
 * 이벤트는 $(window)에 걸어야 합니다.
-* 넓이값이 변경되어야 이벤트가 발생됩니다.
 
 이름 | 형태 | 설명
 | :-- | :- | :-- |
 state | string | 범위에 걸린 분기이름입니다.
+setting | object | $.responsive.setting과 같습니다.
 
 걸린시점의 값이 떨어집니다.
 
 #### 기본
 ````
 $(window).on("responsive", function(event) {
-    console.log(event);
-    console.log(event.state);
+     console.log(event);
+     console.log(event.state);
+     console.log(event.setting);
 });
 ````
 
 #### 필터
 ````
 $(window).on("responsive:#", function(event) {
-    console.log(event);
-    console.log(event.state);
+     console.log(event);
+     console.log(event.state);
+     console.log(event.setting);
 });
 ````
 * #은 지정한 분기이름 입니다.

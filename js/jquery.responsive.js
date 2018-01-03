@@ -87,8 +87,11 @@ try {
 			function _typeOf(variable) {
 				var result = "";
 				
+				//undefined일때(ie7, ie8에서 찾지 못함)
 				if(variable === undefined) {
 					result = "undefined";
+				
+				//NaN일때(숫자로 처리되서 따로 처리함)
 				}else if(typeof variable === "number" && isNaN(variable)) {
 					result = "NaN";
 				}else{
@@ -106,7 +109,8 @@ try {
 			 */
 			function _freeObject(object) {
 				var result = {};
-
+				
+				//객체일때
 				if(_typeOf(object) == "object") {
 					result = _JSON.parse(_JSON.stringify(object));
 				}
@@ -149,6 +153,7 @@ try {
 					result.browser = "unknown";
 				}
 				
+				//platformCase에 platform이 있을때
 				if($.inArray(platform, platformCase) > -1) {
 					result.platform = "pc";
 				}else{
@@ -169,6 +174,7 @@ try {
 				var result = [],
 					typeOf = _typeOf(name);
 				
+				//문자 || 숫자 || 불린일때
 				if(typeOf == "string" || typeOf == "number" || typeOf == "boolean") {
 					name = $.makeArray(name);
 				}else if(typeOf != "array") {
@@ -187,7 +193,7 @@ try {
 
 			$(function() {
 				var _$target = $("body"),
-					_option = {};
+					_setting = {};
 
 				/**
 				 * @name 스크롤바 존재여부
@@ -248,17 +254,17 @@ try {
 						data = $scrollbar.data(),
 						result = ($scrollbar.length) ? $scrollbar[0].offsetWidth - $scrollbar[0].clientWidth : 0;
 					
-					//data가 없을경우
+					//data가 없을때
 					if(!data) {
 						data = {
 							timestamp : undefined
 						};
 					}
 					
-					//$scrollbar의 timestamp와 _timestamp가 다를경우
+					//$scrollbar의 timestamp와 _timestamp가 다를때
 					if(data.timestamp != _timestamp) {
 
-						//$scrollbar가 있을경우
+						//$scrollbar가 있을때
 						if($scrollbar.length) {
 							$scrollbar.remove();
 						}
@@ -282,10 +288,11 @@ try {
 						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height(),
 						result = {
 							isRun : false,
+							range : {},
 							exit : [],
+							lowIE : {},
 							nowState : [],
 							prevState : [],
-							lowIERun : true,
 							scrollbarWidth : scrollbarWidth,
 							screenWidth : screenWidth,
 							screenHeight : screenHeight,
@@ -314,44 +321,49 @@ try {
 				 */
 				function _setState(state) {
 					var result = false,
-						setState = [];
+						setState = [],
+						nowState = [];
 
 					//중복제거
 					state = _removeDuplicate(state);
 
-					//적용시킬 상태가 있는지 확인
 					for(var i = 0; i < state.length; i++) {
-						if($.inArray(state[i], _option.nowState) == -1) {
+						//적용시킬 상태가 있을때
+						if($.inArray(state[i], _setting.nowState) == -1) {
 							setState.push(state[i]);
+						}else{
+							nowState.push(state[i]);
 						}
 					}
-				
-					//적용시킬 상태가 있으면 true
-					if(setState.length) {
+
+					//적용시킬 상태가 있을때
+					if(setState.length || nowState.length != _setting.nowState.length) {
 						result = true;
 					}
 
 					if(result) {
 						//현재상태 클래스 제거
-						_$target.removeClass(_option.nowState.join(" "));
+						_$target.removeClass(_setting.nowState.join(" "));
 
 						//새로운상태 클래스 추가
 						_$target.addClass(state.join(" "));
 						
 						//이전상태 추가
-						_option.prevState = _option.nowState;
+						_setting.prevState = _setting.nowState;
 
 						//새로운상태 추가
-						_option.nowState = state;
+						_setting.nowState = state;
 
 						//console에 상태표기
 						console.log("현재상태 : " + state.join(", "));
 					}
-					
+
 					//함수실행
 					_callEvent((state.join("All, ") + "All").split(", "));
 					
+					//위에서 처리하고나서 불러야 해서 따로처리함
 					if(result) {
+						//적용시킬 상태만 처리함
 						_callEvent(setState);					
 					}
 
@@ -365,15 +377,25 @@ try {
 				 * @return {array}
 				 */
 				function _callEvent(state) {
+					var event = {
+						setting : _freeObject(_setting)
+					};
+
 					//중복제거
 					state = _removeDuplicate(state);
+					
+					//전역객체 갱신
+					$.responsive.setting = event.setting;
 
 					for(var i = 0; i < state.length; i++) {
+						//분기값 적용
+						event.state = state[i];
+
 						//모든 이벤트 호출
-						_$window.triggerHandler($.Event("responsive", {state : state[i]}));
+						_$window.triggerHandler($.Event("responsive", event));
 
 						//필터 이벤트 호출
-						_$window.triggerHandler($.Event("responsive:" + state[i], {state : state[i]}));
+						_$window.triggerHandler($.Event("responsive:" + state[i], event));
 					}
 
 					return state;
@@ -385,213 +407,224 @@ try {
 				 * @return {object}
 				 */
 				function _setScreenInfo() {
-					//스크롤바 유무
 					var hasScrollbar = _hasScrollbar(_$target[0]);
 
-					//가로, 세로 스크롤바가 있는지
-					_option.hasVerticalScrollbar = hasScrollbar.vertical;
-					_option.hasHorizontalScrollbar = hasScrollbar.horizontal;
+					//가로, 세로 스크롤바 확인
+					_setting.hasVerticalScrollbar = hasScrollbar.vertical;
+					_setting.hasHorizontalScrollbar = hasScrollbar.horizontal;
+					
+					//화면이 변경되었는지 확인하는 변수
+					_setting.isResize = false;
+					_setting.isScreenWidthChange = false;
+					_setting.isScreenHeightChange = false;
+					_setting.isScreenWidthAndHeightChange = false;
+					_setting.isScreenChange = false;
 
-					//스크롤바 넓이 갱신
-					_option.scrollbarWidth = _getScrollbarWidth();
+					//스크롤바 넓이
+					_setting.scrollbarWidth = _getScrollbarWidth();
 
 					//브라우저 스크롤바가 있을때
-					if(_option.scrollbarWidth) {
+					if(_setting.scrollbarWidth) {
 						_$target.addClass("scrollbar");
 					}else{
 						_$target.removeClass("scrollbar");
 					}
 
-					//화면정보 등록
-					_option.screenWidth = _$window.width();
-					_option.screenHeight = _$window.height();
+					//화면 넓이, 높이
+					_setting.screenWidth = _$window.width();
+					_setting.screenHeight = _$window.height();
 
 					//세로 스크롤바가 있을때
-					if(_option.hasVerticalScrollbar) {
-						_option.screenWidth += _option.scrollbarWidth;
+					if(_setting.hasVerticalScrollbar) {
+						_setting.screenWidth += _setting.scrollbarWidth;
 					}
 
 					//가로 스크롤바가 있을때
-					if(_option.hasHorizontalScrollbar) {
-						_option.screenHeight += _option.scrollbarWidth;
+					if(_setting.hasHorizontalScrollbar) {
+						_setting.screenHeight += _setting.scrollbarWidth;
 					}
 
-					return _option;
-				}
-				
-				/**
-				 * @name 화면 불린 초기화
-				 * @since 2017-12-06
-				 * @return {object}
-				 */
-				function _resetIsScreenVariable() {
-					_option.isResize = false;
-					_option.isScreenWidthChange = false;
-					_option.isScreenHeightChange = false;
-					_option.isScreenWidthAndHeightChange = false;
-					_option.isScreenChange = false;
-
-					return _option;
+					return _setting;
 				}
 
 				/**
-				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {state : ["#"]}}
+				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ["#"]}}
 				 * @return {object}
 				 */
 				$.responsive = function(option) {
 					//현재상태가 있을경우
-					if(_option.nowState && _option.nowState.length) {
-						_$target.removeClass(_option.nowState.join(" "));
+					if(_setting.nowState && _setting.nowState.length) {
+						_$target.removeClass(_setting.nowState.join(" "));
 					}
 
-					//기본객체 등록
-					_option = _getDefaultObject();
+					//기본객체
+					_setting = _getDefaultObject();
 
 					//실행등록
-					_option.isRun = true;
+					_setting.isRun = true;
 
 					//브라우저, 플랫폼 클래스 추가
-					_$target.addClass(_option.browser + " " + _option.platform);
+					_$target.addClass(_setting.browser + " " + _setting.platform);
 					
-					//option이 객체가 아닐경우
+					//객체가 아닐때
 					if(_typeOf(option) != "object") {
 						option = {};
 					}
 
-					//ie7, ie8 객체
+					//객체가 아닐때
 					if(_typeOf(option.lowIE) != "object") {
 						option.lowIE = {};
 					}
 
-					//option.lowIE.state 형태검사
-					option.lowIE.stateType = _typeOf(option.lowIE.state);
+					//option.lowIE.property 형태검사
+					option.lowIE.propertyType = _typeOf(option.lowIE.property);
 					
-					//option.lowIE.state가 배열 또는 문자이면
-					if(option.lowIE.stateType == "array" || option.lowIE.stateType == "string") {
-						option.lowIE.state = _removeDuplicate(option.lowIE.state);
+					//배열 또는 문자일때
+					if(option.lowIE.propertyType == "array" || option.lowIE.propertyType == "string") {
+						option.lowIE.property = _removeDuplicate(option.lowIE.property);
 					}else{
-						option.lowIE.state = [];
+						option.lowIE.property = [];
 					}
+					
+					//리사이즈 종료 간격
+					option.interval = 250;
 
-					//option.range가 없으면
+					//객체가 아닐때
 					if(_typeOf(option.range) != "object") {
 						option.range = {};
 					}
 					
-					//리사이즈가 끝나고 함수실행 간격
-					option.interval = 250;
-
-					//분기에 들어온 프로퍼티 명
-					option.enter = [];
-
-					//화면범위로 만든 코드
-					option.rangeCode = "";
-
-					//화면범위 프로퍼티 명
-					option.rangeName = [];
-
-					//option.rangeCode작성 시작
-
 					//option.range에 적은 값을 기준으로 자바스크립트 코드 생성
-					for(option.i in option.range) {
-						//소문자 변경
-						option.i = option.i.toLowerCase();
+					option.rangeCode = "option.enter = [];\n_setting.exit = [];\n\n";
+					option.rangeCode += "if(!_setting.lowIE.run && _setting.isLowIE) {\n\toption.enter = _setting.lowIE.property;\n}else{\n";
+					option.range.property = [];
 
+					for(option.i in option.range) {
 						//필터링
-						if(option.i.substr(-7) != "resized" && option.i.substr(-4) != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "whale" && option.i != "samsung" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
+						if(option.i != "property" && option.i.substr(-3) != "All" && option.i.substr(-7) != "Resized" && option.i != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
 							//프로퍼티명 기입
-							option.rangeName.push(option.i);
-							
+							option.range.property.push(option.i);
+
 							//객체가 아닐경우
 							if(_typeOf(option.range[option.i]) != "object") {
 								option.range[option.i] = {};
 							}
+							
+							option.rangeCode += "\tif(";
 
-							//값이 없거나 문자일 경우
-							if(_typeOf(option.range[option.i].from) != "number") {
-								option.range[option.i].from = 9999;	
+							//객체일때
+							option.isHorizontal = (_typeOf(option.range[option.i].horizontal) == "object");
+
+							if(option.isHorizontal) {
+								//숫자가 아닐경우
+								if(_typeOf(option.range[option.i].horizontal.from) != "number") {
+									option.range[option.i].horizontal.from = 9999;	
+								}
+
+								//숫자가 아닐경우
+								if(_typeOf(option.range[option.i].horizontal.to) != "number") {
+									option.range[option.i].horizontal.to = 0;
+								}
+
+								option.rangeCode += "_setting.screenWidth <= " + option.range[option.i].horizontal.from + " && _setting.screenWidth >= " + option.range[option.i].horizontal.to;
 							}
 
-							//값이 없거나 문자일 경우
-							if(_typeOf(option.range[option.i].to) != "number") {
-								option.range[option.i].to = 0;
-							}
+							//객체일때
+							if(_typeOf(option.range[option.i].vertical) == "object") {
+								//숫자가 아닐경우
+								if(_typeOf(option.range[option.i].vertical.from) != "number") {
+									option.range[option.i].vertical.from = 9999;	
+								}
 
-							option.rangeCode += "\tif(_option.screenWidth <= " + option.range[option.i].from + " && _option.screenWidth >= " + option.range[option.i].to + ") {\n";
+								//숫자가 아닐경우
+								if(_typeOf(option.range[option.i].vertical.to) != "number") {
+									option.range[option.i].vertical.to = 0;
+								}
+								
+								//가로 객체가 있을경우
+								if(option.isHorizontal) {
+									option.rangeCode += " && ";
+								}
+
+								option.rangeCode += "_setting.screenHeight <= " + option.range[option.i].vertical.from + " && _setting.screenHeight >= " + option.range[option.i].vertical.to;
+							}
+							
+							option.rangeCode += ") {\n";
 							option.rangeCode += "\t\toption.enter.push(\"" + option.i + "\");\n";
 							option.rangeCode += "\t}else{\n";
-							option.rangeCode += "\t\t_option.exit.push(\"" + option.i + "\");\n";
+							option.rangeCode += "\t\t_setting.exit.push(\"" + option.i + "\");\n";
 							option.rangeCode += "\t}\n\n";
 						}
 					}
 
+					option.rangeCode = option.rangeCode.replace(/\n$/, "");
 					option.rangeCode += "}";
-
-					//필터링된 프로퍼티명에서 option.lowIE.state에 이름이 있는지 확인해서 없으면 제거
-					option.i = 0;
-
-					for(; option.i < option.lowIE.state.length; option.i++) {
-						if($.inArray(option.lowIE.state[option.i], option.rangeName) == -1) {
-							option.lowIE.state[option.i] = "none";
-						}
-					}
-
-					//ie7 && ie8에서 적용할 상태가 있을경우
-					if(option.lowIE.state.length) {
-						option.lowIE.state = option.lowIE.state.join(", ").replace(/, none/g, "").split(", ");
-						_option.lowIERun = false;
-					}
-
-					//rangeCode 결합
-					option.rangeCode = "option.enter = [];\n_option.exit = [];\n\nif(!_option.lowIERun && _option.isLowIE) {\n\toption.enter = option.lowIE.state;\n}else{\n" + option.rangeCode;
-
+					_setting.range = option.range;
 					//option.rangeCode작성 끝
 
-					_$window.off("resize.responsive").on("resize.responsive", function(event) {
-						//화면이 변경되었는지 확인하는 변수들 초기화
-						_resetIsScreenVariable();
+					//필터링된 프로퍼티명에서 option.lowIE.property에 이름이 있는지 확인해서 없으면 제거
+					option.i = 0;
+					option.filter = [];
 
+					for(; option.i < option.lowIE.property.length; option.i++) {
+						if($.inArray(option.lowIE.property[option.i], option.range.property) > -1) {
+							option.filter.push(option.lowIE.property[option.i]);
+						}
+					}
+					
+					if(option.filter.length) {
+						option.lowIE.run = false;
+					}else{
+						option.lowIE.run = true;
+					}
+
+					option.lowIE.property = option.filter;
+					delete option.lowIE.propertyType;
+					_setting.lowIE = option.lowIE;
+
+					_$window.off("resize.responsive").on("resize.responsive", function(event) {
 						//화면정보 갱신
 						_setScreenInfo();
-							
+						
 						//리사이즈 중
-						_option.isResize = true;
+						_setting.isResize = true;
 
 						//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 같은지 확인
-						if(_option.screenWidth != option.screenWidth) {
-							option.screenWidth = _option.screenWidth;
-							_option.isScreenWidthChange = true;
+						if(_setting.screenWidth != option.screenWidth) {
+							option.screenWidth = _setting.screenWidth;
+							_setting.isScreenWidthChange = true;
 						}
 
 						//기존의 스크린 높이와 새로부여받은 스크린 높이가 같은지 확인
-						if(_option.screenHeight != option.screenHeight) {
-							option.screenHeight = _option.screenHeight;
-							_option.isScreenHeightChange = true;
+						if(_setting.screenHeight != option.screenHeight) {
+							option.screenHeight = _setting.screenHeight;
+							_setting.isScreenHeightChange = true;
 						}
 
 						//기존 스크린 넓이와 높이가 둘다 변경되었을때
-						if(_option.isScreenWidthChange && _option.isScreenHeightChange) {
-							_option.isScreenWidthAndHeightChange = true;
+						if(_setting.isScreenWidthChange && _setting.isScreenHeightChange) {
+							_setting.isScreenWidthAndHeightChange = true;
 						}
 
 						//스크린의 넓이값 또는 세로값이 변경되었을때
-						if(_option.isScreenWidthChange || _option.isScreenHeightChange) {
-							_option.isScreenChange = true;
+						if(_setting.isScreenWidthChange || _setting.isScreenHeightChange) {
+							_setting.isScreenChange = true;
 						}
-
-						//최초호출 변수가 없을경우
+						
+						//최초호출 변수가 없을때
 						if(!option.init) {
-							_resetIsScreenVariable();
+							_setting.isResize = false;
+							_setting.isScreenWidthChange = false;
+							_setting.isScreenHeightChange = false;
+							_setting.isScreenWidthAndHeightChange = false;
+							_setting.isScreenChange = false;
 						}
 
-						//사용자 객체 갱신
-						$.responsive.setting = _freeObject(_option);
-
-						//스크린의 넓이값이 변경되었을 때 || 최초호출 변수가 없을 때
-						if(_option.isScreenWidthChange || !option.init) {
+						//스크린의 넓이값이 변경되었을 때
+						if(_setting.isScreenChange || !option.init) {
 							//전체범위 함수 호출
 							_callEvent("all");
-
+							
 							//범위실행
 							eval(option.rangeCode);
 
@@ -612,13 +645,10 @@ try {
 							option.timer = setTimeout(function() {
 								//화면정보 갱신
 								_setScreenInfo();
-								
-								//사용자 객체 갱신
-								$.responsive.setting = _freeObject(_option);
 
 								//전체범위 함수 호출
 								_callEvent("allResized");
-								
+
 								//상태적용, 이벤트 호출
 								if(option.enter.length) {
 									_callEvent((option.enter.join("AllResized, ") + "AllResized").split(", "));
@@ -627,11 +657,8 @@ try {
 								}
 							}, option.interval);
 						}
-
-						//화면이 변경되었는지 확인하는 변수들 초기화
-						_resetIsScreenVariable();
 						
-						//최초호출 변수
+						//최초호출 변수등록
 						option.init = true;
 					}).triggerHandler("resize.responsive");
 
@@ -648,10 +675,10 @@ try {
 					var result = false;
 					
 					//플러그인을 실행중일때
-					if(_option.isRun) {
+					if(_setting.isRun) {
 						_$window.off("resize.responsive");
-						_$target.removeClass("scrollbar " + _option.browser + " " + _option.platform + " " + _option.nowState.join(" "));
-						_option.isRun = false;
+						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" "));
+						_setting.isRun = false;
 						$("body > #responsive_scrollbar").remove();
 						this.setting = undefined;
 						result = true;
@@ -660,7 +687,7 @@ try {
 					return result;
 				};
 
-				//사용자 객체 제공
+				//전역객체
 				$.responsive.setting = _getDefaultObject();
 			});
 		})(jQuery);
