@@ -13,9 +13,10 @@ try {
 	if(jQuery) {
 		//$ 중첩 방지
 		(function($) {
-			var _$window = $(window),
-				_timestamp = new Date().getTime(),
+			var _$target = $("html"),
+				_$window = $(window),
 				_connectedState = _getConnectedState(),
+				_setting = {},
 				/**
 				 * @name JSON psrse, stringify
 				 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
@@ -192,9 +193,6 @@ try {
 			}
 
 			$(function() {
-				var _$target = $("body"),
-					_setting = {};
-
 				/**
 				 * @name 스크롤바 존재여부
 				 * @since 2017-12-06
@@ -251,25 +249,14 @@ try {
 				function _getScrollbarWidth() {
 					var $body = $("body"),
 						$scrollbar = $body.children("#responsive_scrollbar"),
-						data = $scrollbar.data(),
+						markup = "<div id=\"responsive_scrollbar\" style=\"visibility:hidden; overflow-x:scroll; overflow-y:scroll; position:absolute; top:-100px; left:-100px; z-index:-1; width:100px; height:100px;\">&nbsp;</div>",
+						scrollbarMarkup = ($scrollbar.length) ? $scrollbar[0].outerHTML.toLowerCase() : "",
 						result = ($scrollbar.length) ? $scrollbar[0].offsetWidth - $scrollbar[0].clientWidth : 0;
-					
-					//data가 없을때
-					if(!data) {
-						data = {
-							timestamp : undefined
-						};
-					}
-					
-					//$scrollbar의 timestamp와 _timestamp가 다를때
-					if(data.timestamp != _timestamp) {
 
-						//$scrollbar가 있을때
-						if($scrollbar.length) {
-							$scrollbar.remove();
-						}
-
-						$body.append("<div id=\"responsive_scrollbar\" style=\"visibility:hidden; overflow-x:scroll; overflow-y:scroll; position:absolute; top:-100px; left:-100px; z-index:-1; width:100px; height:100px;\"  data-timestamp=\"" + _timestamp + "\">&nbsp;</div>");
+					//마크업이 다를때
+					if(markup != scrollbarMarkup) {
+						$scrollbar.remove();
+						$body.append(markup);
 						_getScrollbarWidth();
 					}
 
