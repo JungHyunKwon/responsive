@@ -128,8 +128,10 @@ isScreenChage | boolean | 넓이 또는 높이가 변경되었는지 확인하�
 isScreenHeightChange | boolean | 높이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthChange | boolean | 넓이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthAndHeightChange | boolean | 넓이와 높이가 변경되었는지 확인하는 변수입니다.
-lowIE | object | 
-range | object | 
+lowIE | object | * property(array) : lowIE에 property에 작성한 값을 토대로 반영된 값 입니다. 
+		 * run(boolean) :  property가 있으면 false가 나오고 없으면 true로 나옵니다. 
+range | object | * \#(object) : range에 작성한 값을 토대로 반영된 값 입니다.
+		 * property(array) : \#에 대한 이름 값 입니다.
 exit | array | 분기범위에서 나간 이름입니다.
 nowState | array | 현재상태에 대한 값입니다.
 prevState | array | 이전상태에 대한 값입니다.
