@@ -40,7 +40,7 @@ $(window).triggerHandler("resize.responsive");가 기본으로 되어있고 콘�
 
 ### 옵션
 #### range
-range객체가 없거나 객체안에 프로퍼티가 없을경우 none이 들어갑니다.
+range가 객체가 아니거나 객체가 없거나 객체안에 프로퍼티가 없을경우 none이 들어갑니다.
 ````
 # : {
     horizontal : {
