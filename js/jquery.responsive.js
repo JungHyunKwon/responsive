@@ -247,16 +247,24 @@ try {
 				 * @return {number}
 				 */
 				function _getScrollbarWidth() {
-					var $body = $("body"),
+					var style = {
+							visibility : "hidden",
+							overflowX : "scroll",
+							overflowY : "scroll",
+							position : "absolute",
+							top : "-100px",
+							left : "-100px",
+							zIndex : "-1",
+							width : "100px",
+							height : "100px"
+						},
+						$body = $("body"),
 						$scrollbar = $body.children("#responsive_scrollbar"),
-						markup = "<div id=\"responsive_scrollbar\" style=\"visibility:hidden; overflow-x:scroll; overflow-y:scroll; position:absolute; top:-100px; left:-100px; z-index:-1; width:100px; height:100px;\">&nbsp;</div>",
-						scrollbarMarkup = ($scrollbar.length) ? $scrollbar[0].outerHTML.toLowerCase() : "",
-						result = ($scrollbar.length) ? $scrollbar[0].offsetWidth - $scrollbar[0].clientWidth : 0;
+						result = ($scrollbar.length) ? $scrollbar.removeAttr("style").css(style)[0].offsetWidth - $scrollbar[0].clientWidth : 0;
 
-					//마크업이 다를때
-					if(markup != scrollbarMarkup) {
-						$scrollbar.remove();
-						$body.append(markup);
+					//스크롤바 객체가 있을때
+					if(!$scrollbar.length) {
+						$body.append("<div id=\"responsive_scrollbar\">&nbsp;</div>");
 						_getScrollbarWidth();
 					}
 
