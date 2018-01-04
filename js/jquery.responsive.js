@@ -695,7 +695,7 @@ try {
 					//플러그인을 실행중일때
 					if(_setting.isRun) {
 						_$window.off("resize.responsive");
-						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" "));
+						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" ") + " " + _setting.orientation);
 						_setting.isRun = false;
 						$("body > #responsive_scrollbar").remove();
 						this.setting = undefined;
