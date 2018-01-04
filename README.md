@@ -140,8 +140,8 @@ exit | array | 분기범위에서 나간 이름입니다.
 nowState | array | 현재상태에 대한 값입니다.
 prevState | array | 이전상태에 대한 값입니다.
 orientation | string | 가로, 세로가 같을때 square가 나오고 세로보다 가로가 더 클때 landscape가 나오고 가로보다 세로가 더 클때 portrait라는 값이 나옵니다.
-loadedScreenWidth | number | 최초실행 했을때 창의 넓이입니다.
-loadedScreenHeight | number | 최초실행 했을때 창의 높이입니다.
+loadedScreenWidth | number | 로드되었을 때 창의 넓이입니다.
+loadedScreenHeight | number | 로드되었을 때 창의 높이입니다.
 screenWidth | number | 창의 넓이값 입니다.
 screenHeight | number | 창의 높이값 입니다.
 scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니다.
