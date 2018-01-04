@@ -293,6 +293,7 @@ try {
 							nowState : [],
 							prevState : [],
 							scrollbarWidth : scrollbarWidth,
+							screen : (screenWidth == screenHeight) ? "square" : (screenWidth > screenHeight) ? "landscape" : "portrait",
 							screenWidth : screenWidth,
 							screenHeight : screenHeight,
 							screenLoadedWidth : screenWidth,
@@ -441,6 +442,19 @@ try {
 					if(_setting.hasHorizontalScrollbar) {
 						_setting.screenHeight += _setting.scrollbarWidth;
 					}
+					
+					//landscape, square, portrait
+					_$target.removeClass(_setting.screen);
+
+					if(_setting.screenWidth == _setting.screenHeight) {
+						_setting.screen = "square";
+					}else if(_setting.screenWidth > _setting.screenHeight) {
+						_setting.screen = "landscape";
+					}else{
+						_setting.screen = "portrait";
+					}
+					
+					_$target.addClass(_setting.screen);
 
 					return _setting;
 				}
