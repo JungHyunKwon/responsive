@@ -7,6 +7,112 @@
  * @version 1.0
  */
 try {
+	/**
+	 * @name JSON psrse, stringify
+	 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
+	 */
+	this.JSON = this.JSON || {
+		parse : function(sJSON) {
+			return eval("(" + sJSON + ")");
+		},
+		stringify : (function() {
+			var toString = Object.prototype.toString,
+				isArray = Array.isArray || function(a) {
+					return toString.call(a) === "[object Array]";
+				},
+				escMap = {
+					"\"" : "\\\"",
+					"\\" : "\\\\",
+					"\b" : "\\b",
+					"\f" : "\\f",
+					"\n" : "\\n",
+					"\r" : "\\r",
+					"\t" : "\\t"
+				},
+				escFunc = function(m) {
+					return escMap[m] || "\\u" + (m.charCodeAt(0) + 0x10000).toString(16).substr(1);
+				},
+				escRE = /[\\"\u0000-\u001F\u2028\u2029]/g;
+
+			return function stringify(value) {
+				if(value == null) {
+					return "null";
+				}else if(typeof value === "number") {
+					return isFinite(value) ? value.toString() : "null";
+				}else if(typeof value === "boolean") {
+					return value.toString();
+				}else if(typeof value === "object") {
+					if(typeof value.toJSON === "function") {
+						return stringify(value.toJSON());
+					}else if(isArray(value)) {
+						var res = "[";
+
+						for (var i = 0; i < value.length; i++) {
+							res += (i ? ", " : "") + stringify(value[i]);
+						}
+
+						return res + ']';
+					}else if(toString.call(value) === "[object Object]") {
+						var tmp = [];
+
+						for(var k in value) {
+							if(value.hasOwnProperty(k)) {
+								tmp.push(stringify(k) + " : " + stringify(value[k]));
+							}
+						}
+
+						return "{" + tmp.join(", ") + "}";
+					}
+				}
+
+				return "\"" + value.toString().replace(escRE, escFunc) + "\"";
+			};
+		})()
+	};
+
+	/**
+	 * @name 콘솔수정
+	 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
+	 * @since 2017-10-11
+	 */
+	this.console = this.console || undefined;
+
+	if(!console) {
+		console = {
+			method : ["assert",
+					   "clear",
+					   "count",
+					   "debug",
+					   "dir",
+					   "dirxml",
+					   "error",
+					   "exception",
+					   "group",
+					   "groupCollapsed",
+					   "groupEnd",
+					   "info",
+					   "log",
+					   "markTimeline",
+					   "profile",
+					   "profileEnd",
+					   "table",
+					   "time",
+					   "timeEnd",
+					   "timeStamp",
+					   "trace",
+					   "warn"],
+			comment : []
+		};
+
+		for(var i = 0; i < console.method.length; i++) {
+			if(!console[console.method[i]]) {
+				console[console.method[i]] = function(comment) {
+					this.comment.push(comment);
+				};
+			}
+		}
+	}
+
 	//제이쿼리가 있는지 확인
 	this.jQuery = this.jQuery || undefined;
 
@@ -15,69 +121,7 @@ try {
 		(function($) {
 			var _$window = $(window),
 				_connectedState = _getConnectedState(),
-				_setting = {},
-				/**
-				 * @name JSON psrse, stringify
-				 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
-				 */
-				_JSON = {
-					parse : function(sJSON) {
-						return eval("(" + sJSON + ")");
-					},
-					stringify : (function() {
-						var toString = Object.prototype.toString,
-							isArray = Array.isArray || function(a) {
-								return toString.call(a) === "[object Array]";
-							},
-							escMap = {
-								"\"" : "\\\"",
-								"\\" : "\\\\",
-								"\b" : "\\b",
-								"\f" : "\\f",
-								"\n" : "\\n",
-								"\r" : "\\r",
-								"\t" : "\\t"
-							},
-							escFunc = function(m) {
-								return escMap[m] || "\\u" + (m.charCodeAt(0) + 0x10000).toString(16).substr(1);
-							},
-							escRE = /[\\"\u0000-\u001F\u2028\u2029]/g;
-
-						return function stringify(value) {
-							if(value == null) {
-								return "null";
-							}else if(typeof value === "number") {
-								return isFinite(value) ? value.toString() : "null";
-							}else if(typeof value === "boolean") {
-								return value.toString();
-							}else if(typeof value === "object") {
-								if(typeof value.toJSON === "function") {
-									return stringify(value.toJSON());
-								}else if(isArray(value)) {
-									var res = "[";
-
-									for (var i = 0; i < value.length; i++) {
-										res += (i ? ", " : "") + stringify(value[i]);
-									}
-
-									return res + ']';
-								}else if(toString.call(value) === "[object Object]") {
-									var tmp = [];
-
-									for(var k in value) {
-										if(value.hasOwnProperty(k)) {
-											tmp.push(stringify(k) + " : " + stringify(value[k]));
-										}
-									}
-
-									return "{" + tmp.join(", ") + "}";
-								}
-							}
-
-							return "\"" + value.toString().replace(escRE, escFunc) + "\"";
-						};
-					})()
-				};
+				_setting = {};
 
 			/**
 			 * @name 변수 형태
@@ -112,7 +156,7 @@ try {
 				
 				//객체일때
 				if(_typeOf(object) == "object") {
-					result = _JSON.parse(_JSON.stringify(object));
+					result = JSON.parse(JSON.stringify(object));
 				}
 
 				return result;
