@@ -362,8 +362,7 @@ try {
 					
 					//위에서 처리하고나서 불러야 해서 따로처리함
 					if(result) {
-						//적용시킬 상태만 처리함
-						_callEvent(setState);					
+						_callEvent(state);					
 					}
 
 					return result;
