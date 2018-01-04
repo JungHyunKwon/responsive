@@ -10,7 +10,8 @@
 	<script type="text/javascript">
 		"use strict";
 
-		var $window = $(window);
+		var $window = $(window),
+			$document = $(document);
 
 		$(function() {
 			//console.log(1);
@@ -33,7 +34,7 @@
 			//console.log(2);
 		});
 
-		$window.on("load.responsive", function(event) {
+		$document.on("ready.responsive", function(event) {
 		   $.responsive({
 				range : {
 					wide : {
