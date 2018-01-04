@@ -3,6 +3,7 @@
 
 ## 호출
 함수입력은 문서준비시점에 들어가며 함수호출이전에 이벤트를 적어놔야 합니다.
+
 ````
 $.responsive({
     range : {
@@ -36,11 +37,14 @@ $.responsive({
     }
 });
 ````
+
 $(window).triggerHandler("resize.responsive");가 기본으로 되어있고 콘솔에 현재상태가 표기됩니다.
 
 ### 옵션
+
 #### range
-range가 객체가 아니거나 객체가 없거나 객체안에 프로퍼티가 없을경우 none이 들어갑니다.
+range가 객체가 아니거나 객체안에 프로퍼티가 없을경우 none이 떨어집니다.
+
 ````
 # : {
     horizontal : {
@@ -61,7 +65,6 @@ range가 객체가 아니거나 객체가 없거나 객체안에 프로퍼티가
 * 뒤에 All이 붙은문자
 * all
 * none
-* property
 * pc
 * mobile
 * scrollbar
@@ -78,34 +81,36 @@ range가 객체가 아니거나 객체가 없거나 객체안에 프로퍼티가
 * unknown
 
 ###### horizontal
-가로에 대한 범위 입니다.
+* 가로에 대한 범위 입니다.
+* horizontal이 객체가 아닐경우 제외됩니다.
 
 ###### vertical
-세로에 대한 범위 입니다.
-
-* horizontal만 있을경우 horizontal만 참조하여 수식을 생성합니다.
-* vertical만 있을경우 vertical만 참조하여 수식을 생성합니다.
-* horizontal과 vertical이 둘다 있을경우 둘다 참조하여 수식을 생성합니다.
+* 세로에 대한 범위 입니다.
+* vertical이 객체가 아닐경우 제외됩니다.
 
 *from*
 시작지점 입니다.
 
 *to*
-끝지점 입니다.
+종료지점 입니다.
+
+from과 to가 숫자가 아닐경우 horizontal 또는 vertical은 제외됩니다.
 
 *n*
-값은 숫자만 사용가능하며 from에 숫자가 아니면 9999가 지정되고 to가 숫자가 아니면 0이 지정됩니다.
+값은 숫자만 사용가능합니다.
 
 #### lowIE
 ie7 또는 ie8에서의 옵션 입니다.
+
 ````
 lowIE : {
     property : ["#"]
 }
 ````
+
 ##### property
 * range에서 지정한 분기를 몇개든 넣으면 ie7, ie8에서 지정한 분기만 보여주게 됩니다.
-* 지정한 분기 중에서 이름이 없으면 기본값은 none입니다.
+* range에 작성한 프로퍼티명에서 필터링된 이름에서 없을경우 ie7 또는 ie8에서 분기제한이 걸리지 않습니다. 
 * 중복으로 적은 값은 제거 됩니다.
 * 작성우선순위와 관련 있습니다.
 
@@ -122,14 +127,14 @@ $.responsive.destroy |  | boolean | 플러그인을 소멸시키는 함수 입�
 hasHorizontalScrollbar | boolean | 가로스크롤바가 있는지 확인하는 변수입니다.
 hasVerticalScrollbar | boolean | 세로스크롤바가 있는지 확인하는 변수입니다.
 isRun | boolean | 플러그인이 실행됬는지 확인하는 변수입니다.
-isLowIE | boolean | 브라우저가 ie7 또는 ie8인지 확인하는 변수입니다.
 isResize | boolean | 리사이즈 중인지 확인하는 변수입니다.
 isScreenChage | boolean | 넓이 또는 높이가 변경되었는지 확인하는 변수입니다.
 isScreenHeightChange | boolean | 높이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthChange | boolean | 넓이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthAndHeightChange | boolean | 넓이와 높이가 변경되었는지 확인하는 변수입니다.
-lowIE | object | <ul><li>property(array) : lowIE에 property에 작성한 값을 토대로 반영된 값 입니다.</li><li>run(boolean) :  property가 있으면 false가 나오고 없으면 true로 나옵니다.</li></ul>
-range | object | <ul><li>\#(object) : range에 작성한 값을 토대로 반영된 값 입니다.</li><li>property(array) : \#에 대한 이름 값 입니다.</li></ul>
+lowIE | object | <ul><li>is(boolean) : 브라우저가 ie7 또는 ie8인지 확인하는 변수입니다.</li><li>property(array) : lowIE에 property에 작성한 값을 토대로 반영된 값 입니다.</li><li>run(boolean) :  property가 있으면 false가 나오고 없으면 true로 나옵니다.</li></ul>
+range | object | property(array) : 플러그인 옵션에서 range에 작성한 값을 토대로 반영된 값 입니다.
+rangeProperty | array | 플러그인 옵션에서 range에 작성한 값을 토대로 반영된 프로퍼티명 입니다.
 exit | array | 분기범위에서 나간 이름입니다.
 nowState | array | 현재상태에 대한 값입니다.
 prevState | array | 이전상태에 대한 값입니다.
@@ -152,7 +157,7 @@ platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨�
 8. noneAllResized
 
 ### 이벤트
-* 이벤트는 $(window)에 걸어야 합니다.
+이벤트는 $(window)에 걸어야 합니다.
 
 이름 | 형태 | 설명
 | :-- | :- | :-- |
@@ -178,14 +183,14 @@ $(window).on("responsive:#", function(event) {
      console.log(event.setting);
 });
 ````
-* #은 지정한 분기이름 입니다.
+* #은 range에 적은 프로퍼티가 분기이름 입니다.
 
 ### 클래스
 * 브라우저 : ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 중에서 해당되는 브라우저로 클래스가 부여됩니다.
   * 브라우저를 찾지 못하면 unknown이라는 클래스가 나오게 됩니다.
 * 플랫폼 : pc, mobile중에서 접속한 플랫폼으로 클래스가 부여됩니다.
 * 스크롤바 : 스크롤바 넓이가 있으면 scrollbar라는 클래스가 부여됩니다.
-* 분기 : 플러그인 옵션중 range에 적은 프로퍼티 이름이 클래스로 부여됩니다.
+* 분기 : 플러그인 옵션중 range에 적은 프로퍼티명이 클래스로 부여됩니다.
 
 ### 제이쿼리 개발버전
 1.12.4

@@ -284,8 +284,11 @@ try {
 						result = {
 							isRun : false,
 							range : {},
+							rangeProperty : [],
 							exit : [],
-							lowIE : {},
+							lowIE : {
+								is : _connectedState.browser == "ie7" || _connectedState.browser == "ie8"
+							},
 							nowState : [],
 							prevState : [],
 							scrollbarWidth : scrollbarWidth,
@@ -297,7 +300,6 @@ try {
 							platform : _connectedState.platform,
 							hasVerticalScrollbar : hasScrollbar.vertical,
 							hasHorizontalScrollbar : hasScrollbar.horizontal,
-							isLowIE : _connectedState.browser == "ie7" || _connectedState.browser == "ie8",
 							isResize : false,
 							isScreenChange : false,
  							isScreenWidthChange : false,
@@ -472,10 +474,10 @@ try {
 					}
 
 					//option.lowIE.property 형태검사
-					option.lowIE.propertyType = _typeOf(option.lowIE.property);
+					option.lowIEPropertyType = _typeOf(option.lowIE.property);
 					
 					//배열 또는 문자일때
-					if(option.lowIE.propertyType == "array" || option.lowIE.propertyType == "string") {
+					if(option.lowIEPropertyType == "array" || option.lowIEPropertyType == "string") {
 						option.lowIE.property = _removeDuplicate(option.lowIE.property);
 					}else{
 						option.lowIE.property = [];
@@ -491,91 +493,100 @@ try {
 					
 					//option.range에 적은 값을 기준으로 자바스크립트 코드 생성
 					option.rangeCode = "option.enter = [];\n_setting.exit = [];\n\n";
-					option.rangeCode += "if(!_setting.lowIE.run && _setting.isLowIE) {\n\toption.enter = _setting.lowIE.property;\n}else{\n";
-					option.range.property = [];
+					option.rangeCode += "if(!_setting.lowIE.run && _setting.lowIE.is) {\n\toption.enter = _setting.lowIE.property;\n}else{\n";
+					option.rangeFilter = [];
+					option.rangeProperty = [];
 
 					for(option.i in option.range) {
 						//필터링
-						if(option.i != "property" && option.i.substr(-3) != "All" && option.i.substr(-7) != "Resized" && option.i != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
-							//프로퍼티명 기입
-							option.range.property.push(option.i);
-
-							//객체가 아닐경우
-							if(_typeOf(option.range[option.i]) != "object") {
-								option.range[option.i] = {};
-							}
+						if(option.i.substr(-3) != "All" && option.i.substr(-7) != "Resized" && option.i != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
+							//객체검사
+							option.hasRangeHorizontal = (_typeOf(option.range[option.i].horizontal) == "object");
+							option.hasRangeVertical = (_typeOf(option.range[option.i].vertical) == "object");
 							
-							option.rangeCode += "\tif(";
-
-							//객체일때
-							option.isHorizontal = (_typeOf(option.range[option.i].horizontal) == "object");
-
-							if(option.isHorizontal) {
-								//숫자가 아닐경우
-								if(_typeOf(option.range[option.i].horizontal.from) != "number") {
-									option.range[option.i].horizontal.from = 9999;	
-								}
-
-								//숫자가 아닐경우
-								if(_typeOf(option.range[option.i].horizontal.to) != "number") {
-									option.range[option.i].horizontal.to = 0;
-								}
-
-								option.rangeCode += "_setting.screenWidth <= " + option.range[option.i].horizontal.from + " && _setting.screenWidth >= " + option.range[option.i].horizontal.to;
-							}
-
-							//객체일때
-							if(_typeOf(option.range[option.i].vertical) == "object") {
-								//숫자가 아닐경우
-								if(_typeOf(option.range[option.i].vertical.from) != "number") {
-									option.range[option.i].vertical.from = 9999;	
-								}
-
-								//숫자가 아닐경우
-								if(_typeOf(option.range[option.i].vertical.to) != "number") {
-									option.range[option.i].vertical.to = 0;
+							//horizontal 또는 vertical이 객체일때
+							if(option.hasRangeHorizontal || option.hasRangeVertical) {
+								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
+								if(option.hasRangeHorizontal && _typeOf(option.range[option.i].horizontal.from) == "number" && _typeOf(option.range[option.i].horizontal.to) == "number") {
+									option.rangeFilter.push(true);
+								}else{
+									option.rangeFilter.push(false);
 								}
 								
-								//가로 객체가 있을경우
-								if(option.isHorizontal) {
-									option.rangeCode += " && ";
+								//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
+								if(option.hasRangeVertical && _typeOf(option.range[option.i].vertical.from) == "number" && _typeOf(option.range[option.i].vertical.to) == "number") {
+									option.rangeFilter.push(true);
+								}else{
+									option.rangeFilter.push(false);
+								}
+								
+								//horizontal이 객체이면서 from, to 프로퍼티가 숫자이거나 vertical이 객체이면서 from, to 프로퍼티가 숫자일때
+								if(option.rangeFilter[0] || option.rangeFilter[1]) {
+									option.rangeCode += "\tif(";
+									
+									//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
+									if(option.rangeFilter[0]) {
+										option.rangeCode += "_setting.screenWidth <= " + option.range[option.i].horizontal.from + " && _setting.screenWidth >= " + option.range[option.i].horizontal.to;
+									}
+									
+									//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
+									if(option.rangeFilter[1]) {
+										//가로 객체가 있을경우
+										if(option.hasRangeHorizontal) {
+											option.rangeCode += " && ";
+										}
+
+										option.rangeCode += "_setting.screenHeight <= " + option.range[option.i].vertical.from + " && _setting.screenHeight >= " + option.range[option.i].vertical.to;
+									}
+
+									option.rangeCode += ") {\n";
+									option.rangeCode += "\t\toption.enter.push(\"" + option.i + "\");\n";
+									option.rangeCode += "\t}else{\n";
+									option.rangeCode += "\t\t_setting.exit.push(\"" + option.i + "\");\n";
+									option.rangeCode += "\t}\n\n";
+
+									//프로퍼티명 기입
+									option.rangeProperty.push(option.i);
+								}else{
+									//프로퍼티 삭제
+									delete option.range[option.i];
 								}
 
-								option.rangeCode += "_setting.screenHeight <= " + option.range[option.i].vertical.from + " && _setting.screenHeight >= " + option.range[option.i].vertical.to;
+								//초기화
+								option.rangeFilter = [];
 							}
-							
-							option.rangeCode += ") {\n";
-							option.rangeCode += "\t\toption.enter.push(\"" + option.i + "\");\n";
-							option.rangeCode += "\t}else{\n";
-							option.rangeCode += "\t\t_setting.exit.push(\"" + option.i + "\");\n";
-							option.rangeCode += "\t}\n\n";
+						}else{
+							//프로퍼티 삭제
+							delete option.range[option.i];
 						}
 					}
 
 					option.rangeCode = option.rangeCode.replace(/\n$/, "");
 					option.rangeCode += "}";
 					_setting.range = option.range;
+					_setting.rangeProperty = option.rangeProperty;
 					//option.rangeCode작성 끝
 
 					//필터링된 프로퍼티명에서 option.lowIE.property에 이름이 있는지 확인해서 없으면 제거
 					option.i = 0;
-					option.filter = [];
+					option.lowIEFilter = [];
 
 					for(; option.i < option.lowIE.property.length; option.i++) {
-						if($.inArray(option.lowIE.property[option.i], option.range.property) > -1) {
-							option.filter.push(option.lowIE.property[option.i]);
+						if($.inArray(option.lowIE.property[option.i], option.rangeProperty) > -1) {
+							option.lowIEFilter.push(option.lowIE.property[option.i]);
 						}
 					}
 					
-					if(option.filter.length) {
+					if(option.lowIEFilter.length) {
 						option.lowIE.run = false;
 					}else{
 						option.lowIE.run = true;
 					}
 
-					option.lowIE.property = option.filter;
-					delete option.lowIE.propertyType;
-					_setting.lowIE = option.lowIE;
+					_setting.lowIE.run = option.lowIE.run;
+
+					option.lowIE.property = option.lowIEFilter;
+					_setting.lowIE.property = option.lowIE.property;
 
 					_$window.off("resize.responsive").on("resize.responsive", function(event) {
 						//화면정보 갱신
@@ -605,9 +616,9 @@ try {
 						if(_setting.isScreenWidthChange || _setting.isScreenHeightChange) {
 							_setting.isScreenChange = true;
 						}
-						
-						//최초호출 변수가 없을때
-						if(!option.init) {
+
+						//trigger로 호출하였을때
+						if(event.isTrigger) {
 							_setting.isResize = false;
 							_setting.isScreenWidthChange = false;
 							_setting.isScreenHeightChange = false;
@@ -615,8 +626,8 @@ try {
 							_setting.isScreenChange = false;
 						}
 
-						//스크린의 넓이값이 변경되었을 때
-						if(_setting.isScreenChange || !option.init) {
+						//스크린의 넓이 또는 높이가 변경되었거나 trigger로 호출하였을때
+						if(_setting.isScreenChange || event.isTrigger) {
 							//전체범위 함수 호출
 							_callEvent("all");
 							
@@ -652,9 +663,6 @@ try {
 								}
 							}, option.interval);
 						}
-						
-						//최초호출 변수등록
-						option.init = true;
 					}).triggerHandler("resize.responsive");
 
 					//객체 반환
