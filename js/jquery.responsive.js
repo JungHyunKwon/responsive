@@ -698,15 +698,12 @@ try {
 						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" ") + " " + _setting.orientation);
 						_setting.isRun = false;
 						$("body > #responsive_scrollbar").remove();
-						this.setting = undefined;
+						delete this.setting;
 						result = true;
 					}
 
 					return result;
 				};
-
-				//전역객체
-				$.responsive.setting = _getDefaultObject();
 			});
 		})(jQuery);
 	}else{
