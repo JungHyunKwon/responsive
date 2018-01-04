@@ -267,7 +267,7 @@ try {
 					//스크롤바 객체가 있을때
 					if(!$scrollbar.length) {
 						$body.append("<div id=\"responsive_scrollbar\">&nbsp;</div>");
-						_getScrollbarWidth();
+						result = _getScrollbarWidth();
 					}
 
 					return result;
