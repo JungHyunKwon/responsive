@@ -514,7 +514,7 @@ try {
 
 					for(option.i in option.range) {
 						//필터링
-						if(option.i.substr(-3) != "All" && option.i.substr(-7) != "Resized" && option.i != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
+						if(option.i != "square" && option.i != "portrait" && option.i != "landscape" && option.i.substr(-3) != "All" && option.i.substr(-7) != "Resized" && option.i != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
 							//객체검사
 							option.hasRangeHorizontal = (_typeOf(option.range[option.i].horizontal) == "object");
 							option.hasRangeVertical = (_typeOf(option.range[option.i].vertical) == "object");

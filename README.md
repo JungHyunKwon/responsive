@@ -77,6 +77,9 @@ range가 객체가 아니거나 객체안에 프로퍼티가 없을경우 none�
 * firefox
 * safari
 * unknown
+* square
+* portrait
+* landscape
 
 ###### horizontal
 * 가로에 대한 범위 입니다.
