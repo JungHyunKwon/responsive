@@ -71,7 +71,7 @@ try {
 	};
 
 	/**
-	 * @name 콘솔수정
+	 * @name 콘솔
 	 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
 	 * @since 2017-10-11
 	 */
@@ -333,7 +333,9 @@ try {
 							rangeProperty : [],
 							exit : [],
 							lowIE : {
-								is : _connectedState.browser == "ie7" || _connectedState.browser == "ie8"
+								is : _connectedState.browser == "ie7" || _connectedState.browser == "ie8",
+								property : [],
+								run : undefined
 							},
 							nowState : [],
 							prevState : [],
