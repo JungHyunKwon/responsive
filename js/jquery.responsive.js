@@ -192,7 +192,8 @@ try {
 			}
 
 			$(function() {
-				var _$target = $("body");
+				var _$target = $("body"),
+					_initialSetting = _getDefaultObject();
 
 				/**
 				 * @name 스크롤바 존재여부
@@ -697,12 +698,15 @@ try {
 						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" ") + " " + _setting.orientation);
 						_setting.isRun = false;
 						$("body > #responsive_scrollbar").remove();
-						delete this.setting;
+						this.setting = _freeObject(_initialSetting);
 						result = true;
 					}
 
 					return result;
 				};
+
+				//전역객체
+				$.responsive.setting = _freeObject(_initialSetting);
 			});
 		})(jQuery);
 	}else{
