@@ -752,7 +752,6 @@ try {
 
 				//전역객체
 				$.responsive.setting = _freeObject(_initialSetting);
-				console.log(_initialSetting);
 			});
 		})(jQuery);
 	}else{
