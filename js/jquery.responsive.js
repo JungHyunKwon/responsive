@@ -335,7 +335,7 @@ try {
 							lowIE : {
 								is : _connectedState.browser == "ie7" || _connectedState.browser == "ie8",
 								property : [],
-								run : undefined
+								run : true
 							},
 							nowState : [],
 							prevState : [],
@@ -489,7 +489,7 @@ try {
 						_setting.screenHeight += _setting.scrollbarWidth;
 					}
 					
-					//orientation
+					//방향
 					_$target.removeClass(_setting.orientation);
 
 					if(_setting.screenWidth == _setting.screenHeight) {
@@ -752,6 +752,7 @@ try {
 
 				//전역객체
 				$.responsive.setting = _freeObject(_initialSetting);
+				console.log(_initialSetting);
 			});
 		})(jQuery);
 	}else{
