@@ -216,12 +216,12 @@ try {
 			 */
 			function _removeDuplicate(name) {
 				var result = [],
-					typeOf = _typeOf(name);
+					nameType = _typeOf(name);
 				
 				//문자 || 숫자 || 불린일때
-				if(typeOf == "string" || typeOf == "number" || typeOf == "boolean") {
+				if(nameType == "string" || nameType == "number" || nameType == "boolean") {
 					name = $.makeArray(name);
-				}else if(typeOf != "array") {
+				}else if(nameType != "array") {
 					name = [];
 				}
 
