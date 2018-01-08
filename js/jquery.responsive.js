@@ -125,6 +125,7 @@ try {
 
 			/**
 			 * @name 변수 형태
+			 * @since 2017-12-06
 			 * @param {*} variable
 			 * @return {string}
 			 */
@@ -146,7 +147,7 @@ try {
 			}
 
 			/**
-			 * @name 가비지 컬렉션
+			 * @name 객체 가비지 컬렉션
 			 * @since 2017-12-06
 			 * @param {object} object
 			 * @return {object}
