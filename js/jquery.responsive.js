@@ -1,9 +1,7 @@
 "use strict";
 
 /**
- * @name responsive
  * @author JungHyunKwon
- * @since 2017-12-06
  * @version 1.0
  */
 try {
@@ -507,6 +505,8 @@ try {
 				}
 
 				/**
+				 * @name responsive
+				 * @since 2017-12-06
 				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ["#"]}}
 				 * @return {object}
 				 */
