@@ -128,7 +128,7 @@ try {
 			 * @return {string}
 			 */
 			function _typeof(variable) {
-				var result = "";
+				var result;
 				
 				//undefined일때(ie7, ie8에서 찾지 못함)
 				if(variable === undefined) {
