@@ -128,7 +128,7 @@ try {
 			 * @param {*} variable
 			 * @return {string}
 			 */
-			function _typeOf(variable) {
+			function _typeof(variable) {
 				var result = "";
 				
 				//undefined일때(ie7, ie8에서 찾지 못함)
@@ -155,7 +155,7 @@ try {
 				var result = {};
 				
 				//객체일때
-				if(_typeOf(object) == "object") {
+				if(_typeof(object) == "object") {
 					result = JSON.parse(JSON.stringify(object));
 				}
 
@@ -216,7 +216,7 @@ try {
 			 */
 			function _removeDuplicate(name) {
 				var result = [],
-					nameType = _typeOf(name);
+					nameType = _typeof(name);
 				
 				//문자 || 숫자 || 불린일때
 				if(nameType == "string" || nameType == "number" || nameType == "boolean") {
@@ -525,17 +525,17 @@ try {
 					_$target.addClass(_setting.browser + " " + _setting.platform);
 					
 					//객체가 아닐때
-					if(_typeOf(option) != "object") {
+					if(_typeof(option) != "object") {
 						option = {};
 					}
 
 					//객체가 아닐때
-					if(_typeOf(option.lowIE) != "object") {
+					if(_typeof(option.lowIE) != "object") {
 						option.lowIE = {};
 					}
 
 					//option.lowIE.property 형태검사
-					option.lowIEPropertyType = _typeOf(option.lowIE.property);
+					option.lowIEPropertyType = _typeof(option.lowIE.property);
 					
 					//배열 또는 문자일때
 					if(option.lowIEPropertyType == "array" || option.lowIEPropertyType == "string") {
@@ -548,7 +548,7 @@ try {
 					option.interval = 250;
 
 					//객체가 아닐때
-					if(_typeOf(option.range) != "object") {
+					if(_typeof(option.range) != "object") {
 						option.range = {};
 					}
 					
@@ -562,20 +562,20 @@ try {
 						//필터링
 						if(option.i != "square" && option.i != "portrait" && option.i != "landscape" && option.i.substr(-3) != "All" && option.i.substr(-7) != "Resized" && option.i != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
 							//객체검사
-							option.hasRangeHorizontal = (_typeOf(option.range[option.i].horizontal) == "object");
-							option.hasRangeVertical = (_typeOf(option.range[option.i].vertical) == "object");
+							option.hasRangeHorizontal = (_typeof(option.range[option.i].horizontal) == "object");
+							option.hasRangeVertical = (_typeof(option.range[option.i].vertical) == "object");
 							
 							//horizontal 또는 vertical이 객체일때
 							if(option.hasRangeHorizontal || option.hasRangeVertical) {
 								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeHorizontal && _typeOf(option.range[option.i].horizontal.from) == "number" && _typeOf(option.range[option.i].horizontal.to) == "number") {
+								if(option.hasRangeHorizontal && _typeof(option.range[option.i].horizontal.from) == "number" && _typeof(option.range[option.i].horizontal.to) == "number") {
 									option.rangeFilter.push(true);
 								}else{
 									option.rangeFilter.push(false);
 								}
 								
 								//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeVertical && _typeOf(option.range[option.i].vertical.from) == "number" && _typeOf(option.range[option.i].vertical.to) == "number") {
+								if(option.hasRangeVertical && _typeof(option.range[option.i].vertical.from) == "number" && _typeof(option.range[option.i].vertical.to) == "number") {
 									option.rangeFilter.push(true);
 								}else{
 									option.rangeFilter.push(false);
