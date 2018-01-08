@@ -1,6 +1,49 @@
 "use strict";
 
 /**
+ * @name 콘솔
+ * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
+ * @since 2017-10-11
+ */
+this.console = this.console || undefined;
+
+if(!console) {
+	console = {
+		method : ["assert",
+				   "clear",
+				   "count",
+				   "debug",
+				   "dir",
+				   "dirxml",
+				   "error",
+				   "exception",
+				   "group",
+				   "groupCollapsed",
+				   "groupEnd",
+				   "info",
+				   "log",
+				   "markTimeline",
+				   "profile",
+				   "profileEnd",
+				   "table",
+				   "time",
+				   "timeEnd",
+				   "timeStamp",
+				   "trace",
+				   "warn"],
+		comment : []
+	};
+
+	for(var i = 0; i < console.method.length; i++) {
+		if(!console[console.method[i]]) {
+			console[console.method[i]] = function(comment) {
+				this.comment.push(comment);
+			};
+		}
+	}
+}
+
+/**
  * @name responsive
  * @author JungHyunKwon
  * @since 2017-12-06
@@ -69,49 +112,6 @@ try {
 			};
 		})()
 	};
-
-	/**
-	 * @name 콘솔
-	 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
-	 * @since 2017-10-11
-	 */
-	this.console = this.console || undefined;
-
-	if(!console) {
-		console = {
-			method : ["assert",
-					   "clear",
-					   "count",
-					   "debug",
-					   "dir",
-					   "dirxml",
-					   "error",
-					   "exception",
-					   "group",
-					   "groupCollapsed",
-					   "groupEnd",
-					   "info",
-					   "log",
-					   "markTimeline",
-					   "profile",
-					   "profileEnd",
-					   "table",
-					   "time",
-					   "timeEnd",
-					   "timeStamp",
-					   "trace",
-					   "warn"],
-			comment : []
-		};
-
-		for(var i = 0; i < console.method.length; i++) {
-			if(!console[console.method[i]]) {
-				console[console.method[i]] = function(comment) {
-					this.comment.push(comment);
-				};
-			}
-		}
-	}
 
 	//제이쿼리가 있는지 확인
 	this.jQuery = this.jQuery || undefined;
