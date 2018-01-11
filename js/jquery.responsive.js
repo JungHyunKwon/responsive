@@ -54,7 +54,15 @@ try {
 	 */
 	this.JSON = this.JSON || {
 		parse : function(sJSON) {
-			return eval("(" + sJSON + ")");
+			var result;
+
+			try {
+				result = eval("(" + sJSON + ")");
+			}catch(e) {
+				result = {};
+			}
+
+			return result;
 		},
 		stringify : (function() {
 			var toString = Object.prototype.toString,
@@ -352,7 +360,11 @@ try {
 							isScreenChange : false,
  							isScreenWidthChange : false,
  							isScreenHeightChange : false,
- 							isScreenWidthAndHeightChange : false
+ 							isScreenWidthAndHeightChange : false,
+							inheritClass : {
+								property : [],
+								is : false	
+							}
 						};
 
 					return _freeObject(result);
@@ -367,12 +379,14 @@ try {
 				function _setState(state) {
 					var result = false,
 						setState = [],
-						nowState = [];
+						nowState = [],
+						inheritClass = [],
+						i;
 
 					//중복제거
 					state = _removeDuplicate(state);
 
-					for(var i = 0; i < state.length; i++) {
+					for(i = 0; i < state.length; i++) {
 						//적용시킬 상태가 있을때
 						if($.inArray(state[i], _setting.nowState) == -1) {
 							setState.push(state[i]);
@@ -392,12 +406,33 @@ try {
 
 						//새로운상태 클래스 추가
 						_$target.addClass(state.join(" "));
-						
+
 						//이전상태 추가
 						_setting.prevState = _setting.nowState;
 
 						//새로운상태 추가
 						_setting.nowState = state;
+
+						//클래스 상속 옵션을 허용했을 때
+						if(_setting.inheritClass.is) {
+							//상속 클래스 초기화
+							_setting.inheritClass.property = [];
+
+							for(i = 0; i < $.inArray(_setting.nowState[_setting.nowState.length - 1], _setting.rangeProperty); i++) {
+								//현재상태에 없을때
+								if($.inArray(_setting.rangeProperty[i], _setting.nowState) == -1) {
+									//객체에 해당 클래스가 없을때
+									if(!_$target.hasClass(_setting.rangeProperty[i])) {
+										inheritClass.push(_setting.rangeProperty[i]);
+									}
+
+									_setting.inheritClass.property.push(_setting.rangeProperty[i]);
+								}
+							}
+						}
+
+						//상속 클래스 추가
+						_$target.addClass(inheritClass.join(" "));
 
 						//console에 상태표기
 						console.log("현재상태 : " + state.join(", "));
@@ -406,7 +441,7 @@ try {
 					//함수실행
 					_callEvent((state.join("All, ") + "All").split(", "));
 					
-					//위에서 처리하고나서 불러야 해서 따로처리함
+					//위에서 처리하고나서 불러야 해서 따로 처리함
 					if(result) {
 						_callEvent(state);					
 					}
@@ -507,13 +542,18 @@ try {
 				/**
 				 * @name responsive
 				 * @since 2017-12-06
-				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ["#"]}}
+				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ["#"]}, inheritClass : boolean}
 				 * @return {object}
 				 */
 				$.responsive = function(option) {
 					//현재상태가 있을경우
 					if(_setting.nowState && _setting.nowState.length) {
 						_$target.removeClass(_setting.nowState.join(" "));
+					}
+
+					//상속된 클래스가 있을경우
+					if(_setting.inheritClass && _setting.inheritClass.property && _setting.inheritClass.property.length) {
+						_$target.removeClass(_setting.inheritClass.property.join(" "));
 					}
 
 					//기본객체
@@ -545,6 +585,14 @@ try {
 						option.lowIE.property = [];
 					}
 					
+					//불린이 아닐경우
+					if(_typeof(option.inheritClass) != "boolean") {
+						option.inheritClass = false;
+					}
+					
+					//클래스 상속여부
+					_setting.inheritClass.is = option.inheritClass;
+
 					//리사이즈 종료 간격
 					option.interval = 250;
 
@@ -565,7 +613,7 @@ try {
 							//객체검사
 							option.hasRangeHorizontal = (_typeof(option.range[option.i].horizontal) == "object");
 							option.hasRangeVertical = (_typeof(option.range[option.i].vertical) == "object");
-							
+
 							//horizontal 또는 vertical이 객체일때
 							if(option.hasRangeHorizontal || option.hasRangeVertical) {
 								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
@@ -742,10 +790,11 @@ try {
 					//플러그인을 실행중일때
 					if(_setting.isRun) {
 						_$window.off("resize.responsive");
-						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" ") + " " + _setting.orientation);
+						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" ") + " " + _setting.orientation + " " + _setting.inheritClass.property.join(" "));
 						$("body > #responsive_scrollbar").remove();
 						this.setting = _freeObject(_initialSetting);
 						result = true;
+						_setting.isRun = false;
 					}
 
 					return result;

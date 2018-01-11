@@ -32,7 +32,8 @@ $.responsive({
     },
     lowIE : {
 	property : ["web"]
-    }
+    },
+    inheritClass : false
 });
 ````
 
@@ -115,6 +116,9 @@ lowIE : {
 * 중복으로 적은 값은 제거 됩니다.
 * 작성우선순위와 관련 있습니다.
 
+#### inheritClass
+클래스를 상속여부 입니다. 예를들어 true일경우 tablet상태라면 wide, web클래스도 가지고있습니다. false일경우 tablet상태라면 wide, web상태는 없고 tablet클래스만 가지고 있습니다.
+
 ### 메소드
 
 이름 | 매개변수 | 반환 | 설명
@@ -147,6 +151,7 @@ screenHeight | number | 창의 높이값 입니다.
 scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니다.
 browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
 platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게되며 그 이외로는 mobile이라는 값이 나오게 됩니다.
+inheritClass | object | <ul><li>is(boolean) : 플러그인 옵션에서 inheritClass에 작성한 값입니다.</li><li>property(array) : 상속된 프로퍼티명 입니다.</li></ul>
 
 ### 상태, 우선순위
 1. all
