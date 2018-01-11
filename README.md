@@ -117,7 +117,10 @@ lowIE : {
 * 작성우선순위와 관련 있습니다.
 
 #### inheritClass
-클래스를 상속여부 입니다. 예를들어 true일경우 tablet상태라면 wide, web클래스도 가지고있습니다. false일경우 tablet상태라면 wide, web상태는 없고 tablet클래스만 가지고 있습니다.
+클래스를 상속여부 입니다.
+
+* 값은 불린만 사용가능합니다.
+* true일경우 tablet상태라면 wide, web클래스도 가지고있습니다. false일경우 tablet상태라면 wide, web상태는 없고 tablet클래스만 가지고 있습니다.
 
 ### 메소드
 
