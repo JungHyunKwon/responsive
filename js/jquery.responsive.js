@@ -131,8 +131,8 @@ try {
 
 			/**
 			 * @name 변수 형태
-			 * @since 2017-12-06
 			 * @param {*} variable
+			 * @since 2017-12-18
 			 * @return {string}
 			 */
 			function _typeof(variable) {
@@ -145,6 +145,10 @@ try {
 				//NaN일때(숫자로 처리되서 따로 처리함)
 				}else if(typeof variable === "number" && isNaN(variable)) {
 					result = "NaN";
+				
+				//제이쿼리 객체일때
+				}else if(typeof variable === "object" && variable.jquery) {
+					result = "jquery";
 				}else{
 					result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
 				}
