@@ -361,6 +361,7 @@ try {
 							hasVerticalScrollbar : hasScrollbar.vertical,
 							hasHorizontalScrollbar : hasScrollbar.horizontal,
 							isResize : false,
+							triggerType : "none",
 							isScreenChange : false,
  							isScreenWidthChange : false,
  							isScreenHeightChange : false,
@@ -706,6 +707,15 @@ try {
 						//화면정보 갱신
 						_setScreenInfo();
 						
+						//트리거
+						if(event.isTrigger == 2) {
+							_setting.triggerType = "triggerHandler";
+						}else if(event.isTrigger == 3) {
+							_setting.triggerType = "trigger";
+						}else{
+							_setting.triggerType = "none";
+						}
+
 						//리사이즈 중
 						_setting.isResize = true;
 
@@ -732,7 +742,7 @@ try {
 						}
 
 						//trigger로 호출하였을때
-						if(event.isTrigger) {
+						if(_setting.triggerType != "none") {
 							_setting.isResize = false;
 							_setting.isScreenWidthChange = false;
 							_setting.isScreenHeightChange = false;
@@ -741,7 +751,7 @@ try {
 						}
 
 						//스크린의 넓이 또는 높이가 변경되었거나 trigger로 호출하였을때
-						if(_setting.isScreenChange || event.isTrigger) {
+						if(_setting.isScreenChange || _setting.triggerType != "none") {
 							//전체범위 함수 호출
 							_callEvent("all");
 							
