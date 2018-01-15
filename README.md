@@ -155,7 +155,7 @@ scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니�
 browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
 platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게되며 그 이외로는 mobile이라는 값이 나오게 됩니다.
 inheritClass | object | <ul><li>is(boolean) : 플러그인 옵션에서 inheritClass에 작성한 값입니다.</li><li>property(array) : 상속된 프로퍼티명 입니다.</li></ul>
-triggerType | string | trigger, triggerHandler, none으로 구성되어있으며 trigger로 호출하였다면 trigger가 나오고 triggerHandler로 호출하였다면 triggerHandler가 나오고 호출하지 않았다면 none이 나옵니다.
+triggerType | string | resize 또는 resize.responsive 이벤트를 trigger 또는 triggerHandler로 호출했을때 어떤 메소드로 호출했는지 나타내는 변수입니다. trigger 또는 triggerHandler에의한 호출이 아니라면 none이 나옵니다.
 
 ### 상태, 우선순위
 1. all
