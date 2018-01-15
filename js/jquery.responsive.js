@@ -488,10 +488,20 @@ try {
 				/**
 				 * @name 화면정보 입력
 				 * @since 2017-12-06
+				 * @param {object} event
 				 * @return {object}
 				 */
-				function _setScreenInfo() {
+				function _setScreenInfo(event) {
 					var hasScrollbar = _hasScrollbar(_$target[0]);
+
+					//트리거
+					if(event.isTrigger == 2) {
+						_setting.triggerType = "triggerHandler";
+					}else if(event.isTrigger == 3) {
+						_setting.triggerType = "trigger";
+					}else{
+						_setting.triggerType = "none";
+					}
 
 					//가로, 세로 스크롤바 확인
 					_setting.hasVerticalScrollbar = hasScrollbar.vertical;
@@ -705,16 +715,7 @@ try {
 
 					_$window.off("resize.responsive").on("resize.responsive", function(event) {
 						//화면정보 갱신
-						_setScreenInfo();
-						
-						//트리거
-						if(event.isTrigger == 2) {
-							_setting.triggerType = "triggerHandler";
-						}else if(event.isTrigger == 3) {
-							_setting.triggerType = "trigger";
-						}else{
-							_setting.triggerType = "none";
-						}
+						_setScreenInfo(event);
 
 						//리사이즈 중
 						_setting.isResize = true;
@@ -774,7 +775,7 @@ try {
 							//setTimeout 재등록
 							option.timer = setTimeout(function() {
 								//화면정보 갱신
-								_setScreenInfo();
+								_setScreenInfo(event);
 
 								//전체범위 함수 호출
 								_callEvent("allResized");
@@ -784,6 +785,12 @@ try {
 									_callEvent((option.enter.join("AllResized, ") + "AllResized").split(", "));
 								}else{
 									_callEvent("noneAllResized");
+								}
+								
+								//트리거 갱신
+								if(_setting.triggerType != "none") {
+									_setting.triggerType = "none";
+									$.responsive.setting = _freeObject(_setting);
 								}
 							}, option.interval);
 						}
