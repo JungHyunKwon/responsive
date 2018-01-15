@@ -149,8 +149,8 @@ prevState | array | 이전상태에 대한 값입니다.
 orientation | string | 가로, 세로가 같을때 square가 나오고 세로보다 가로가 더 클때 landscape가 나오고 가로보다 세로가 더 클때 portrait라는 값이 나옵니다.
 loadedScreenWidth | number | 로드되었을때 창의 넓이입니다.
 loadedScreenHeight | number | 로드되었을때 창의 높이입니다.
-screenWidth | number | 창의 넓이값 입니다.
-screenHeight | number | 창의 높이값 입니다.
+screenWidth | number | 창의 넓이입니다.
+screenHeight | number | 창의 높이입니다.
 scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니다.
 browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
 platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게되며 그 이외로는 mobile이라는 값이 나오게 됩니다.
