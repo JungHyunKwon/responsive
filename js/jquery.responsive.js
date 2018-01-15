@@ -361,7 +361,7 @@ try {
 							hasVerticalScrollbar : hasScrollbar.vertical,
 							hasHorizontalScrollbar : hasScrollbar.horizontal,
 							isResize : false,
-							triggerType : "none",
+							triggerType : "",
 							isScreenChange : false,
  							isScreenWidthChange : false,
  							isScreenHeightChange : false,
@@ -500,7 +500,7 @@ try {
 					}else if(event.isTrigger == 3) {
 						_setting.triggerType = "trigger";
 					}else{
-						_setting.triggerType = "none";
+						_setting.triggerType = "";
 					}
 
 					//가로, 세로 스크롤바 확인
@@ -743,7 +743,7 @@ try {
 						}
 
 						//trigger로 호출하였을때
-						if(_setting.triggerType != "none") {
+						if(_setting.triggerType) {
 							_setting.isResize = false;
 							_setting.isScreenWidthChange = false;
 							_setting.isScreenHeightChange = false;
@@ -752,7 +752,7 @@ try {
 						}
 
 						//스크린의 넓이 또는 높이가 변경되었거나 trigger로 호출하였을때
-						if(_setting.isScreenChange || _setting.triggerType != "none") {
+						if(_setting.isScreenChange || _setting.triggerType) {
 							//전체범위 함수 호출
 							_callEvent("all");
 							
@@ -788,8 +788,8 @@ try {
 								}
 								
 								//트리거 갱신
-								if(_setting.triggerType != "none") {
-									_setting.triggerType = "none";
+								if(_setting.triggerType) {
+									_setting.triggerType = "";
 									$.responsive.setting = _freeObject(_setting);
 								}
 							}, option.interval);
