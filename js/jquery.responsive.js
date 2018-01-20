@@ -1,970 +1,834 @@
 "use strict";
 
 /**
- * @name 데이터 이벤트
- * @author (주)한신정보기술 퍼블리셔팀 권정현({@link mailto:kjh3859@hanshinit.co.kr})
+ * @author JungHyunKwon
  * @version 1.0
  */
 try {
-	this.jQuery = this.jQuery || undefined;
+	/**
+	 * @name 콘솔
+	 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
+	 * @since 2017-10-11
+	 */
+	this.console = this.console || undefined;
 
-	//제이쿼리가 있는지 확인
-	if(jQuery) {
-		//$ 중첩 방지
-		(function($) {
-			$(function() {
-				var count = 0,
-					easing = [];
+	if(!console) {
+		console = {
+			method : ["assert",
+					   "clear",
+					   "count",
+					   "debug",
+					   "dir",
+					   "dirxml",
+					   "error",
+					   "exception",
+					   "group",
+					   "groupCollapsed",
+					   "groupEnd",
+					   "info",
+					   "log",
+					   "markTimeline",
+					   "profile",
+					   "profileEnd",
+					   "table",
+					   "time",
+					   "timeEnd",
+					   "timeStamp",
+					   "trace",
+					   "warn"],
+			comment : []
+		};
 
-				/**
-				 * @name 이징 프로퍼티명 등록
-				 * @since 2017-12-18
-				 */
-				for(var i in $.easing) {
-					if(i != "_default" && i != "def") {
-						easing.push(i);	
+		for(var i = 0; i < console.method.length; i++) {
+			if(!console[console.method[i]]) {
+				console[console.method[i]] = function(comment) {
+					this.comment.push(comment);
+				};
+			}
+		}
+	}
+
+	/**
+	 * @name JSON psrse, stringify
+	 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
+	 */
+	this.JSON = this.JSON || {
+		parse : function(sJSON) {
+			var result;
+
+			try {
+				result = eval("(" + sJSON + ")");
+			}catch(e) {
+				result = {};
+			}
+
+			return result;
+		},
+		stringify : (function() {
+			var toString = Object.prototype.toString,
+				isArray = Array.isArray || function(a) {
+					return toString.call(a) === "[object Array]";
+				},
+				escMap = {
+					"\"" : "\\\"",
+					"\\" : "\\\\",
+					"\b" : "\\b",
+					"\f" : "\\f",
+					"\n" : "\\n",
+					"\r" : "\\r",
+					"\t" : "\\t"
+				},
+				escFunc = function(m) {
+					return escMap[m] || "\\u" + (m.charCodeAt(0) + 0x10000).toString(16).substr(1);
+				},
+				escRE = /[\\"\u0000-\u001F\u2028\u2029]/g;
+
+			return function stringify(value) {
+				if(value == null) {
+					return "null";
+				}else if(typeof value === "number") {
+					return isFinite(value) ? value.toString() : "null";
+				}else if(typeof value === "boolean") {
+					return value.toString();
+				}else if(typeof value === "object") {
+					if(typeof value.toJSON === "function") {
+						return stringify(value.toJSON());
+					}else if(isArray(value)) {
+						var res = "[";
+
+						for (var i = 0; i < value.length; i++) {
+							res += (i ? ", " : "") + stringify(value[i]);
+						}
+
+						return res + ']';
+					}else if(toString.call(value) === "[object Object]") {
+						var tmp = [];
+
+						for(var k in value) {
+							if(value.hasOwnProperty(k)) {
+								tmp.push(stringify(k) + " : " + stringify(value[k]));
+							}
+						}
+
+						return "{" + tmp.join(", ") + "}";
 					}
 				}
 
+				return "\"" + value.toString().replace(escRE, escFunc) + "\"";
+			};
+		})()
+	};
+
+	//제이쿼리가 있는지 확인
+	this.jQuery = this.jQuery || undefined;
+
+	if(jQuery) {
+		//$ 중첩 방지
+		(function($) {
+			var _$window = $(window),
+				_connectedState = _getConnectedState(),
+				_setting = {};
+
+			/**
+			 * @name 변수 형태
+			 * @param {*} variable
+			 * @since 2017-12-18
+			 * @return {string}
+			 */
+			function _typeof(variable) {
+				var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
+				
+				//undefined일때(ie7, ie8에서 찾지 못함)
+				if(variable === undefined) {
+					result = "undefined";
+				
+				//NaN일때(숫자로 처리되서 따로 처리함)
+				}else if(typeof variable === "number" && isNaN(variable)) {
+					result = "NaN";
+				
+				//document일때
+				}else if(result.substr(-8) === "document") {
+					result = "document";
+
+				//엘리먼트일때
+				}else if(result.substr(-7) === "element") {
+					result = "element";
+
+				//제이쿼리 엘리먼트일때
+				}else if(typeof variable === "object" && variable.jquery) {
+					result = "jqueryElement";
+				}
+
+				return result;
+			}
+
+			/**
+			 * @name 객체 가비지 컬렉션
+			 * @since 2017-12-06
+			 * @param {object} object
+			 * @return {object}
+			 */
+			function _freeObject(object) {
+				var result = {};
+				
+				//객체일때
+				if(_typeof(object) == "object") {
+					result = JSON.parse(JSON.stringify(object));
+				}
+
+				return result;
+			}
+
+			/**
+			 * @name 접속상태 가져오기
+			 * @since 2017-12-06
+			 * @return {object}
+			 */
+			function _getConnectedState() {
+				var userAgent = navigator.userAgent.toLowerCase(),
+					platform = navigator.platform.toLowerCase(),
+					platformCase = ["win16", "win32", "win64", "mac", "linux"],
+					result = {browser : "", platform : ""};
+
+				if(userAgent.indexOf("msie 7.0") > -1) {
+					result.browser = "ie7";
+				}else if(userAgent.indexOf("msie 8.0") > -1) {
+					result.browser = "ie8";
+				}else if(userAgent.indexOf("msie 9.0") > -1) {
+					result.browser = "ie9";
+				}else if(userAgent.indexOf("msie 10.0") > -1) {
+					result.browser = "ie10";
+				}else if(userAgent.indexOf("trident/7.0") > -1) {
+					result.browser = "ie11";
+				}else if(userAgent.indexOf("edge") > -1) {
+					result.browser = "edge";
+				}else if(userAgent.indexOf("opr") > -1) {
+					result.browser = "opera"; 
+				}else if(userAgent.indexOf("chrome") > -1) {
+					result.browser = "chrome";
+				}else if(userAgent.indexOf("firefox") > -1) {
+					result.browser = "firefox"; 
+				}else if(userAgent.indexOf("safari") > -1) {
+					result.browser = "safari";
+				}else{
+					result.browser = "unknown";
+				}
+				
+				//platformCase에 platform이 있을때
+				if($.inArray(platform, platformCase) > -1) {
+					result.platform = "pc";
+				}else{
+					result.platform = "mobile";
+				}
+
+				return result;
+			}
+
+			/**
+			 * @name 배열 중복값 제거
+			 * @description name에서 중복값을 제거합니다.
+			 * @since 2017-12-06
+			 * @param {array || string} name
+			 * @return {array}
+			 */
+			function _removeDuplicate(name) {
+				var result = [],
+					nameType = _typeof(name);
+				
+				//문자 || 숫자 || 불린일때
+				if(nameType == "string" || nameType == "number" || nameType == "boolean") {
+					name = $.makeArray(name);
+				}else if(nameType != "array") {
+					name = [];
+				}
+
+				for(var i = 0; i < name.length; i++) {
+					//result값에 값이 없으면 집어넣는다.
+					if($.inArray(name[i], result) == -1) {
+						result.push(name[i]);
+					}
+				}
+
+				return result;
+			}
+
+			$(function() {
+				var _$target = $("body"),
+					_initialSetting = _getDefaultObject();
+
 				/**
-				 * @name 변수 형태
-				 * @param {*} variable
-				 * @since 2017-12-18
-				 * @return {string}
+				 * @name 스크롤바 존재여부
+				 * @since 2017-12-06
+				 * @param {object} object
+				 * @return {object}
 				 */
-				function _typeof(variable) {
-					var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
+				function _hasScrollbar(object) {
+					var $this = $(object).first(),
+						$target = $this.add($this.parents()),
+						horizontal = [],
+						vertical = [],
+						result = {horizontal : false, vertical : false};
 					
-					//undefined일때(ie7, ie8에서 찾지 못함)
-					if(variable === undefined) {
-						result = "undefined";
-					
-					//NaN일때(숫자로 처리되서 따로 처리함)
-					}else if(typeof variable === "number" && isNaN(variable)) {
-						result = "NaN";
-					
-					//document일때
-					}else if(result.substr(-8) === "document") {
-						result = "document";
+					$target.each(function(index, element) {
+						var $this = $(element),
+							overflow = {
+								x : $this.css("overflow-x"),
+								y : $this.css("overflow-y")
+							};
 
-					//엘리먼트일때
-					}else if(result.substr(-7) === "element") {
-						result = "element";
-
-					//제이쿼리 엘리먼트일때
-					}else if(typeof variable === "object" && variable.jquery) {
-						result = "jqueryElement";
+						//매핑한 객체의 넓이가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
+						if((element.scrollWidth > element.clientWidth && overflow.x != "hidden") || overflow.x == "scroll") {
+							horizontal.push(true);
+						}else{
+							horizontal.push(false);
+						}
+						
+						//매핑한 객체의 높이가가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
+						if((element.scrollHeight > element.clientHeight && overflow.y != "hidden") || overflow.y == "scroll") {
+							vertical.push(true);
+						}else{
+							vertical.push(false);
+						}
+					});
+					
+					//가로스크롤바가 하나라도 있을경우
+					if($.inArray(true, horizontal) > -1) {
+						result.horizontal = true;
+					}
+					
+					//세로스크롤바가 하나라도 있을경우
+					if($.inArray(true, vertical) > -1) {
+						result.vertical = true;
 					}
 
 					return result;
 				}
 
 				/**
-				 * @name 타겟 얻기
-				 * @param {object} option
-				 * @since 2018-01-08
+				 * @name 스크롤바 넓이 구하기
+				 * @since 2017-12-06
+				 * @return {number}
+				 */
+				function _getScrollbarWidth() {
+					var style = {
+							visibility : "hidden",
+							overflowX : "scroll",
+							overflowY : "scroll",
+							position : "absolute",
+							top : "-100px",
+							left : "-100px",
+							zIndex : "-1",
+							width : "100px",
+							height : "100px"
+						},
+						$body = $("body"),
+						$scrollbar = $body.children("#responsive_scrollbar"),
+						result = ($scrollbar.length) ? $scrollbar.removeAttr("style").css(style)[0].offsetWidth - $scrollbar[0].clientWidth : 0;
+
+					//스크롤바 객체가 있을때
+					if(!$scrollbar.length) {
+						$body.append("<div id=\"responsive_scrollbar\">&nbsp;</div>");
+						result = _getScrollbarWidth();
+					}
+
+					return result;
+				}
+
+				/**
+				 * @name 기본옵션 객체 얻기
+				 * @since 2017-12-06
 				 * @return {object}
 				 */
-				$.fn.getTarget = function(option) {
+				function _getDefaultObject() {
+					var hasScrollbar = _hasScrollbar(_$target[0]),
+						scrollbarWidth = _getScrollbarWidth(),
+						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
+						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height(),
+						result = {
+							isRun : false,
+							range : {},
+							rangeProperty : [],
+							exit : [],
+							lowIE : {
+								is : _connectedState.browser == "ie7" || _connectedState.browser == "ie8",
+								property : [],
+								run : true
+							},
+							nowState : [],
+							prevState : [],
+							scrollbarWidth : scrollbarWidth,
+							orientation : (screenWidth == screenHeight) ? "square" : (screenWidth > screenHeight) ? "landscape" : "portrait",
+							screenWidth : screenWidth,
+							screenHeight : screenHeight,
+							loadedScreenWidth : screenWidth,
+							loadedScreenHeight : screenHeight,
+							browser : _connectedState.browser,
+							platform : _connectedState.platform,
+							hasVerticalScrollbar : hasScrollbar.vertical,
+							hasHorizontalScrollbar : hasScrollbar.horizontal,
+							isResize : false,
+							triggerType : "",
+							isScreenChange : false,
+ 							isScreenWidthChange : false,
+ 							isScreenHeightChange : false,
+ 							isScreenWidthAndHeightChange : false,
+							inheritClass : {
+								property : [],
+								is : false	
+							}
+						};
+
+					return _freeObject(result);
+				}
+
+				/**
+				 * @name 분기 적용
+				 * @since 2017-12-06
+				 * @param {array[string] || string} state
+				 * @return {boolean}
+				 */
+				function _setState(state) {
+					var result = false,
+						setState = [],
+						nowState = [],
+						inheritClass = [],
+						i;
+
+					//중복제거
+					state = _removeDuplicate(state);
+
+					for(i = 0; i < state.length; i++) {
+						//적용시킬 상태가 있을때
+						if($.inArray(state[i], _setting.nowState) == -1) {
+							setState.push(state[i]);
+						}else{
+							nowState.push(state[i]);
+						}
+					}
+
+					//적용시킬 상태가 있을때
+					if(setState.length || nowState.length != _setting.nowState.length) {
+						result = true;
+					}
+
+					if(result) {
+						//현재상태 클래스 제거
+						_$target.removeClass(_setting.nowState.join(" "));
+
+						//새로운상태 클래스 추가
+						_$target.addClass(state.join(" "));
+
+						//이전상태 추가
+						_setting.prevState = _setting.nowState;
+
+						//새로운상태 추가
+						_setting.nowState = state;
+
+						//클래스 상속 옵션을 허용했을 때
+						if(_setting.inheritClass.is) {
+							//상속 클래스 초기화
+							_setting.inheritClass.property = [];
+
+							for(i = 0; i < $.inArray(_setting.nowState[_setting.nowState.length - 1], _setting.rangeProperty); i++) {
+								//현재상태에 없을때
+								if($.inArray(_setting.rangeProperty[i], _setting.nowState) == -1) {
+									//객체에 해당 클래스가 없을때
+									if(!_$target.hasClass(_setting.rangeProperty[i])) {
+										inheritClass.push(_setting.rangeProperty[i]);
+									}
+
+									_setting.inheritClass.property.push(_setting.rangeProperty[i]);
+								}
+							}
+						}
+
+						//상속 클래스 추가
+						_$target.addClass(inheritClass.join(" "));
+
+						//console에 상태표기
+						console.log("현재상태 : " + state.join(", "));
+					}
+
+					//함수실행
+					_callEvent((state.join("All, ") + "All").split(", "));
+					
+					//위에서 처리하고나서 불러야 해서 따로 처리함
+					if(result) {
+						_callEvent(state);					
+					}
+
+					return result;
+				}
+
+				/**
+				 * @name 분기이벤트 실행
+				 * @since 2017-12-06
+				 * @param {array[string] || string} state
+				 * @return {array}
+				 */
+				function _callEvent(state) {
+					var event = {
+						setting : _freeObject(_setting)
+					};
+
+					//중복제거
+					state = _removeDuplicate(state);
+					
+					//전역객체 갱신
+					$.responsive.setting = event.setting;
+
+					for(var i = 0; i < state.length; i++) {
+						//분기값 적용
+						event.state = state[i];
+
+						//모든 이벤트 호출
+						_$window.triggerHandler($.Event("responsive", event));
+
+						//필터 이벤트 호출
+						_$window.triggerHandler($.Event("responsive:" + state[i], event));
+					}
+
+					return state;
+				}
+				
+				/**
+				 * @name 화면정보 입력
+				 * @since 2017-12-06
+				 * @param {object} event
+				 * @return {object}
+				 */
+				function _setScreenInfo(event) {
+					var hasScrollbar = _hasScrollbar(_$target[0]);
+
+					//트리거
+					if(event.isTrigger == 2) {
+						_setting.triggerType = "triggerHandler";
+					}else if(event.isTrigger == 3) {
+						_setting.triggerType = "trigger";
+					}else{
+						_setting.triggerType = "";
+					}
+
+					//가로, 세로 스크롤바 확인
+					_setting.hasVerticalScrollbar = hasScrollbar.vertical;
+					_setting.hasHorizontalScrollbar = hasScrollbar.horizontal;
+					
+					//화면이 변경되었는지 확인하는 변수
+					_setting.isResize = false;
+					_setting.isScreenWidthChange = false;
+					_setting.isScreenHeightChange = false;
+					_setting.isScreenWidthAndHeightChange = false;
+					_setting.isScreenChange = false;
+
+					//스크롤바 넓이
+					_setting.scrollbarWidth = _getScrollbarWidth();
+
+					//브라우저 스크롤바가 있을때
+					if(_setting.scrollbarWidth) {
+						_$target.addClass("scrollbar");
+					}else{
+						_$target.removeClass("scrollbar");
+					}
+
+					//화면 넓이, 높이
+					_setting.screenWidth = _$window.width();
+					_setting.screenHeight = _$window.height();
+
+					//세로 스크롤바가 있을때
+					if(_setting.hasVerticalScrollbar) {
+						_setting.screenWidth += _setting.scrollbarWidth;
+					}
+
+					//가로 스크롤바가 있을때
+					if(_setting.hasHorizontalScrollbar) {
+						_setting.screenHeight += _setting.scrollbarWidth;
+					}
+					
+					//방향
+					_$target.removeClass(_setting.orientation);
+
+					if(_setting.screenWidth == _setting.screenHeight) {
+						_setting.orientation = "square";
+					}else if(_setting.screenWidth > _setting.screenHeight) {
+						_setting.orientation = "landscape";
+					}else{
+						_setting.orientation = "portrait";
+					}
+					
+					_$target.addClass(_setting.orientation);
+
+					return _setting;
+				}
+
+				/**
+				 * @name responsive
+				 * @since 2017-12-06
+				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ["#"]}, inheritClass : boolean}
+				 * @return {object}
+				 */
+				$.responsive = function(option) {
+					//현재상태가 있을경우
+					if(_setting.nowState && _setting.nowState.length) {
+						_$target.removeClass(_setting.nowState.join(" "));
+					}
+
+					//상속된 클래스가 있을경우
+					if(_setting.inheritClass && _setting.inheritClass.property && _setting.inheritClass.property.length) {
+						_$target.removeClass(_setting.inheritClass.property.join(" "));
+					}
+
+					//기본객체
+					_setting = _getDefaultObject();
+
+					//실행등록
+					_setting.isRun = true;
+
+					//브라우저, 플랫폼 클래스 추가
+					_$target.addClass(_setting.browser + " " + _setting.platform);
+					
+					//객체가 아닐때
 					if(_typeof(option) != "object") {
 						option = {};
 					}
 
-					if(_typeof(option.value) == "string") {
-						option.value = option.value.split("/");
-					}else{
-						option.value = "";
+					//객체가 아닐때
+					if(_typeof(option.lowIE) != "object") {
+						option.lowIE = {};
 					}
 
-					option.result = $();
-
-					this.each(function(index, element) {
-						var $this = $(element),
-							data = $this.data(),
-							value = option.value,
-							valueType,
-							$target,
-							targetType;
-						
-						if(!value.length) {
-							value = data.target;
-						}
-
-						valueType = _typeof(value);
-
-						if(valueType == "string") {
-							value = value.split("/");
-						}else if(valueType != "array") {
-							value = [];	
-						}
-
-						for(var i = 0; i < value.length; i++) {
-							try {
-								$target = eval(value[i]);
-								targetType = _typeof($target);
-
-								//객체가 아닐때
-								if(targetType != "jqueryElement" && targetType != "element" && targetType != "window" && targetType != "document") {
-									try {
-										$target = $(value[i]);
-									}catch(e) {
-										$target = $();
-									}
-								}
-							}catch(e) {
-								try {
-									$target = $(value[i]);
-								}catch(e) {
-									$target = $();
-								}
-							}
-
-							option.result = option.result.add($target);
-						}
-					});
-
-					return option.result;
-				};
-
-				//데이터 함수
-				$.dataEvent = {
-					/**
-					 * @name prompt
-					 * @since 2017-12-18
-					 */
-					showPrompt : function(event) {
-						var $window = $(window),
-							$this = $(this),
-							$first = $this.first(),
-							data = $first.data(),
-							result;
-
-						if(_typeof(data.preventDefault) != "boolean") {
-							data.preventDefault = false;
-						}
+					//option.lowIE.property 형태검사
+					option.lowIEPropertyType = _typeof(option.lowIE.property);
 					
-						if(_typeof(data.promptTitle) != "string") {
-							data.promptTitle = "";
-						}
-
-						if(_typeof(data.promptText) != "string") {
-							data.promptText = "";
-						}
-						
-						result = prompt(data.promptTitle, data.promptText);
-
-						$first.triggerHandler($.Event("data:showPrompt", {rst : {
-							title : data.promptTitle,
-							text : data.promptText,
-							is : (result) ? true : false,
-							isPreventDefault : data.preventDefault
-						}}));
-
-						if(data.preventDefault) {
-							event.preventDefault();
-						}
-					},
-
-					/**
-					 * @name 인쇄
-					 * @since 2017-12-18
-					 */
-					print : function(event) {
-						var $window = $(window),
-							$this = $(this),
-							$first = $this.first(),
-							data = $first.data(),
-							$target = $first.getTarget().eq($.inArray("print", data.fn));
-
-						if(_typeof(data.preventDefault) != "boolean") {
-							data.preventDefault = false;
-						}
-						
-						if(_typeof(data.printTarget) != "string") {
-							data.printTarget = "";
-						}
-
-						$first.triggerHandler($.Event("data:print", {rst : {
-							state : "before",
-							isPreventDefault : data.preventDefault,
-							target : data.printTarget
-						}}));
-
-						if($target.length && $target[0].print) {
-							$target[0].print();
-						}else{
-							window.print();
-						}
-
-						$first.triggerHandler($.Event("data:print", {rst : {
-							state : "after",
-							isPreventDefault : data.preventDefault,
-							target : data.printTarget
-						}}));
-
-						if(data.preventDefault) {
-							event.preventDefault();
-						}
-					},
+					//배열 또는 문자일때
+					if(option.lowIEPropertyType == "array" || option.lowIEPropertyType == "string") {
+						option.lowIE.property = _removeDuplicate(option.lowIE.property);
+					}else{
+						option.lowIE.property = [];
+					}
 					
-					/**
-					 * @name 복사
-					 * @since 2017-12-18
-					 */
-					copy : function(event) {
-						var $this = $(this),
-							$first = $this.first(),
-							data = $first.data(),
-							result = false,
-							$copy = $("#copy"),
-							$copyText = $("#copy_text");
-
-						if(_typeof(data.preventDefault) != "boolean") {
-							data.preventDefault = false;
-						}
-
-						if(!$copy.length) {
-							$("body").append("<div id=\"copy\" style=\"overflow-x:hidden; overflow-y:hidden; position:absolute; top:0; left:0; width:0; height:0;\"></div>");
-							$copy = $("#copy");
-						}
-
-						if(!$("#copy_paste_label").length) {
-							$copy.append("<label for=\"copy_text\" id=\"copy_label\">문자</label>");
-						}
-
-						if(!$copyText.length) {
-							$copy.append("<input type=\"text\" id=\"copy_text\" tabindex=\"-1\" />");
-							$copyText = $("#copy_text");
-						}
-
-						if(_typeof(data.copyText) == "string") {
-							$copyText.val(data.copyText).select();
-							result = document.execCommand("copy");
-						}
-
-						$first.triggerHandler($.Event("data:copy", {state : result}));
-
-						if(data.preventDefault) {
-							event.preventDefault();
-						}
-					},
-
-					/**
-					 * @name 붙여넣기
-					 * @since 2017-12-18
-					 */
-					paste : function(event) {
-						var $this = $(this),
-							$first = $this.first(),
-							data = $first.data(),
-							result,
-							$target = $first.getTarget();
-
-						if(_typeof(data.preventDefault) != "boolean") {
-							data.preventDefault = false;
-						}
-
-						$target.focus();
-						result = document.execCommand("paste");
-
-						$first.triggerHandler($.Event("data:paste", {state : result}));
-
-						if(data.preventDefault) {
-							event.preventDefault();
-						}
-					},
-
-					/**
-					 * @name 아이프레임 내부컨텐츠 높이조정
-					 * @since 2017-12-18
-					 */
-					iframeHeight : function(event) {
-						var $this = $(this),
-							$first = $this.first(),
-							tagName = $first[0].tagName.toLowerCase(),
-							data = $first.data();
-
-						if(_typeof(data.iframeInterval) != "number") {
-							data.iframeInterval = 0;
-						}
-						
-						if(event.handleObj.type == "load" && tagName == "iframe") {
-							if(data.iframeTimer) {
-								clearInterval(data.iframeTimer);
-								data.iframeTimer = 0;
-							}
-
-							data.iframeTimer = setInterval(function() {
-								$first.height($first.contents().children("html").height());
-							}, data.iframeInterval);
-						}
-					},
-
-					/**
-					 * @name 팝업열기
-					 * @since 2017-12-18
-					 */
-					openPopup : function(event) {
-						var $this = $(this),
-							$first = $this.first(),
-							data = $this.data(),
-							prefix = "popup" + $.inArray(event.handleObj.type + "." + event.handleObj.namespace, data.event),
-							url = data[prefix + "Url"],
-							name = data[prefix + "Name"],
-							channelmode = data[prefix + "Channelmode"],
-							directories = data[prefix + "Directories"],
-							fullscreen = data[prefix + "Fullscreen"],
-							height = data[prefix + "Height"],
-							left = data[prefix + "Left"],
-							loc = data[prefix + "Loc"],
-							menubar = data[prefix + "Menubar"],
-							resizable = data[prefix + "Resizable"],
-							scrollbars = data[prefix + "Scrollbars"],
-							status = data[prefix + "Status"],
-							titlebar = data[prefix + "Titlebar"],
-							toolbar = data[prefix + "Toolbar"],
-							top = data[prefix + "Top"],
-							width = data[prefix + "Width"],
-							replace = data[prefix + "Replace"];
-
-						if(_typeof(url) != "string") {
-							url = "";
-						}
-
-						if(_typeof(name) != "string") {
-							name = "";
-						}
-
-						if(channelmode != "yes" && channelmode != "no" && channelmode != 1 && channelmode != 0) {
-							channelmode = "no";
-						}
-
-						if(directories != "yes" && directories != "no" && directories != 1 && directories != 0) {
-							directories = "no";
-						}
-
-						if(fullscreen != "yes" && fullscreen != "no" && fullscreen != 1 && fullscreen != 0) {
-							fullscreen = "no";
-						}
-
-						if(_typeof(height) != "number") {
-							height = 0;
-						}
-
-						if(_typeof(left) != "number") {
-							left = 0;
-						}
-
-						if(loc != "yes" && loc != "no" && loc != 1 && loc != 0) {
-							loc = "no";
-						}
-
-						if(menubar != "yes" && menubar != "no" && menubar != 1 && menubar != 0) {
-							menubar = "no";
-						}
-
-						if(resizable != "yes" && resizable != "no" && resizable != 1 && resizable != 0) {
-							resizable = "no";
-						}
-
-						if(scrollbars != "yes" && scrollbars != "no" && scrollbars != 1 && scrollbars != 0) {
-							scrollbars = "no";
-						}
-
-						if(status != "yes" && status != "no" && status != 1 && status != 0) {
-							status = "no";
-						}
-
-						if(titlebar != "yes" && titlebar != "no" && titlebar != 1 && titlebar != 0) {
-							titlebar = "no";
-						}
-						
-						if(toolbar != "yes" && toolbar != "no" && toolbar != 1 && toolbar != 0) {
-							toolbar = "no";
-						}
-						
-						if(_typeof(top) != "number") {
-							top = 0;
-						}
-						
-						if(_typeof(width) != "number") {
-							width = 0;
-						}
-
-						if(_typeof(replace) != "boolean") {
-							replace = false;
-						}
-
-						data[prefix] = window.open(url, name, "channelmode=" + channelmode + ", directories=" + directories + ", fullscreen=" + fullscreen + ", height=" + height + ", left=" + left + ", location=" + loc + ", channelmode=" + channelmode + ", menubar=" + menubar + ", resizable=" + resizable + ", scrollbars=" + scrollbars + ", status=" + status + ", titlebar=" + titlebar + ", toolbar=" + toolbar + ", top=" + top + ", width=" + width, replace);
-					},
-
-					/**
-					 * @name 팝업닫기
-					 * @since 2017-12-18
-					 */
-					closePopup : function(event) { 
-						var $this = $(this),
-							$first = $this.first(),
-							$target = $first.getTarget(),
-							data = $this.data(),
-							prefix = "popup" + $.inArray(event.handleObj.type + "." + event.handleObj.namespace, data.event);
-					},
+					//불린이 아닐경우
+					if(_typeof(option.inheritClass) != "boolean") {
+						option.inheritClass = false;
+					}
 					
-					/**
-					 * @name 팝업토글
-					 * @since 2017-12-18
-					 */
-					togglePopup : function(event) {
-						var $this = $(this),
-							$first = $this.first(),
-							data = $first.data(),
-							prefix = "popup" + $.inArray(event.handleObj.type + "." + event.handleObj.namespace, data.event);
-						
-						if(data[prefix][0]) {
-							closePopup.call($first[0], event);
-						}else{
-							openPopup.call($first[0], event);
-						}
-					},
+					//클래스 상속여부
+					_setting.inheritClass.is = option.inheritClass;
 
-						//콜백 데이터 넘겨줄거 추가 해야됨
-					scroll : function(event) {
-						var $this = $(this).first(),
-							href = $this.attr("href"),
-							tabindex = $this.attr("tabindex"),
-							hash = $this.attr("id"),
-							data = $this.data(), 
-							$target = $(data.target);
+					//리사이즈 종료 간격
+					option.interval = 250;
 
-						if($.inArray(data.easing, easing) == -1) {
-							data.easing = "swing";
-						}
+					//객체가 아닐때
+					if(_typeof(option.range) != "object") {
+						option.range = {};
+					}
+					
+					//option.range에 적은 값을 기준으로 자바스크립트 코드 생성
+					option.rangeCode = "option.enter = [];\n_setting.exit = [];\n\n";
+					option.rangeCode += "if(!_setting.lowIE.run && _setting.lowIE.is) {\n\toption.enter = _setting.lowIE.property;\n}else{\n";
+					option.rangeFilter = [];
+					option.rangeProperty = [];
 
-						if(_typeof(data.duration) != "number") {
-							data.duration = 400;
-						}
+					for(option.i in option.range) {
+						//필터링
+						if(option.i != "square" && option.i != "portrait" && option.i != "landscape" && option.i.substr(-3) != "All" && option.i.substr(-7) != "Resized" && option.i != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
+							//객체검사
+							option.hasRangeHorizontal = (_typeof(option.range[option.i].horizontal) == "object");
+							option.hasRangeVertical = (_typeof(option.range[option.i].vertical) == "object");
 
-						if(data.type != "offset" && data.type != "position") {
-							data.type = "offset";
-						}
-
-						if(data.direction != "top" && data.direction != "left") {
-							data.type = "top";
-						}
-						
-						if(href) {
-							if(!hash) {
-								if(href.charAt(0) == "#" && href.length > 1) {
-									hash = href.replace("#", "");
+							//horizontal 또는 vertical이 객체일때
+							if(option.hasRangeHorizontal || option.hasRangeVertical) {
+								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
+								if(option.hasRangeHorizontal && _typeof(option.range[option.i].horizontal.from) == "number" && _typeof(option.range[option.i].horizontal.to) == "number") {
+									option.rangeFilter.push(true);
 								}else{
-									hash = "";
+									option.rangeFilter.push(false);
 								}
-							}
-
-							if(!data.to.length) {
-								data.to = $(href).first();
-							}
-						}
-						
-						var toType = _typeof(data.to);
-
-						if(toType == "string") {
-							data.to = $(data.to).first();
-							console.log(data.to);
-							data.to = data.to[data.type]()[data.direction];
-						}else if(toType != "number") {
-							data.to = 0;
-						}
-
-	console.log(data.to);
-						/*if(!$target.is(":animated")) {
-							$target.animate({
-								["scroll" + data.direction.charAt(0).toUpperCase() + data.direction.slice(1)] : data.to
-							}, {
-								duration : data.duration,
-								easing : data.easing,
-								done : function() {
-									if(tabindex) {
-										$this.focus();
-									}else{
-										$this.attr("tabindex", -1);
-										$this.focus();
-										$this.removeAttr("tabindex");
+								
+								//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
+								if(option.hasRangeVertical && _typeof(option.range[option.i].vertical.from) == "number" && _typeof(option.range[option.i].vertical.to) == "number") {
+									option.rangeFilter.push(true);
+								}else{
+									option.rangeFilter.push(false);
+								}
+								
+								//horizontal이 객체이면서 from, to 프로퍼티가 숫자이거나 vertical이 객체이면서 from, to 프로퍼티가 숫자일때
+								if(option.rangeFilter[0] || option.rangeFilter[1]) {
+									option.rangeCode += "\tif(";
+									
+									//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
+									if(option.rangeFilter[0]) {
+										option.rangeCode += "_setting.screenWidth <= " + option.range[option.i].horizontal.from + " && _setting.screenWidth >= " + option.range[option.i].horizontal.to;
 									}
 									
-									window.location.hash = hash;
+									//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
+									if(option.rangeFilter[1]) {
+										//가로 객체가 있을경우
+										if(option.hasRangeHorizontal) {
+											option.rangeCode += " && ";
+										}
 
-									$this.triggerHandler($.Event("data:scroll", {
-										object : this
-									}));
+										option.rangeCode += "_setting.screenHeight <= " + option.range[option.i].vertical.from + " && _setting.screenHeight >= " + option.range[option.i].vertical.to;
+									}
+
+									option.rangeCode += ") {\n";
+									option.rangeCode += "\t\toption.enter.push(\"" + option.i + "\");\n";
+									option.rangeCode += "\t}else{\n";
+									option.rangeCode += "\t\t_setting.exit.push(\"" + option.i + "\");\n";
+									option.rangeCode += "\t}\n\n";
+
+									//프로퍼티명 기입
+									option.rangeProperty.push(option.i);
+								}else{
+									//프로퍼티 삭제
+									delete option.range[option.i];
 								}
-							});
-						}*/
 
-						event.preventDefault();
-					},
-
-
-					/**
-					 * @name absolute되어 있는객체 부모를 이용해 영역 잡기
-					 * @since 2017-12-18
-					 */
-					absoluteDomain : function(event) {
-						var $this = $(this).first(),
-							data = $this.data(),
-							css = {
-								display : $this.css("display"),
-								visibility : $this.css("visibility")
-							},
-							type = "Height",
-							$target = $this.getTarget(),
-							$link = $this.getTarget({
-								value : data.link	
-							});
-
-						//문자일때
-						if(_typeof(data.direction) == "string") {
-							data.direction = data.direction.toLowerCase();
-						}
-						
-						//4가지 방향 모두다 없을때
-						if(data.direction != "top" && data.direction != "right" && data.direction != "bottom" && data.direction != "left") {
-							data.direction = "bottom";
-						}
-						
-						//방향이 right 또는 left일때
-						if(data.direction == "right" || data.direction == "left") {
-							type = "Width";
-						}
-
-						//적용
-						if(css.display != "none" && css.visibility != "hidden") {
-							$target.css("padding-" + data.direction, $this["outer" + type](true));
-						}
-					},
-
-					show : function(event) {
-						var $this = $(this),
-							data = $this.data(),
-							className = (_typeOf(data.cls) == "string") ? data.cls : "active",
-							preventDefault = (_typeOf(data.prvtdft) == "boolean") ? data.prvtdft : false;
-						
-						//기본기능 초기화
-						if(preventDefault) {
-							event.preventDefault();
-						}
-
-						/*var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$group = $("[data-group='" + data.group + "']").not($this),
-							$classTargetGroup = $(), 
-							$target = $(data.target),
-							$targetGroup = $();
-
-						$group.each(function(index, element) {
-							var groupData = $(element).data();
-
-							$classTargetGroup = $classTargetGroup.add($(groupData.clsTarget));
-							$targetGroup = $targetGroup.add($(groupData.target));
-						});
-
-						if($classTarget.length) {
-							$classTargetGroup.removeClass(className);
-
-							$classTarget.addClass(className);
+								//초기화
+								option.rangeFilter = [];
+							}
 						}else{
-							$group.removeClass(className);
-							$targetGroup.removeClass(className);
-
-							$this.addClass(className);
-							$target.addClass(className);
+							//프로퍼티 삭제
+							delete option.range[option.i];
 						}
-							
-						event.preventDefault();*/
-					},
-
-					hide : function(event) {
-						var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$open = $(data.open),
-							$target = $(data.target);
-						
-						if($classTarget.length) {
-							$classTarget.removeClass(className);
-						}else{
-							$open.removeClass(className);
-							$target.removeClass(className);
-						}
-
-						event.preventDefault();
 					}
 
-					/*slideDown : function(event) {
-						var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$group = $("[data-group='" + data.group + "']").not($this),
-							$classTargetGroup = $(), 
-							$target = $(data.target),
-							$targetGroup = $(),
-							easing = data.easing || "swing",
-							duration = data.duration || 400;
+					option.rangeCode = option.rangeCode.replace(/\n$/, "");
+					option.rangeCode += "}";
+					_setting.range = option.range;
+					_setting.rangeProperty = option.rangeProperty;
+					//option.rangeCode작성 끝
 
-						$group.each(function(index, element) {
-							var groupData = $(element).data();
+					//필터링된 프로퍼티명에서 option.lowIE.property에 이름이 있는지 확인해서 없으면 제거
+					option.i = 0;
+					option.lowIEFilter = [];
 
-							$classTargetGroup = $classTargetGroup.add($(groupData.clsTarget));
-							$targetGroup = $targetGroup.add($(groupData.target));
-						});
-
-						if(!$target.is(":animated")) {
-							if($classTarget.length) {
-								$classTargetGroup.removeClass(className);
-
-								$classTarget.addClass(className);
-							}else{
-								$group.removeClass(className);
-								$targetGroup.removeClass(className);
-
-								$this.addClass(className);
-								$target.addClass(className);
-							}
-
-							$targetGroup.slideUp(duration, easing, function() {
-								$this.triggerHandler($.Event("data:slideDown", {
-									object : this,
-									state : "up"
-								}));
-							});
-
-							$target.slideDown(duration, easing, function() {
-								$this.triggerHandler($.Event("data:slideDown", {
-									object : this,
-									state : "down"
-								}));
-							});
+					for(; option.i < option.lowIE.property.length; option.i++) {
+						if($.inArray(option.lowIE.property[option.i], option.rangeProperty) > -1) {
+							option.lowIEFilter.push(option.lowIE.property[option.i]);
 						}
-
-						event.preventDefault();
-					},
+					}
 					
-					fadeIn : function(event) {
-						var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$group = $("[data-group='" + data.group + "']").not($this),
-							$classTargetGroup = $(), 
-							$target = $(data.target),
-							$targetGroup = $(),
-							easing = data.easing || "swing",
-							duration = data.duration || 400;
+					if(option.lowIEFilter.length) {
+						option.lowIE.run = false;
+					}else{
+						option.lowIE.run = true;
+					}
 
-						$group.each(function(index, element) {
-							var groupData = $(element).data();
+					_setting.lowIE.run = option.lowIE.run;
 
-							$classTargetGroup = $classTargetGroup.add($(groupData.clsTarget));
-							$targetGroup = $targetGroup.add($(groupData.target));
-						});
+					option.lowIE.property = option.lowIEFilter;
+					_setting.lowIE.property = option.lowIE.property;
 
-						if(!$target.is(":animated")) {
-							if($classTarget.length) {
-								$classTargetGroup.removeClass(className);
+					_$window.off("resize.responsive").on("resize.responsive", function(event) {
+						//화면정보 갱신
+						_setScreenInfo(event);
 
-								$classTarget.addClass(className);
+						//리사이즈 중
+						_setting.isResize = true;
+
+						//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 같은지 확인
+						if(_setting.screenWidth != option.screenWidth) {
+							option.screenWidth = _setting.screenWidth;
+							_setting.isScreenWidthChange = true;
+						}
+
+						//기존의 스크린 높이와 새로부여받은 스크린 높이가 같은지 확인
+						if(_setting.screenHeight != option.screenHeight) {
+							option.screenHeight = _setting.screenHeight;
+							_setting.isScreenHeightChange = true;
+						}
+
+						//기존 스크린 넓이와 높이가 둘다 변경되었을때
+						if(_setting.isScreenWidthChange && _setting.isScreenHeightChange) {
+							_setting.isScreenWidthAndHeightChange = true;
+						}
+
+						//스크린의 넓이값 또는 세로값이 변경되었을때
+						if(_setting.isScreenWidthChange || _setting.isScreenHeightChange) {
+							_setting.isScreenChange = true;
+						}
+
+						//trigger로 호출하였을때
+						if(_setting.triggerType) {
+							_setting.isResize = false;
+							_setting.isScreenWidthChange = false;
+							_setting.isScreenHeightChange = false;
+							_setting.isScreenWidthAndHeightChange = false;
+							_setting.isScreenChange = false;
+						}
+
+						//스크린의 넓이 또는 높이가 변경되었거나 trigger로 호출하였을때
+						if(_setting.isScreenChange || _setting.triggerType) {
+							//전체범위 함수 호출
+							_callEvent("all");
+							
+							//범위실행
+							eval(option.rangeCode);
+
+							//상태적용, 이벤트 호출
+							if(option.enter.length) {
+								_setState(option.enter);
 							}else{
-								$group.removeClass(className);
-								$targetGroup.removeClass(className);
-
-								$this.addClass(className);
-								$target.addClass(className);
+								_setState("none");
 							}
 
-							$targetGroup.fadeOut(duration, easing, function() {
-								$this.triggerHandler($.Event("data:fadeOut", {
-									object : this,
-									state : "out"
-								}));
-							});
-
-							$target.fadeIn(duration, easing, function() {
-								$this.triggerHandler($.Event("data:fadeIn", {
-									object : this,
-									state : "in"
-								}));
-							});
-						}
-
-						event.preventDefault();
-					},
-
-					slideUp : function(event) {
-						var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$open = $(data.open),
-							$target = $(data.target),
-							easing = data.easing || "swing",
-							duration = data.duration || 400;
-
-						if(!$target.is(":animated")) {
-							if($classTarget.length) {
-								$classTarget.removeClass(className);
-							}else{
-								$open.removeClass(className);
-								$target.removeClass(className);
+							//돌던 setTimeout이 있으면 중단
+							if(option.timer) {
+								clearTimeout(option.timer);
+								option.timer = 0;
 							}
+							
+							//setTimeout 재등록
+							option.timer = setTimeout(function() {
+								//화면정보 갱신
+								_setScreenInfo(event);
 
-							$target.slideUp(duration, easing, function() {
-								$this.triggerHandler($.Event("data:slideUp", {
-									object : this
-								}));
-							});
+								//전체범위 함수 호출
+								_callEvent("allResized");
+
+								//상태적용, 이벤트 호출
+								if(option.enter.length) {
+									_callEvent((option.enter.join("AllResized, ") + "AllResized").split(", "));
+								}else{
+									_callEvent("noneAllResized");
+								}
+								
+								//트리거 갱신
+								if(_setting.triggerType) {
+									_setting.triggerType = "";
+									$.responsive.setting = _freeObject(_setting);
+								}
+							}, option.interval);
 						}
+					}).triggerHandler("resize.responsive");
 
-						event.preventDefault();
-					},
-					
-					fadeOut : function(event) {
-						var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$open = $(data.open),
-							$target = $(data.target),
-							easing = data.easing || "swing",
-							duration = data.duration || 400;
-
-						if(!$target.is(":animated")) {
-							if($classTarget.length) {
-								$classTarget.removeClass(className);
-							}else{
-								$open.removeClass(className);
-								$target.removeClass(className);
-							}
-
-							$target.slideUp(duration, easing, function() {
-								$this.triggerHandler($.Event("data:fadeOut", {
-									object : this
-								}));
-							});
-						}
-
-						event.preventDefault();
-					},
-
-					toggle : function(event) {					
-						var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$group = $("[data-group='" + data.group + "']").not($this),
-							$classTargetGroup = $(), 
-							$target = $(data.target),
-							$targetGroup = $();
-
-						$group.each(function(index, element) {
-							var groupData = $(element).data();
-
-							$classTargetGroup = $classTargetGroup.add($(groupData.clsTarget));
-							$targetGroup = $targetGroup.add($(groupData.target));
-						});
-
-						if($classTarget.length) {
-							$classTargetGroup.removeClass(className);
-
-							$classTarget.toggleClass(className);
-						}else{
-							$group.removeClass(className);
-							$targetGroup.removeClass(className);
-
-							$this.toggleClass(className);
-							$target.toggleClass(className);
-						}
-
-						event.preventDefault();
-					},
-
-					slideToggle : function(event) {
-						var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$group = $("[data-group='" + data.group + "']").not($this),
-							$classTargetGroup = $(), 
-							$target = $(data.target),
-							$targetGroup = $(),
-							easing = data.easing || "swing",
-							duration = data.duration || 400;
-						
-						$group.each(function(index, element) {
-							var groupData = $(element).data();
-
-							$classTargetGroup = $classTargetGroup.add($(groupData.clsTarget));
-							$targetGroup = $targetGroup.add($(groupData.target));
-						});
-
-						if(!$target.is(":animated")) {
-							if($classTarget.length) {
-								$classTargetGroup.removeClass(className);
-
-								$classTarget.toggleClass(className);
-							}else{
-								$group.removeClass(className);
-								$targetGroup.removeClass(className);
-
-								$this.toggleClass(className);
-								$target.toggleClass(className);
-							}
-
-							$targetGroup.slideUp(duration, easing, function() {
-								$this.triggerHandler($.Event("data:slideToggle", {
-									object : this,
-									state : "up"
-								}));
-							});
-
-							$target.slideToggle(duration, easing, function() {
-								$this.triggerHandler($.Event("data:slideToggle", {
-									object : this,
-									state : (this.style.display == "block") ? "down" : "up"
-								}));
-							});
-						}
-
-						event.preventDefault();
-					},
-
-					fadeToggle : function(event) {
-						var $this = $(this),
-							data = $this.data(),
-							className = data.cls || "active",
-							$classTarget = $(data.clsTarget),
-							$group = $("[data-group='" + data.group + "']").not($this),
-							$classTargetGroup = $(), 
-							$target = $(data.target),
-							$targetGroup = $(),
-							easing = data.easing || "swing",
-							duration = data.duration || 400;
-
-						$group.each(function(index, element) {
-							var groupData = $(element).data();
-
-							$classTargetGroup = $classTargetGroup.add($(groupData.clsTarget));
-							$targetGroup = $targetGroup.add($(groupData.target));
-						});
-
-						if(!$target.is(":animated")) {
-							if($classTarget.length) {
-								$classTargetGroup.removeClass(className);
-
-								$classTarget.toggleClass(className);
-							}else{
-								$group.removeClass(className);
-								$targetGroup.removeClass(className);
-
-								$this.toggleClass(className);
-								$target.toggleClass(className);
-							}
-
-							$targetGroup.fadeOut(duration, easing, function() {
-								$this.triggerHandler($.Event("data:fadeToggle", {
-									object : this,
-									state : "out"
-								}));
-							});
-
-							$target.fadeToggle(duration, easing, function() {
-								$this.triggerHandler($.Event("data:fadeToggle", {
-									object : this,
-									state : (this.style.display == "block") ? "in" : "out"
-								}));
-							});
-						}
-
-						event.preventDefault();
-					},
-					*/
+					//객체 반환
+					return _$target;
 				};
 
-				//data-event라는 속성을 가진 객체에게 이벤트 부여
-				$("[data-event]").each(function(index, element) {
-					element = $(element);
-
-					var $this = element,
-						data = $this.data(),
-						triggerType = _typeof(data.trigger);
-
-					//문자일 때
-					if(_typeof(data.event) == "string") {
-						data.event = data.event.split("/");
-					}else{
-						data.event = [];
-					}
-				
-					//문자일 때
-					if(_typeof(data.i) == "string") {
-						data.i = data.i.split("/");
-					}else{
-						data.i = [];
+				/**
+				 * @name 반응형 플러그인 소멸
+				 * @since 2017-12-06
+				 * @return {boolean}
+				 */
+				$.responsive.destroy = function() {
+					var result = false;
+					
+					//플러그인을 실행중일때
+					if(_setting.isRun) {
+						_$window.off("resize.responsive");
+						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" ") + " " + _setting.orientation + " " + _setting.inheritClass.property.join(" "));
+						$("body > #responsive_scrollbar").remove();
+						this.setting = _freeObject(_initialSetting);
+						result = true;
+						_setting.isRun = false;
 					}
 
-					//문자 또는 불린일 때
-					if(triggerType == "string" || triggerType == "boolean") {
-						data.trigger = data.trigger.toString().split("/");
-					}else{
-						data.trigger = [];
-					}
+					return result;
+				};
 
-					//문자일 때
-					if(_typeof(data.fn) == "string") {
-						data.fn = data.fn.split("/");
-					}else{
-						data.fn = [];
-					}
-
-					for(var i = 0; i < data.event.length; i++) {
-						//온점 단위로 쪼개기
-						data.event[i] = data.event[i].split(".");
-
-						//네임스페이스가 없을때
-						if(!data.event[i][1]) {
-							data.event[i][1] = "dataEvent" + count;
-							count++;
-						}
-
-						//결합
-						data.event[i] = data.event[i][0] + "." + data.event[i][1];
-						
-						//함수 존재확인
-						if($.dataEvent[data.fn[i]]) {
-							//this조정
-							if(data.i[i]) {
-								$this = $this.getTarget({
-									value : data.i[i]
-								});
-
-								if(!$this.length) {
-									$this = element;
-								}
-							}
-
-							//대리인 유지해서 이벤트 등록
-							$this.on(data.event[i], $.proxy($.dataEvent[data.fn[i]], element.add($this).get()));
-							
-							//트리거 실행
-							if(data.trigger[i] == "true") {
-								$this.triggerHandler(data.event[i]);
-							}
-						}
-					}
-				});
+				//전역객체
+				$.responsive.setting = _freeObject(_initialSetting);
 			});
 		})(jQuery);
 	}else{
