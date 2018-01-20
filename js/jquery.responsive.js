@@ -467,9 +467,9 @@ try {
 				 * @return {array}
 				 */
 				function _callEvent(state) {
-					var event = {
-						setting : _freeObject(_setting)
-					};
+					var event = $.Event("responsive", {
+									setting : _freeObject(_setting)
+								});
 
 					//중복제거
 					state = _removeDuplicate(state);
@@ -482,10 +482,11 @@ try {
 						event.state = state[i];
 
 						//모든 이벤트 호출
-						_$window.triggerHandler($.Event("responsive", event));
+						_$window.triggerHandler(event);
 
 						//필터 이벤트 호출
-						_$window.triggerHandler($.Event("responsive:" + state[i], event));
+						event.type = "responsive:" + state[i];
+						_$window.triggerHandler(event);
 					}
 
 					return state;
