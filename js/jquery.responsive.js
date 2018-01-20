@@ -146,6 +146,10 @@ try {
 				}else if(typeof variable === "number" && isNaN(variable)) {
 					result = "NaN";
 				
+				//document일때
+				}else if(result.substr(-8) === "document") {
+					result = "document";
+
 				//dom요소일때
 				}else if(result.substr(-7) === "element") {
 					result = "element";
