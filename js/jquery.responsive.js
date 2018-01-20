@@ -147,12 +147,12 @@ try {
 					result = "NaN";
 				
 				//dom요소일때
-				}else if(result.substr(-7) === "element") {
+				}else if(result.substr(-7) == "element") {
 					result = "element";
 
 				//제이쿼리 객체일때
 				}else if(typeof variable === "object" && variable.jquery) {
-					result = "jquery";
+					result = "jquery element";
 				}
 
 				return result;
