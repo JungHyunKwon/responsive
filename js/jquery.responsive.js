@@ -143,7 +143,7 @@ try {
 					result = "undefined";
 				
 				//Infinity일때(숫자로 처리되서 따로 처리함)
-				}else if(variable === Infinity) {
+				}else if(typeof variable === "number" && !isFinite(variable)) {
 					result = "Infinity";
 
 				//NaN일때(숫자로 처리되서 따로 처리함)
@@ -158,9 +158,9 @@ try {
 				}else if(result.substr(-7) === "element") {
 					result = "element";
 
-				//제이쿼리 엘리먼트일때
-				}else if(typeof variable === "object" && variable.jquery) {
-					result = "jqueryElement";
+				//제이쿼리 객체일때
+				}else if(typeof window.jQuery === "function" && variable instanceof window.jQuery) {
+					result = "jqueryObject";
 				}
 
 				return result;
