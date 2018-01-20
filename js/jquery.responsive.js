@@ -239,11 +239,9 @@ try {
 				var result = [],
 					nameType = _typeof(name);
 				
-				//문자 || 숫자 || 불린일때
-				if(nameType == "string" || nameType == "number" || nameType == "boolean") {
+				//배열이 아닐때
+				if(nameType != "array") {
 					name = $.makeArray(name);
-				}else if(nameType != "array") {
-					name = [];
 				}
 
 				for(var i = 0; i < name.length; i++) {
@@ -255,7 +253,7 @@ try {
 
 				return result;
 			}
-
+			
 			$(function() {
 				var _$target = $("body"),
 					_initialSetting = _getDefaultObject();
