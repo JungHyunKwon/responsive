@@ -152,7 +152,7 @@ try {
 
 				//제이쿼리 객체일때
 				}else if(typeof variable === "object" && variable.jquery) {
-					result = "jquery element";
+					result = "jqueryElement";
 				}
 
 				return result;
