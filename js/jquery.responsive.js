@@ -136,7 +136,7 @@ try {
 			 * @return {string}
 			 */
 			function _typeof(variable) {
-				var result;
+				var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
 				
 				//undefined일때(ie7, ie8에서 찾지 못함)
 				if(variable === undefined) {
@@ -146,11 +146,13 @@ try {
 				}else if(typeof variable === "number" && isNaN(variable)) {
 					result = "NaN";
 				
+				//dom요소일때
+				}else if(result.substr(-7) === "element") {
+					result = "element";
+
 				//제이쿼리 객체일때
 				}else if(typeof variable === "object" && variable.jquery) {
 					result = "jquery";
-				}else{
-					result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
 				}
 
 				return result;
