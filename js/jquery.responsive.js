@@ -236,11 +236,10 @@ try {
 			 * @return {array}
 			 */
 			function _removeDuplicate(name) {
-				var result = [],
-					nameType = _typeof(name);
+				var result = [];
 				
 				//배열이 아닐때
-				if(nameType != "array") {
+				if(_typeof(name) != "array") {
 					name = $.makeArray(name);
 				}
 
