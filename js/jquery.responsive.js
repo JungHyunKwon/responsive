@@ -142,6 +142,10 @@ try {
 				if(variable === undefined) {
 					result = "undefined";
 				
+				//Infinity일때(숫자로 처리되서 따로 처리함)
+				}else if(variable === Infinity) {
+					result = "Infinity";
+
 				//NaN일때(숫자로 처리되서 따로 처리함)
 				}else if(typeof variable === "number" && isNaN(variable)) {
 					result = "NaN";
