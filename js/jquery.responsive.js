@@ -137,7 +137,7 @@ try {
 			 */
 			function _typeof(variable) {
 				var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
-				
+
 				//undefined일때(ie7, ie8에서 찾지 못함)
 				if(variable === undefined) {
 					result = "undefined";
@@ -161,6 +161,14 @@ try {
 				//제이쿼리 객체일때
 				}else if(typeof window.jQuery === "function" && variable instanceof window.jQuery) {
 					result = "jqueryObject";
+				
+				//Invalid Date일때
+				}else if(result === "date" && isNaN(new Date(variable))) {
+					result = "Invalid Date";
+				
+				//class일때
+				}else if(result === "function" && /^class\s/.test(Function.prototype.toString.call(variable))) {
+					result = "class";
 				}
 
 				return result;
