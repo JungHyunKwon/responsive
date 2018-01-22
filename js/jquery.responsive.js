@@ -130,7 +130,7 @@ try {
 				_setting = {};
 
 			/**
-			 * @name 문자열 형태 변환
+			 * @name 변수형태
 			 * @since 2017-12-18
 			 * @param {*} value
 			 * @return {string}
