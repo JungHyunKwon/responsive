@@ -160,7 +160,21 @@ try {
 
 				//제이쿼리 객체일때
 				}else if(typeof window.jQuery === "function" && value instanceof window.jQuery) {
-					result = "jqueryObject";
+					var count = 0;
+
+					for(var i in value) {
+						var iType = _typeof(value[i]);
+
+						if((iType === "window" || iType === "document" || iType === "element") && !isNaN(Number(i))) {
+							count++;
+						}
+					}
+
+					if(value.length && value.length === count) {
+						result = "jqueryElement";
+					}else{
+						result = "jqueryObject";
+					}
 				
 				//Invalid Date일때
 				}else if(result === "date" && isNaN(new Date(value))) {
