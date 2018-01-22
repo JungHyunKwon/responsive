@@ -143,11 +143,11 @@ try {
 					result = "undefined";
 				
 				//Infinity일때(숫자로 처리되서 따로 처리함)
-				}else if(typeof variable === "number" && !isFinite(variable)) {
+				}else if(result === "number" && !isFinite(variable)) {
 					result = "Infinity";
 
 				//NaN일때(숫자로 처리되서 따로 처리함)
-				}else if(typeof variable === "number" && isNaN(variable)) {
+				}else if(result === "number" && isNaN(variable)) {
 					result = "NaN";
 				
 				//document일때
