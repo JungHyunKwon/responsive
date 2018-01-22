@@ -131,8 +131,8 @@ try {
 
 			/**
 			 * @name 문자열 형태 변환
-			 * @param {*} value
 			 * @since 2017-12-18
+			 * @param {*} value
 			 * @return {string}
 			 */
 			function _typeof(value) {
