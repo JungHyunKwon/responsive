@@ -171,9 +171,9 @@ try {
 					}
 
 					if(value.length && value.length === count) {
-						result = "jqueryElement";
+						result = "jQueryElement";
 					}else{
-						result = "jqueryObject";
+						result = "jQueryObject";
 					}
 				
 				//Invalid Date일때
