@@ -130,24 +130,24 @@ try {
 				_setting = {};
 
 			/**
-			 * @name 변수 형태
-			 * @param {*} variable
+			 * @name 문자열 형태 변환
+			 * @param {*} value
 			 * @since 2017-12-18
 			 * @return {string}
 			 */
-			function _typeof(variable) {
-				var result = Object.prototype.toString.call(variable).toLowerCase().replace("[object ", "").replace("]", "");
+			function _typeof(value) {
+				var result = Object.prototype.toString.call(value).toLowerCase().replace("[object ", "").replace("]", "");
 
 				//undefined일때(ie7, ie8에서 찾지 못함)
-				if(variable === undefined) {
+				if(value === undefined) {
 					result = "undefined";
 				
 				//Infinity일때(숫자로 처리되서 따로 처리함)
-				}else if(result === "number" && !isFinite(variable)) {
+				}else if(result === "number" && !isFinite(value)) {
 					result = "Infinity";
 
 				//NaN일때(숫자로 처리되서 따로 처리함)
-				}else if(result === "number" && isNaN(variable)) {
+				}else if(result === "number" && isNaN(value)) {
 					result = "NaN";
 				
 				//document일때
@@ -159,15 +159,15 @@ try {
 					result = "element";
 
 				//제이쿼리 객체일때
-				}else if(typeof window.jQuery === "function" && variable instanceof window.jQuery) {
+				}else if(typeof window.jQuery === "function" && value instanceof window.jQuery) {
 					result = "jqueryObject";
 				
 				//Invalid Date일때
-				}else if(result === "date" && isNaN(new Date(variable))) {
+				}else if(result === "date" && isNaN(new Date(value))) {
 					result = "Invalid Date";
 				
 				//class일때
-				}else if(result === "function" && /^class\s/.test(Function.prototype.toString.call(variable))) {
+				}else if(result === "function" && /^class\s/.test(Function.prototype.toString.call(value))) {
 					result = "class";
 				}
 
