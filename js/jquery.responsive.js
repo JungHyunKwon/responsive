@@ -138,51 +138,55 @@ try {
 			function _typeof(value) {
 				var result = Object.prototype.toString.call(value).toLowerCase().replace("[object ", "").replace("]", "");
 
-				//undefined일때(ie7, ie8에서 찾지 못함)
-				if(value === undefined) {
-					result = "undefined";
-				
-				//NaN일때(숫자로 처리되서 따로 처리함)
-				}else if(result === "number" && isNaN(value)) {
-					result = "NaN";
-				
-				//Infinity일때(숫자로 처리되서 따로 처리함)
-				}else if(result === "number" && !isFinite(value)) {
-					result = "Infinity";
+				if(arguments.length) {
+					//undefined일때(ie7, ie8에서 찾지 못함)
+					if(value === undefined) {
+						result = "undefined";
+					
+					//NaN일때(숫자로 처리되서 따로 처리함)
+					}else if(result === "number" && isNaN(value)) {
+						result = "NaN";
+					
+					//Infinity일때(숫자로 처리되서 따로 처리함)
+					}else if(result === "number" && !isFinite(value)) {
+						result = "Infinity";
 
-				//document일때
-				}else if(result.substr(-8) === "document") {
-					result = "document";
+					//document일때
+					}else if(result.substr(-8) === "document") {
+						result = "document";
 
-				//엘리먼트일때
-				}else if(result.substr(-7) === "element") {
-					result = "element";
+					//엘리먼트일때
+					}else if(result.substr(-7) === "element") {
+						result = "element";
 
-				//제이쿼리 객체일때
-				}else if(typeof window.jQuery === "function" && value instanceof window.jQuery) {
-					var count = 0;
+					//제이쿼리 객체일때
+					}else if(typeof window.jQuery === "function" && value instanceof window.jQuery) {
+						var count = 0;
 
-					for(var i in value) {
-						var iType = _typeof(value[i]);
+						for(var i in value) {
+							var iType = _typeof(value[i]);
 
-						if((iType === "window" || iType === "document" || iType === "element") && !isNaN(Number(i))) {
-							count++;
+							if((iType === "window" || iType === "document" || iType === "element") && !isNaN(Number(i))) {
+								count++;
+							}
 						}
-					}
 
-					if(value.length && value.length === count) {
-						result = "jQueryElement";
-					}else{
-						result = "jQueryObject";
+						if(value.length && value.length === count) {
+							result = "jQueryElement";
+						}else{
+							result = "jQueryObject";
+						}
+					
+					//Invalid Date일때
+					}else if(result === "date" && isNaN(new Date(value))) {
+						result = "Invalid Date";
+					
+					//class일때
+					}else if(result === "function" && /^class\s/.test(Function.prototype.toString.call(value))) {
+						result = "class";
 					}
-				
-				//Invalid Date일때
-				}else if(result === "date" && isNaN(new Date(value))) {
-					result = "Invalid Date";
-				
-				//class일때
-				}else if(result === "function" && /^class\s/.test(Function.prototype.toString.call(value))) {
-					result = "class";
+				}else{
+					result = "value 매개변수가 없습니다.";
 				}
 
 				return result;
