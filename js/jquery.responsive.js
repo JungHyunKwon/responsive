@@ -10,10 +10,8 @@ try {
 	 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
 	 * @since 2017-10-11
 	 */
-	this.console = this.console || undefined;
-
-	if(!console) {
-		console = {
+	if(!window.console) {
+		window.console = {
 			method : ["assert",
 					   "clear",
 					   "count",
@@ -40,8 +38,8 @@ try {
 		};
 
 		for(var i = 0; i < console.method.length; i++) {
-			if(!console[console.method[i]]) {
-				console[console.method[i]] = function(comment) {
+			if(!window.console[window.console.method[i]]) {
+				window.console[window.console.method[i]] = function(comment) {
 					this.comment.push(comment);
 				};
 			}
@@ -52,7 +50,7 @@ try {
 	 * @name JSON psrse, stringify
 	 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
 	 */
-	this.JSON = this.JSON || {
+	window.JSON = window.JSON || {
 		parse : function(sJSON) {
 			var result;
 
@@ -120,9 +118,7 @@ try {
 	};
 
 	//제이쿼리가 있는지 확인
-	this.jQuery = this.jQuery || undefined;
-
-	if(jQuery) {
+	if(window.jQuery) {
 		//$ 중첩 방지
 		(function($) {
 			var _$window = $(window),
