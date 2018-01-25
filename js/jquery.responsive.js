@@ -136,9 +136,11 @@ try {
 			 * @return {string}
 			 */
 			function _typeof(value) {
-				var result = Object.prototype.toString.call(value).toLowerCase().replace("[object ", "").replace("]", "");
+				var result = "none";
 
 				if(arguments.length) {
+					result = Object.prototype.toString.call(value).toLowerCase().replace("[object ", "").replace("]", "");
+
 					//undefined일때(ie7, ie8에서 찾지 못함)
 					if(value === undefined) {
 						result = "undefined";
@@ -185,8 +187,6 @@ try {
 					}else if(result === "function" && /^class\s/.test(Function.prototype.toString.call(value))) {
 						result = "class";
 					}
-				}else{
-					result = "value 매개변수가 없습니다.";
 				}
 
 				return result;
