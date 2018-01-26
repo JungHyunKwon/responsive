@@ -57,7 +57,7 @@ try {
 			try {
 				result = eval("(" + sJSON + ")");
 			}catch(e) {
-				result = {};
+				result = sJSON;
 			}
 
 			return result;
