@@ -121,9 +121,9 @@ try {
 	if(window.jQuery) {
 		//$ 중첩 방지
 		(function($) {
-			var _$window = $(window),
-				_connectedState = _getConnectedState(),
-				_setting = {};
+			var $window = $(window),
+				connectedState = getConnectedState(),
+				setting = {};
 
 			/**
 			 * @name 변수형태
@@ -131,9 +131,10 @@ try {
 			 * @param {*} value
 			 * @return {string}
 			 */
-			function _typeof(value) {
+			function getTypeof(value) {
 				var result = "none";
-
+				
+				//매개변수가 있을때
 				if(arguments.length) {
 					result = Object.prototype.toString.call(value).toLowerCase().replace("[object ", "").replace("]", "");
 
@@ -162,7 +163,7 @@ try {
 						var count = 0;
 
 						for(var i in value) {
-							var iType = _typeof(value[i]);
+							var iType = getTypeof(value[i]);
 
 							if((iType === "window" || iType === "document" || iType === "element") && !isNaN(Number(i))) {
 								count++;
@@ -194,11 +195,11 @@ try {
 			 * @param {object} object
 			 * @return {object}
 			 */
-			function _freeObject(object) {
+			function freeObject(object) {
 				var result = {};
 				
 				//객체일때
-				if(_typeof(object) == "object") {
+				if(getTypeof(object) == "object") {
 					result = JSON.parse(JSON.stringify(object));
 				}
 
@@ -210,11 +211,11 @@ try {
 			 * @since 2017-12-06
 			 * @return {object}
 			 */
-			function _getConnectedState() {
+			function getConnectedState() {
 				var userAgent = navigator.userAgent.toLowerCase(),
 					platform = navigator.platform.toLowerCase(),
 					platformCase = ["win16", "win32", "win64", "mac", "linux"],
-					result = {browser : "", platform : ""};
+					result = {};
 
 				if(userAgent.indexOf("msie 7.0") > -1) {
 					result.browser = "ie7";
@@ -257,11 +258,11 @@ try {
 			 * @param {array || string} name
 			 * @return {array}
 			 */
-			function _removeDuplicate(name) {
+			function removeDuplicate(name) {
 				var result = [];
 				
 				//배열이 아닐때
-				if(_typeof(name) != "array") {
+				if(getTypeof(name) != "array") {
 					name = $.makeArray(name);
 				}
 
@@ -276,8 +277,8 @@ try {
 			}
 			
 			$(function() {
-				var _$target = $("body"),
-					_initialSetting = _getDefaultObject();
+				var $target = $("body"),
+					initialSetting = getDefaultObject();
 
 				/**
 				 * @name 스크롤바 존재여부
@@ -285,7 +286,7 @@ try {
 				 * @param {object} object
 				 * @return {object}
 				 */
-				function _hasScrollbar(object) {
+				function hasScrollbar(object) {
 					var $this = $(object).first(),
 						$target = $this.add($this.parents()),
 						horizontal = [],
@@ -332,7 +333,7 @@ try {
 				 * @since 2017-12-06
 				 * @return {number}
 				 */
-				function _getScrollbarWidth() {
+				function getScrollbarWidth() {
 					var style = {
 							visibility : "hidden",
 							overflowX : "scroll",
@@ -351,7 +352,7 @@ try {
 					//스크롤바 객체가 있을때
 					if(!$scrollbar.length) {
 						$body.append("<div id=\"responsive_scrollbar\">&nbsp;</div>");
-						result = _getScrollbarWidth();
+						result = getScrollbarWidth();
 					}
 
 					return result;
@@ -362,46 +363,45 @@ try {
 				 * @since 2017-12-06
 				 * @return {object}
 				 */
-				function _getDefaultObject() {
-					var hasScrollbar = _hasScrollbar(_$target[0]),
-						scrollbarWidth = _getScrollbarWidth(),
-						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
-						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height(),
-						result = {
-							isRun : false,
-							range : {},
-							rangeProperty : [],
-							exit : [],
-							lowIE : {
-								is : _connectedState.browser == "ie7" || _connectedState.browser == "ie8",
-								property : [],
-								run : true
-							},
-							nowState : [],
-							prevState : [],
-							scrollbarWidth : scrollbarWidth,
-							orientation : (screenWidth == screenHeight) ? "square" : (screenWidth > screenHeight) ? "landscape" : "portrait",
-							screenWidth : screenWidth,
-							screenHeight : screenHeight,
-							loadedScreenWidth : screenWidth,
-							loadedScreenHeight : screenHeight,
-							browser : _connectedState.browser,
-							platform : _connectedState.platform,
-							hasVerticalScrollbar : hasScrollbar.vertical,
-							hasHorizontalScrollbar : hasScrollbar.horizontal,
-							isResize : false,
-							triggerType : "",
-							isScreenChange : false,
- 							isScreenWidthChange : false,
- 							isScreenHeightChange : false,
- 							isScreenWidthAndHeightChange : false,
-							inheritClass : {
-								property : [],
-								is : false	
-							}
-						};
+				function getDefaultObject() {
+					var scrollbar = hasScrollbar($target[0]),
+						scrollbarWidth = getScrollbarWidth(),
+						screenWidth = (scrollbar.vertical) ? $window.width() + scrollbarWidth : $window.width(),
+						screenHeight = (scrollbar.horizontal) ? $window.height() + scrollbarWidth : $window.height();
 
-					return _freeObject(result);
+					return freeObject({
+						isRun : false,
+						range : {},
+						rangeProperty : [],
+						exit : [],
+						lowIE : {
+							is : connectedState.browser == "ie7" || connectedState.browser == "ie8",
+							property : [],
+							run : true
+						},
+						nowState : [],
+						prevState : [],
+						scrollbarWidth : scrollbarWidth,
+						orientation : (screenWidth == screenHeight) ? "square" : (screenWidth > screenHeight) ? "landscape" : "portrait",
+						screenWidth : screenWidth,
+						screenHeight : screenHeight,
+						loadedScreenWidth : screenWidth,
+						loadedScreenHeight : screenHeight,
+						browser : connectedState.browser,
+						platform : connectedState.platform,
+						hasVerticalScrollbar : scrollbar.vertical,
+						hasHorizontalScrollbar : scrollbar.horizontal,
+						isResize : false,
+						triggerType : "",
+						isScreenChange : false,
+						isScreenWidthChange : false,
+						isScreenHeightChange : false,
+						isScreenWidthAndHeightChange : false,
+						inheritClass : {
+							property : [],
+							is : false	
+						}
+					});
 				}
 
 				/**
@@ -410,7 +410,7 @@ try {
 				 * @param {array[string] || string} state
 				 * @return {boolean}
 				 */
-				function _setState(state) {
+				function setState(state) {
 					var result = false,
 						setState = [],
 						nowState = [],
@@ -418,11 +418,11 @@ try {
 						i;
 
 					//중복제거
-					state = _removeDuplicate(state);
+					state = removeDuplicate(state);
 
 					for(i = 0; i < state.length; i++) {
 						//적용시킬 상태가 있을때
-						if($.inArray(state[i], _setting.nowState) == -1) {
+						if($.inArray(state[i], setting.nowState) == -1) {
 							setState.push(state[i]);
 						}else{
 							nowState.push(state[i]);
@@ -430,54 +430,54 @@ try {
 					}
 
 					//적용시킬 상태가 있을때
-					if(setState.length || nowState.length != _setting.nowState.length) {
+					if(setState.length || nowState.length != setting.nowState.length) {
 						result = true;
 					}
 
 					if(result) {
 						//현재상태 클래스 제거
-						_$target.removeClass(_setting.nowState.join(" "));
+						$target.removeClass(setting.nowState.join(" "));
 
 						//새로운상태 클래스 추가
-						_$target.addClass(state.join(" "));
+						$target.addClass(state.join(" "));
 
 						//이전상태 추가
-						_setting.prevState = _setting.nowState;
+						setting.prevState = setting.nowState;
 
 						//새로운상태 추가
-						_setting.nowState = state;
+						setting.nowState = state;
 
 						//클래스 상속 옵션을 허용했을 때
-						if(_setting.inheritClass.is) {
+						if(setting.inheritClass.is) {
 							//상속 클래스 초기화
-							_setting.inheritClass.property = [];
+							setting.inheritClass.property = [];
 
-							for(i = 0; i < $.inArray(_setting.nowState[_setting.nowState.length - 1], _setting.rangeProperty); i++) {
+							for(i = 0; i < $.inArray(setting.nowState[setting.nowState.length - 1], setting.rangeProperty); i++) {
 								//현재상태에 없을때
-								if($.inArray(_setting.rangeProperty[i], _setting.nowState) == -1) {
+								if($.inArray(setting.rangeProperty[i], setting.nowState) == -1) {
 									//객체에 해당 클래스가 없을때
-									if(!_$target.hasClass(_setting.rangeProperty[i])) {
-										inheritClass.push(_setting.rangeProperty[i]);
+									if(!$target.hasClass(setting.rangeProperty[i])) {
+										inheritClass.push(setting.rangeProperty[i]);
 									}
 
-									_setting.inheritClass.property.push(_setting.rangeProperty[i]);
+									setting.inheritClass.property.push(setting.rangeProperty[i]);
 								}
 							}
 						}
 
 						//상속 클래스 추가
-						_$target.addClass(inheritClass.join(" "));
+						$target.addClass(inheritClass.join(" "));
 
 						//console에 상태표기
 						console.log("현재상태 : " + state.join(", "));
 					}
 
 					//함수실행
-					_callEvent((state.join("All, ") + "All").split(", "));
+					callEvent((state.join("All, ") + "All").split(", "));
 					
 					//위에서 처리하고나서 불러야 해서 따로 처리함
 					if(result) {
-						_callEvent(state);					
+						callEvent(state);					
 					}
 
 					return result;
@@ -489,13 +489,13 @@ try {
 				 * @param {array[string] || string} state
 				 * @return {array}
 				 */
-				function _callEvent(state) {
+				function callEvent(state) {
 					var event = $.Event("responsive", {
-									setting : _freeObject(_setting)
+									setting : freeObject(setting)
 								});
 
 					//중복제거
-					state = _removeDuplicate(state);
+					state = removeDuplicate(state);
 					
 					//전역객체 갱신
 					$.responsive.setting = event.setting;
@@ -505,11 +505,11 @@ try {
 						event.state = state[i];
 
 						//모든 이벤트 호출
-						_$window.triggerHandler(event);
+						$window.triggerHandler(event);
 
 						//필터 이벤트 호출
 						event.type = "responsive:" + state[i];
-						_$window.triggerHandler(event);
+						$window.triggerHandler(event);
 					}
 
 					return state;
@@ -521,67 +521,67 @@ try {
 				 * @param {object} event
 				 * @return {object}
 				 */
-				function _setScreenInfo(event) {
-					var hasScrollbar = _hasScrollbar(_$target[0]);
+				function setScreenInfo(event) {
+					var scrollbar = hasScrollbar($target[0]);
 
 					//트리거
 					if(event.isTrigger == 2) {
-						_setting.triggerType = "triggerHandler";
+						setting.triggerType = "triggerHandler";
 					}else if(event.isTrigger == 3) {
-						_setting.triggerType = "trigger";
+						setting.triggerType = "trigger";
 					}else{
-						_setting.triggerType = "";
+						setting.triggerType = "";
 					}
 
 					//가로, 세로 스크롤바 확인
-					_setting.hasVerticalScrollbar = hasScrollbar.vertical;
-					_setting.hasHorizontalScrollbar = hasScrollbar.horizontal;
+					setting.hasVerticalScrollbar = scrollbar.vertical;
+					setting.hasHorizontalScrollbar = scrollbar.horizontal;
 					
 					//화면이 변경되었는지 확인하는 변수
-					_setting.isResize = false;
-					_setting.isScreenWidthChange = false;
-					_setting.isScreenHeightChange = false;
-					_setting.isScreenWidthAndHeightChange = false;
-					_setting.isScreenChange = false;
+					setting.isResize = false;
+					setting.isScreenWidthChange = false;
+					setting.isScreenHeightChange = false;
+					setting.isScreenWidthAndHeightChange = false;
+					setting.isScreenChange = false;
 
 					//스크롤바 넓이
-					_setting.scrollbarWidth = _getScrollbarWidth();
+					setting.scrollbarWidth = getScrollbarWidth();
 
 					//브라우저 스크롤바가 있을때
-					if(_setting.scrollbarWidth) {
-						_$target.addClass("scrollbar");
+					if(setting.scrollbarWidth) {
+						$target.addClass("scrollbar");
 					}else{
-						_$target.removeClass("scrollbar");
+						$target.removeClass("scrollbar");
 					}
 
 					//화면 넓이, 높이
-					_setting.screenWidth = _$window.width();
-					_setting.screenHeight = _$window.height();
+					setting.screenWidth = $window.width();
+					setting.screenHeight = $window.height();
 
 					//세로 스크롤바가 있을때
-					if(_setting.hasVerticalScrollbar) {
-						_setting.screenWidth += _setting.scrollbarWidth;
+					if(setting.hasVerticalScrollbar) {
+						setting.screenWidth += setting.scrollbarWidth;
 					}
 
 					//가로 스크롤바가 있을때
-					if(_setting.hasHorizontalScrollbar) {
-						_setting.screenHeight += _setting.scrollbarWidth;
+					if(setting.hasHorizontalScrollbar) {
+						setting.screenHeight += setting.scrollbarWidth;
 					}
 					
 					//방향
-					_$target.removeClass(_setting.orientation);
+					$target.removeClass(setting.orientation);
 
-					if(_setting.screenWidth == _setting.screenHeight) {
-						_setting.orientation = "square";
-					}else if(_setting.screenWidth > _setting.screenHeight) {
-						_setting.orientation = "landscape";
+					if(setting.screenWidth == setting.screenHeight) {
+						setting.orientation = "square";
+					}else if(setting.screenWidth > setting.screenHeight) {
+						setting.orientation = "landscape";
 					}else{
-						_setting.orientation = "portrait";
+						setting.orientation = "portrait";
 					}
 					
-					_$target.addClass(_setting.orientation);
+					$target.addClass(setting.orientation);
 
-					return _setting;
+					return setting;
 				}
 
 				/**
@@ -592,63 +592,63 @@ try {
 				 */
 				$.responsive = function(option) {
 					//현재상태가 있을경우
-					if(_setting.nowState && _setting.nowState.length) {
-						_$target.removeClass(_setting.nowState.join(" "));
+					if(setting.nowState && setting.nowState.length) {
+						$target.removeClass(setting.nowState.join(" "));
 					}
 
 					//상속된 클래스가 있을경우
-					if(_setting.inheritClass && _setting.inheritClass.property && _setting.inheritClass.property.length) {
-						_$target.removeClass(_setting.inheritClass.property.join(" "));
+					if(setting.inheritClass && setting.inheritClass.property && setting.inheritClass.property.length) {
+						$target.removeClass(setting.inheritClass.property.join(" "));
 					}
 
 					//기본객체
-					_setting = _getDefaultObject();
+					setting = getDefaultObject();
 
 					//실행등록
-					_setting.isRun = true;
+					setting.isRun = true;
 
 					//브라우저, 플랫폼 클래스 추가
-					_$target.addClass(_setting.browser + " " + _setting.platform);
+					$target.addClass(setting.browser + " " + setting.platform);
 					
 					//객체가 아닐때
-					if(_typeof(option) != "object") {
+					if(getTypeof(option) != "object") {
 						option = {};
 					}
 
 					//객체가 아닐때
-					if(_typeof(option.lowIE) != "object") {
+					if(getTypeof(option.lowIE) != "object") {
 						option.lowIE = {};
 					}
 
 					//option.lowIE.property 형태검사
-					option.lowIEPropertyType = _typeof(option.lowIE.property);
+					option.lowIEPropertyType = getTypeof(option.lowIE.property);
 					
 					//배열 또는 문자일때
 					if(option.lowIEPropertyType == "array" || option.lowIEPropertyType == "string") {
-						option.lowIE.property = _removeDuplicate(option.lowIE.property);
+						option.lowIE.property = removeDuplicate(option.lowIE.property);
 					}else{
 						option.lowIE.property = [];
 					}
 					
 					//불린이 아닐경우
-					if(_typeof(option.inheritClass) != "boolean") {
+					if(getTypeof(option.inheritClass) != "boolean") {
 						option.inheritClass = false;
 					}
 					
 					//클래스 상속여부
-					_setting.inheritClass.is = option.inheritClass;
+					setting.inheritClass.is = option.inheritClass;
 
 					//리사이즈 종료 간격
 					option.interval = 250;
 
 					//객체가 아닐때
-					if(_typeof(option.range) != "object") {
+					if(getTypeof(option.range) != "object") {
 						option.range = {};
 					}
 					
 					//option.range에 적은 값을 기준으로 자바스크립트 코드 생성
-					option.rangeCode = "option.enter = [];\n_setting.exit = [];\n\n";
-					option.rangeCode += "if(!_setting.lowIE.run && _setting.lowIE.is) {\n\toption.enter = _setting.lowIE.property;\n}else{\n";
+					option.rangeCode = "option.enter = [];\nsetting.exit = [];\n\n";
+					option.rangeCode += "if(!setting.lowIE.run && setting.lowIE.is) {\n\toption.enter = setting.lowIE.property;\n}else{\n";
 					option.rangeFilter = [];
 					option.rangeProperty = [];
 
@@ -656,20 +656,20 @@ try {
 						//필터링
 						if(option.i != "square" && option.i != "portrait" && option.i != "landscape" && option.i.substr(-3) != "All" && option.i.substr(-7) != "Resized" && option.i != "none" && option.i.substr(-3) != "all" && option.i != "mobile" && option.i != "pc" && option.i != "scrollbar" && option.i != "ie7" && option.i != "ie8" && option.i != "ie9" && option.i != "ie10" && option.i != "ie11" && option.i != "edge" && option.i != "opera" && option.i != "chrome" && option.i != "firefox" && option.i != "safari" && option.i != "unknown") {
 							//객체검사
-							option.hasRangeHorizontal = (_typeof(option.range[option.i].horizontal) == "object");
-							option.hasRangeVertical = (_typeof(option.range[option.i].vertical) == "object");
+							option.hasRangeHorizontal = (getTypeof(option.range[option.i].horizontal) == "object");
+							option.hasRangeVertical = (getTypeof(option.range[option.i].vertical) == "object");
 
 							//horizontal 또는 vertical이 객체일때
 							if(option.hasRangeHorizontal || option.hasRangeVertical) {
 								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeHorizontal && _typeof(option.range[option.i].horizontal.from) == "number" && _typeof(option.range[option.i].horizontal.to) == "number") {
+								if(option.hasRangeHorizontal && getTypeof(option.range[option.i].horizontal.from) == "number" && getTypeof(option.range[option.i].horizontal.to) == "number") {
 									option.rangeFilter.push(true);
 								}else{
 									option.rangeFilter.push(false);
 								}
 								
 								//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeVertical && _typeof(option.range[option.i].vertical.from) == "number" && _typeof(option.range[option.i].vertical.to) == "number") {
+								if(option.hasRangeVertical && getTypeof(option.range[option.i].vertical.from) == "number" && getTypeof(option.range[option.i].vertical.to) == "number") {
 									option.rangeFilter.push(true);
 								}else{
 									option.rangeFilter.push(false);
@@ -681,7 +681,7 @@ try {
 									
 									//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
 									if(option.rangeFilter[0]) {
-										option.rangeCode += "_setting.screenWidth <= " + option.range[option.i].horizontal.from + " && _setting.screenWidth >= " + option.range[option.i].horizontal.to;
+										option.rangeCode += "setting.screenWidth <= " + option.range[option.i].horizontal.from + " && setting.screenWidth >= " + option.range[option.i].horizontal.to;
 									}
 									
 									//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
@@ -691,13 +691,13 @@ try {
 											option.rangeCode += " && ";
 										}
 
-										option.rangeCode += "_setting.screenHeight <= " + option.range[option.i].vertical.from + " && _setting.screenHeight >= " + option.range[option.i].vertical.to;
+										option.rangeCode += "setting.screenHeight <= " + option.range[option.i].vertical.from + " && setting.screenHeight >= " + option.range[option.i].vertical.to;
 									}
 
 									option.rangeCode += ") {\n";
 									option.rangeCode += "\t\toption.enter.push(\"" + option.i + "\");\n";
 									option.rangeCode += "\t}else{\n";
-									option.rangeCode += "\t\t_setting.exit.push(\"" + option.i + "\");\n";
+									option.rangeCode += "\t\tsetting.exit.push(\"" + option.i + "\");\n";
 									option.rangeCode += "\t}\n\n";
 
 									//프로퍼티명 기입
@@ -718,8 +718,8 @@ try {
 
 					option.rangeCode = option.rangeCode.replace(/\n$/, "");
 					option.rangeCode += "}";
-					_setting.range = option.range;
-					_setting.rangeProperty = option.rangeProperty;
+					setting.range = option.range;
+					setting.rangeProperty = option.rangeProperty;
 					//option.rangeCode작성 끝
 
 					//필터링된 프로퍼티명에서 option.lowIE.property에 이름이 있는지 확인해서 없으면 제거
@@ -738,62 +738,62 @@ try {
 						option.lowIE.run = true;
 					}
 
-					_setting.lowIE.run = option.lowIE.run;
+					setting.lowIE.run = option.lowIE.run;
 
 					option.lowIE.property = option.lowIEFilter;
-					_setting.lowIE.property = option.lowIE.property;
+					setting.lowIE.property = option.lowIE.property;
 
-					_$window.off("resize.responsive").on("resize.responsive", function(event) {
+					$window.off("resize.responsive").on("resize.responsive", function(event) {
 						//화면정보 갱신
-						_setScreenInfo(event);
+						setScreenInfo(event);
 
 						//리사이즈 중
-						_setting.isResize = true;
+						setting.isResize = true;
 
 						//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 같은지 확인
-						if(_setting.screenWidth != option.screenWidth) {
-							option.screenWidth = _setting.screenWidth;
-							_setting.isScreenWidthChange = true;
+						if(setting.screenWidth != option.screenWidth) {
+							option.screenWidth = setting.screenWidth;
+							setting.isScreenWidthChange = true;
 						}
 
 						//기존의 스크린 높이와 새로부여받은 스크린 높이가 같은지 확인
-						if(_setting.screenHeight != option.screenHeight) {
-							option.screenHeight = _setting.screenHeight;
-							_setting.isScreenHeightChange = true;
+						if(setting.screenHeight != option.screenHeight) {
+							option.screenHeight = setting.screenHeight;
+							setting.isScreenHeightChange = true;
 						}
 
 						//기존 스크린 넓이와 높이가 둘다 변경되었을때
-						if(_setting.isScreenWidthChange && _setting.isScreenHeightChange) {
-							_setting.isScreenWidthAndHeightChange = true;
+						if(setting.isScreenWidthChange && setting.isScreenHeightChange) {
+							setting.isScreenWidthAndHeightChange = true;
 						}
 
 						//스크린의 넓이값 또는 세로값이 변경되었을때
-						if(_setting.isScreenWidthChange || _setting.isScreenHeightChange) {
-							_setting.isScreenChange = true;
+						if(setting.isScreenWidthChange || setting.isScreenHeightChange) {
+							setting.isScreenChange = true;
 						}
 
 						//trigger로 호출하였을때
-						if(_setting.triggerType) {
-							_setting.isResize = false;
-							_setting.isScreenWidthChange = false;
-							_setting.isScreenHeightChange = false;
-							_setting.isScreenWidthAndHeightChange = false;
-							_setting.isScreenChange = false;
+						if(setting.triggerType) {
+							setting.isResize = false;
+							setting.isScreenWidthChange = false;
+							setting.isScreenHeightChange = false;
+							setting.isScreenWidthAndHeightChange = false;
+							setting.isScreenChange = false;
 						}
 
 						//스크린의 넓이 또는 높이가 변경되었거나 trigger로 호출하였을때
-						if(_setting.isScreenChange || _setting.triggerType) {
+						if(setting.isScreenChange || setting.triggerType) {
 							//전체범위 함수 호출
-							_callEvent("all");
+							callEvent("all");
 							
 							//범위실행
 							eval(option.rangeCode);
 
 							//상태적용, 이벤트 호출
 							if(option.enter.length) {
-								_setState(option.enter);
+								setState(option.enter);
 							}else{
-								_setState("none");
+								setState("none");
 							}
 
 							//돌던 setTimeout이 있으면 중단
@@ -805,29 +805,29 @@ try {
 							//setTimeout 재등록
 							option.timer = setTimeout(function() {
 								//화면정보 갱신
-								_setScreenInfo(event);
+								setScreenInfo(event);
 
 								//전체범위 함수 호출
-								_callEvent("allResized");
+								callEvent("allResized");
 
 								//상태적용, 이벤트 호출
 								if(option.enter.length) {
-									_callEvent((option.enter.join("AllResized, ") + "AllResized").split(", "));
+									callEvent((option.enter.join("AllResized, ") + "AllResized").split(", "));
 								}else{
-									_callEvent("noneAllResized");
+									callEvent("noneAllResized");
 								}
 								
 								//트리거 갱신
-								if(_setting.triggerType) {
-									_setting.triggerType = "";
-									$.responsive.setting = _freeObject(_setting);
+								if(setting.triggerType) {
+									setting.triggerType = "";
+									$.responsive.setting = freeObject(setting);
 								}
 							}, option.interval);
 						}
 					}).triggerHandler("resize.responsive");
 
 					//객체 반환
-					return _$target;
+					return $target;
 				};
 
 				/**
@@ -839,20 +839,20 @@ try {
 					var result = false;
 					
 					//플러그인을 실행중일때
-					if(_setting.isRun) {
-						_$window.off("resize.responsive");
-						_$target.removeClass("scrollbar " + _setting.browser + " " + _setting.platform + " " + _setting.nowState.join(" ") + " " + _setting.orientation + " " + _setting.inheritClass.property.join(" "));
+					if(setting.isRun) {
+						$window.off("resize.responsive");
+						$target.removeClass("scrollbar " + setting.browser + " " + setting.platform + " " + setting.nowState.join(" ") + " " + setting.orientation + " " + setting.inheritClass.property.join(" "));
 						$("body > #responsive_scrollbar").remove();
-						this.setting = _freeObject(_initialSetting);
+						this.setting = freeObject(initialSetting);
 						result = true;
-						_setting.isRun = false;
+						setting.isRun = false;
 					}
 
 					return result;
 				};
 
 				//전역객체
-				$.responsive.setting = _freeObject(_initialSetting);
+				$.responsive.setting = freeObject(initialSetting);
 			});
 		})(jQuery);
 	}else{
