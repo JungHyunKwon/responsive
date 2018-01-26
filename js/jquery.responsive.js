@@ -438,6 +438,29 @@ try {
 						//현재상태 클래스 제거
 						$target.removeClass(setting.nowState.join(" "));
 
+						//클래스 상속 옵션을 허용했을 때
+						if(setting.inheritClass.is) {
+							//상속 클래스 제거
+							if(setting.inheritClass.property.length) {
+								$target.removeClass(setting.inheritClass.property.join(" "));
+							}
+
+							for(i = 0; i < $.inArray(state[state.length - 1], setting.rangeProperty); i++) {
+								//현재상태에 없을때
+								if($.inArray(setting.rangeProperty[i], state) == -1) {
+									inheritClass.push(setting.rangeProperty[i]);
+								}
+							}
+
+							//상속 클래스 추가
+							if(inheritClass.length) {
+								$target.addClass(inheritClass.join(" "));
+							}
+							
+							//상속된 프로퍼티명 추가
+							setting.inheritClass.property = inheritClass;
+						}
+
 						//새로운상태 클래스 추가
 						$target.addClass(state.join(" "));
 
@@ -446,27 +469,6 @@ try {
 
 						//새로운상태 추가
 						setting.nowState = state;
-
-						//클래스 상속 옵션을 허용했을 때
-						if(setting.inheritClass.is) {
-							//상속 클래스 초기화
-							setting.inheritClass.property = [];
-
-							for(i = 0; i < $.inArray(setting.nowState[setting.nowState.length - 1], setting.rangeProperty); i++) {
-								//현재상태에 없을때
-								if($.inArray(setting.rangeProperty[i], setting.nowState) == -1) {
-									//객체에 해당 클래스가 없을때
-									if(!$target.hasClass(setting.rangeProperty[i])) {
-										inheritClass.push(setting.rangeProperty[i]);
-									}
-
-									setting.inheritClass.property.push(setting.rangeProperty[i]);
-								}
-							}
-						}
-
-						//상속 클래스 추가
-						$target.addClass(inheritClass.join(" "));
 
 						//console에 상태표기
 						console.log("현재상태 : " + state.join(", "));
