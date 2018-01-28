@@ -31,13 +31,13 @@ $.responsive({
 	}
     },
     lowIE : {
-	property : ["web"]
+	property : ['web']
     },
     inheritClass : false
 });
 ````
 
-$(window).triggerHandler("resize.responsive");가 기본으로 되어있고 콘솔에 현재상태가 표기됩니다.
+$(window).triggerHandler('resize.responsive');가 기본으로 되어있고 콘솔에 현재상태가 표기됩니다.
 
 ### 옵션
 
@@ -106,7 +106,7 @@ ie7 또는 ie8에서의 옵션 입니다.
 
 ````
 lowIE : {
-    property : ["#"]
+    property : ['#']
 }
 ````
 
@@ -179,7 +179,7 @@ setting | object | $.responsive.setting과 같습니다.
 
 #### 기본
 ````
-$(window).on("responsive", function(event) {
+$(window).on('responsive', function(event) {
      console.log(event);
      console.log(event.state);
      console.log(event.setting);
@@ -188,7 +188,7 @@ $(window).on("responsive", function(event) {
 
 #### 필터
 ````
-$(window).on("responsive:#", function(event) {
+$(window).on('responsive:#', function(event) {
      console.log(event);
      console.log(event.state);
      console.log(event.setting);
