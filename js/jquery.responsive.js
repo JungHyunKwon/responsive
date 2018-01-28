@@ -271,11 +271,11 @@ try {
 							overflowX : 'scroll',
 							overflowY : 'scroll',
 							position : 'absolute',
-							top : '-100px',
-							left : '-100px',
+							top : -100,
+							left : -100,
 							zIndex : -1,
-							width : '100px',
-							height : '100px'
+							width : 100,
+							height : 100
 						},
 						$body = $('body'),
 						$scrollbar = $body.children('#responsive_scrollbar'),
@@ -425,14 +425,14 @@ try {
 				 */
 				function _callEvent(state) {
 					var event = $.Event('responsive', {
-						_setting : _copyObject(_setting)
+						setting : _copyObject(_setting)
 					});
 
 					//중복제거
 					state = _removeDuplicate(state);
 					
 					//전역객체 갱신
-					$.responsive.setting = event._setting;
+					$.responsive.setting = event.setting;
 
 					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
 						//분기값 적용
@@ -446,7 +446,7 @@ try {
 						_$window.triggerHandler(event);
 					}
 
-					return state;
+					return event;
 				}
 				
 				/**
