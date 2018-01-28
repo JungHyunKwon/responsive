@@ -123,10 +123,14 @@ try {
 			 * @name 객체 복사
 			 * @since 2017-12-06
 			 * @param {object} object
-			 * @return {object}
+			 * @return {*}
 			 */
-			function _copyObject(object) {
-				var result = $.extend(true, {}, object);
+			function copyObject(object) {
+				var result = object;
+
+				if(_getTypeof(result) === 'object') {
+					result = $.extend(true, {}, result);
+				}
 
 				return result;
 			}
