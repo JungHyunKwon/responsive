@@ -113,8 +113,21 @@ try {
 
 				for(var i = 0, consoleMethodLength = console.method.length; i < consoleMethodLength; i++) {
 					if(_getTypeof(window.console[window.console.method[i]]) !== 'function') {
-						window.console[window.console.method[i]] = function(comment) {
-							this.comment.push(comment);
+						window.console[window.console.method[i]] = function() {
+							var result,
+								argumentsLength = arguments.length;
+                        
+							if(argumentsLength > 1) {
+								result = [];
+
+								for(var i = 0; i < argumentsLength; i++) {
+									result.push(arguments[i]);
+								}
+							}else if(argumentsLength === 1) {
+								result = arguments[0];
+							}
+
+							return this.comment.push(result);
 						};
 					}
 				}
