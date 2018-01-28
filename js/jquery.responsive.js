@@ -144,7 +144,7 @@ try {
 			function _getConnectedState() {
 				var USER_AGENT = navigator.userAgent.toLowerCase(),
 					PLATFORM = navigator.platform.toLowerCase(),
-					PLATFORM_CASE = ['win16', 'win32', 'win64', 'mac', 'linux'],
+					platformCase = ['win16', 'win32', 'win64', 'mac', 'linux'],
 					result = {};
 
 				if(USER_AGENT.indexOf('msie 7.0') > -1) {
@@ -172,7 +172,7 @@ try {
 				}
 				
 				//platformCase에 platform이 있을때
-				if($.inArray(PLATFORM, PLATFORM_CASE) > -1) {
+				if($.inArray(PLATFORM, platformCase) > -1) {
 					result.platform = 'pc';
 				}else{
 					result.platform = 'mobile';
