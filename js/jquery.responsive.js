@@ -15,7 +15,7 @@ try {
 				_consoleType = _getTypeof(window.console);
 
 			/**
-			 * @name 형태얻기
+			 * @name 변수형태
 			 * @since 2017-12-18
 			 * @param {*} value
 			 * @return {string}
@@ -58,19 +58,20 @@ try {
 								iCount++;
 							}
 						}
-
+                        
+						//제이쿼리 엘리먼트일때
 						if(value.length && value.length === iCount) {
 							result = 'jQueryElement';
 						}else{
 							result = 'jQueryObject';
 						}
 					
-					//Invalid Date일때
+					//Invalid Date일때(date로 처리되서 따로 처리함)
 					}else if(result === 'date' && isNaN(new Date(value))) {
 						result = 'Invalid Date';
 					
 					//class일때
-					}else if(result === 'function' && /^class\s/.test(Function.prototype.toString.call(value))) {
+					}else if(result === 'function' && /^class\s/.test(value.toString())) {
 						result = 'class';
 					}
 				}
