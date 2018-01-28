@@ -125,7 +125,7 @@ try {
 			 * @param {object} object
 			 * @return {*}
 			 */
-			function copyObject(object) {
+			function _copyObject(object) {
 				var result = object;
 
 				if(_getTypeof(result) === 'object') {
