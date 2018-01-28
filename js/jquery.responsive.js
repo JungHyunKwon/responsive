@@ -15,7 +15,7 @@ try {
 				_consoleType = _getTypeof(window.console);
 
 			/**
-			 * @name 변수형태
+			 * @name 형태얻기
 			 * @since 2017-12-18
 			 * @param {*} value
 			 * @return {string}
