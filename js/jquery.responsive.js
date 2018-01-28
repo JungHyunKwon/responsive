@@ -126,8 +126,12 @@ try {
 							}else if(argumentsLength === 1) {
 								result = arguments[0];
 							}
+                            
+							if(argumentsLength) {
+							    this.comment.push(result);
+							}
 
-							return this.comment.push(result);
+							return result;
 						};
 					}
 				}
