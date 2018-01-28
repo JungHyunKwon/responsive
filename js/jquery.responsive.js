@@ -5,222 +5,128 @@
  * @version 1.0
  */
 try {
-	/**
-	 * @name 변수형태
-	 * @since 2017-12-18
-	 * @param {*} value
-	 * @return {string}
-	 */
-	window.getTypeof = function(value) {
-		var result = 'none';
-		
-		//매개변수가 있을때
-		if(arguments.length) {
-			result = Object.prototype.toString.call(value).toLowerCase().replace('[object ', '').replace(']', '');
-
-			//undefined일때(ie7, ie8에서 찾지 못함)
-			if(value === undefined) {
-				result = 'undefined';
-			
-			//NaN일때(숫자로 처리되서 따로 처리함)
-			}else if(result === 'number' && isNaN(value)) {
-				result = 'NaN';
-			
-			//Infinity일때(숫자로 처리되서 따로 처리함)
-			}else if(result === 'number' && !isFinite(value)) {
-				result = 'Infinity';
-
-			//document일때
-			}else if(result.substr(-8) === 'document') {
-				result = 'document';
-
-			//엘리먼트일때
-			}else if(result.substr(-7) === 'element') {
-				result = 'element';
-
-			//제이쿼리 객체일때
-			}else if(typeof window.jQuery === 'function' && value instanceof window.jQuery) {
-				var iCount = 0;
-
-				for(var i in value) {
-					var iType = getTypeof(value[i]);
-
-					if((iType === 'window' || iType === 'document' || iType === 'element') && !isNaN(Number(i))) {
-						iCount++;
-					}
-				}
-
-				if(value.length && value.length === iCount) {
-					result = 'jQueryElement';
-				}else{
-					result = 'jQueryObject';
-				}
-			
-			//Invalid Date일때
-			}else if(result === 'date' && isNaN(new Date(value))) {
-				result = 'Invalid Date';
-			
-			//class일때
-			}else if(result === 'function' && /^class\s/.test(Function.prototype.toString.call(value))) {
-				result = 'class';
-			}
-		}
-
-		return result;
-	};
-
-	/**
-	 * @name 콘솔
-	 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
-	 * @since 2017-10-11
-	 */
-	window.consoleType = getTypeof(window.console);
-
-	if(window.consoleType !== 'object' && window.consoleType !== 'console') {
-		window.console = {
-			method : ['assert',
-					   'clear',
-					   'count',
-					   'debug',
-					   'dir',
-					   'dirxml',
-					   'error',
-					   'exception',
-					   'group',
-					   'groupCollapsed',
-					   'groupEnd',
-					   'info',
-					   'log',
-					   'markTimeline',
-					   'profile',
-					   'profileEnd',
-					   'table',
-					   'time',
-					   'timeEnd',
-					   'timeStamp',
-					   'trace',
-					   'warn'],
-			comment : []
-		};
-
-		for(var i = 0, consoleMethodCount = console.method.length; i < consoleMethodCount; i++) {
-			if(getTypeof(window.console[window.console.method[i]]) !== 'function') {
-				window.console[window.console.method[i]] = function(comment) {
-					this.comment.push(comment);
-				};
-			}
-		}
-	}
-
-	/**
-	 * @name JSON psrse, stringify
-	 * @link {https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/JSON}
-	 */
-	window.JSONType = getTypeof(window.JSON);
-    
-	if(window.JSONType !== 'object' && window.JSONType !== 'json') {
-		window.JSON = {};
-
-	    if(getTypeof(window.JSON.parse) !== 'function') {
-			window.JSON.parse = function(sJSON) {
-				var result;
-
-				try {
-					result = eval('(' + sJSON + ')');
-				}catch(e) {
-					result = sJSON;
-				}
-
-				return result;
-			};
-		}
-
-	    if(getTypeof(window.JSON.stringify) !== 'function') {
-			window.JSON.stringify = (function() {
-				var toString = Object.prototype.toString,
-					isArray = Array.isArray || function(a) {
-						return toString.call(a) === '[object Array]';
-					},
-					escMap = {
-						'"' : '\\"',
-						'\\' : '\\\\',
-						'\b' : '\\b',
-						'\f' : '\\f',
-						'\n' : '\\n',
-						'\r' : '\\r',
-						'\t' : '\\t'
-					};
-					escFunc = function(m) {
-						return escMap[m] || '\\u' + (m.charCodeAt(0) + 0x10000).toString(16).substr(1);
-					},
-					escRE = /[\\"\u0000-\u001F\u2028\u2029]/g;
-
-				return function stringify(value) {
-					var result;
-
-					if(value === undefined) {
-						result = 'undefined';
-					}else if(value === null) {
-						result = 'null';
-					}else if(typeof value === 'number') {
-						result = isFinite(value) ? value.toString() : 'null';
-					}else if(typeof value === 'boolean') {
-						result = value.toString();
-					}else if(typeof value === 'object') {
-						if(typeof value.toJSON === 'function') {
-							result = stringify(value.toJSON());
-						}else if(isArray(value)) {
-							result = '[';
-
-							for(var i = 0, valueCount = value.length; i < valueCount; i++) {
-								result += ((i) ? ', ' : '') + stringify(value[i]);
-							}
-
-							result = result + ']';
-						}else if(toString.call(value) === '[object Object]') {
-							result = [];
-
-							for(var i in value) {
-								if(value.hasOwnProperty(i)) {
-									result.push(stringify(i) + ' : ' + stringify(value[i]));
-								}
-							}
-
-							result = '{' + result.join(', ') + '}';
-						}
-					}else{
-						result = '"' + value.toString().replace(escRE, escFunc) + '"';
-					}
-
-					return result;
-				};
-			})();
-		}
-	}
-
 	//제이쿼리가 있는지 확인
-	window.jQueryType = getTypeof(window.jQuery);
-
-	if(window.jQueryType === 'function') {
+	if(typeof window.jQuery === 'function') {
 		//$ 중첩 방지
 		(function($) {
 			var _$window = $(window),
 				_connectedState = _getConnectedState(),
-				_setting = {};
+				_setting = {},
+				_consoleType = _getTypeof(window.console);
 
 			/**
-			 * @name 객체 가비지 컬렉션
+			 * @name 변수형태
+			 * @since 2017-12-18
+			 * @param {*} value
+			 * @return {string}
+			 */
+			function _getTypeof(value) {
+				var result = 'none';
+				
+				//매개변수가 있을때
+				if(arguments.length) {
+					result = Object.prototype.toString.call(value).toLowerCase().replace('[object ', '').replace(']', '');
+
+					//undefined일때(ie7, ie8에서 찾지 못함)
+					if(value === undefined) {
+						result = 'undefined';
+					
+					//NaN일때(숫자로 처리되서 따로 처리함)
+					}else if(result === 'number' && isNaN(value)) {
+						result = 'NaN';
+					
+					//Infinity일때(숫자로 처리되서 따로 처리함)
+					}else if(result === 'number' && !isFinite(value)) {
+						result = 'Infinity';
+
+					//document일때
+					}else if(result.substr(-8) === 'document') {
+						result = 'document';
+
+					//엘리먼트일때
+					}else if(result.substr(-7) === 'element') {
+						result = 'element';
+
+					//제이쿼리 객체일때
+					}else if(typeof window.jQuery === 'function' && value instanceof window.jQuery) {
+						var iCount = 0;
+
+						for(var i in value) {
+							var iType = _getTypeof(value[i]);
+
+							if((iType === 'window' || iType === 'document' || iType === 'element') && !isNaN(Number(i))) {
+								iCount++;
+							}
+						}
+
+						if(value.length && value.length === iCount) {
+							result = 'jQueryElement';
+						}else{
+							result = 'jQueryObject';
+						}
+					
+					//Invalid Date일때
+					}else if(result === 'date' && isNaN(new Date(value))) {
+						result = 'Invalid Date';
+					
+					//class일때
+					}else if(result === 'function' && /^class\s/.test(Function.prototype.toString.call(value))) {
+						result = 'class';
+					}
+				}
+
+				return result;
+			}
+
+			/**
+			 * @name 콘솔
+			 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
+			 * @since 2017-10-11
+			 */
+			if(_consoleType !== 'object' && _consoleType !== 'console') {
+				window.console = {
+					method : ['assert',
+							   'clear',
+							   'count',
+							   'debug',
+							   'dir',
+							   'dirxml',
+							   'error',
+							   'exception',
+							   'group',
+							   'groupCollapsed',
+							   'groupEnd',
+							   'info',
+							   'log',
+							   'markTimeline',
+							   'profile',
+							   'profileEnd',
+							   'table',
+							   'time',
+							   'timeEnd',
+							   'timeStamp',
+							   'trace',
+							   'warn'],
+					comment : []
+				};
+
+				for(var i = 0, consoleMethodLength = console.method.length; i < consoleMethodLength; i++) {
+					if(_getTypeof(window.console[window.console.method[i]]) !== 'function') {
+						window.console[window.console.method[i]] = function(comment) {
+							this.comment.push(comment);
+						};
+					}
+				}
+			}
+
+			/**
+			 * @name 객체 복사
 			 * @since 2017-12-06
 			 * @param {object} object
 			 * @return {object}
 			 */
-			function _freeObject(object) {
-				var result = {};
-				
-				//객체일때
-				if(getTypeof(object) === 'object') {
-					result = JSON.parse(JSON.stringify(object));
-				}
+			function _copyObject(object) {
+				var result = $.extend(true, {}, object);
 
 				return result;
 			}
@@ -281,11 +187,11 @@ try {
 				var result = [];
 				
 				//배열이 아닐때
-				if(getTypeof(name) !== 'array') {
+				if(_getTypeof(name) !== 'array') {
 					name = $.makeArray(name);
 				}
 
-				for(var i = 0, nameCount = name.length; i < nameCount; i++) {
+				for(var i = 0, nameLength = name.length; i < nameLength; i++) {
 					//result값에 값이 없으면 집어넣는다.
 					if($.inArray(name[i], result) === -1) {
 						result.push(name[i]);
@@ -389,41 +295,42 @@ try {
 					var hasScrollbar = _hasScrollbar(_$target[0]),
 						SCROLLBAR_WIDTH = getScrollbarWidth(),
 						SCREEN_WIDTH = (hasScrollbar.vertical) ? _$window.width() + SCROLLBAR_WIDTH : _$window.width(),
-						SCREEN_HEIGHT = (hasScrollbar.horizontal) ? _$window.height() + SCROLLBAR_WIDTH : _$window.height();
+						SCREEN_HEIGHT = (hasScrollbar.horizontal) ? _$window.height() + SCROLLBAR_WIDTH : _$window.height(),
+						result = _copyObject({
+							isRun : false,
+							range : {},
+							rangeProperty : [],
+							exit : [],
+							lowIE : {
+								is : _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
+								property : [],
+								run : true
+							},
+							nowState : [],
+							prevState : [],
+							scrollbarWidth : SCROLLBAR_WIDTH,
+							orientation : (SCREEN_WIDTH === SCREEN_HEIGHT) ? 'square' : (SCREEN_WIDTH > SCREEN_HEIGHT) ? 'landscape' : 'portrait',
+							screenWidth : SCREEN_WIDTH,
+							screenHeight : SCREEN_HEIGHT,
+							loadedScreenWidth : SCREEN_WIDTH,
+							loadedScreenHeight : SCREEN_HEIGHT,
+							browser : _connectedState.browser,
+							platform : _connectedState.platform,
+							hasVerticalScrollbar : hasScrollbar.vertical,
+							hasHorizontalScrollbar : hasScrollbar.horizontal,
+							isResize : false,
+							triggerType : '',
+							isScreenChange : false,
+							isScreenWidthChange : false,
+							isScreenHeightChange : false,
+							isScreenWidthAndHeightChange : false,
+							inheritClass : {
+								property : [],
+								is : false	
+							}
+						});
 
-					return _freeObject({
-						isRun : false,
-						range : {},
-						rangeProperty : [],
-						exit : [],
-						lowIE : {
-							is : _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
-							property : [],
-							run : true
-						},
-						nowState : [],
-						prevState : [],
-						scrollbarWidth : SCROLLBAR_WIDTH,
-						orientation : (SCREEN_WIDTH === SCREEN_HEIGHT) ? 'square' : (SCREEN_WIDTH > SCREEN_HEIGHT) ? 'landscape' : 'portrait',
-						screenWidth : SCREEN_WIDTH,
-						screenHeight : SCREEN_HEIGHT,
-						loadedScreenWidth : SCREEN_WIDTH,
-						loadedScreenHeight : SCREEN_HEIGHT,
-						browser : _connectedState.browser,
-						platform : _connectedState.platform,
-						hasVerticalScrollbar : hasScrollbar.vertical,
-						hasHorizontalScrollbar : hasScrollbar.horizontal,
-						isResize : false,
-						triggerType : '',
-						isScreenChange : false,
-						isScreenWidthChange : false,
-						isScreenHeightChange : false,
-						isScreenWidthAndHeightChange : false,
-						inheritClass : {
-							property : [],
-							is : false	
-						}
-					});
+					return result;
 				}
 
 				/**
@@ -441,7 +348,7 @@ try {
 					//중복제거
 					state = _removeDuplicate(state);
 
-					for(var i = 0, stateCount = state.length; i < stateCount; i++) {
+					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
 						//적용시킬 상태가 있을때
 						if($.inArray(state[i], _setting.nowState) === -1) {
 							setState.push(state[i]);
@@ -514,7 +421,7 @@ try {
 				 */
 				function _callEvent(state) {
 					var event = $.Event('responsive', {
-						_setting : _freeObject(_setting)
+						_setting : _copyObject(_setting)
 					});
 
 					//중복제거
@@ -523,7 +430,7 @@ try {
 					//전역객체 갱신
 					$.responsive.setting = event._setting;
 
-					for(var i = 0, stateCount = state.length; i < stateCount; i++) {
+					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
 						//분기값 적용
 						event.state = state[i];
 
@@ -634,17 +541,17 @@ try {
 					_$target.addClass(_setting.browser + ' ' + _setting.platform);
 					
 					//객체가 아닐때
-					if(getTypeof(option) !== 'object') {
+					if(_getTypeof(option) !== 'object') {
 						option = {};
 					}
 
 					//객체가 아닐때
-					if(getTypeof(option.lowIE) !== 'object') {
+					if(_getTypeof(option.lowIE) !== 'object') {
 						option.lowIE = {};
 					}
 
 					//option.lowIE.property 형태검사
-					option.lowIEPropertyType = getTypeof(option.lowIE.property);
+					option.lowIEPropertyType = _getTypeof(option.lowIE.property);
 					
 					//배열 또는 문자일때
 					if(option.lowIEPropertyType === 'array' || option.lowIEPropertyType === 'string') {
@@ -654,7 +561,7 @@ try {
 					}
 					
 					//불린이 아닐경우
-					if(getTypeof(option.inheritClass) !== 'boolean') {
+					if(_getTypeof(option.inheritClass) !== 'boolean') {
 						option.inheritClass = false;
 					}
 					
@@ -665,7 +572,7 @@ try {
 					option.interval = 250;
 
 					//객체가 아닐때
-					if(getTypeof(option.range) !== 'object') {
+					if(_getTypeof(option.range) !== 'object') {
 						option.range = {};
 					}
 					
@@ -679,20 +586,20 @@ try {
 						//필터링
 						if(i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'scrollbar' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							//객체검사
-							option.hasRangeHorizontal = (getTypeof(option.range[i].horizontal) === 'object');
-							option.hasRangeVertical = (getTypeof(option.range[i].vertical) === 'object');
+							option.hasRangeHorizontal = (_getTypeof(option.range[i].horizontal) === 'object');
+							option.hasRangeVertical = (_getTypeof(option.range[i].vertical) === 'object');
 
 							//horizontal 또는 vertical이 객체일때
 							if(option.hasRangeHorizontal || option.hasRangeVertical) {
 								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeHorizontal && getTypeof(option.range[i].horizontal.from) === 'number' && getTypeof(option.range[i].horizontal.to) === 'number') {
+								if(option.hasRangeHorizontal && _getTypeof(option.range[i].horizontal.from) === 'number' && _getTypeof(option.range[i].horizontal.to) === 'number') {
 									option.rangeFilter.push(true);
 								}else{
 									option.rangeFilter.push(false);
 								}
 								
 								//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeVertical && getTypeof(option.range[i].vertical.from) === 'number' && getTypeof(option.range[i].vertical.to) === 'number') {
+								if(option.hasRangeVertical && _getTypeof(option.range[i].vertical.from) === 'number' && _getTypeof(option.range[i].vertical.to) === 'number') {
 									option.rangeFilter.push(true);
 								}else{
 									option.rangeFilter.push(false);
@@ -748,7 +655,7 @@ try {
 					//필터링된 프로퍼티명에서 option.lowIE.property에 이름이 있는지 확인해서 없으면 제거
 					option.lowIEFilter = [];
 
-					for(var i = 0, lowIEPropertyCount = option.lowIE.property.length; i < lowIEPropertyCount; i++) {
+					for(var i = 0, lowIEPropertyLength = option.lowIE.property.length; i < lowIEPropertyLength; i++) {
 						if($.inArray(option.lowIE.property[i], option.rangeProperty) > -1) {
 							option.lowIEFilter.push(option.lowIE.property[i]);
 						}
@@ -842,7 +749,7 @@ try {
 								//트리거 갱신
 								if(_setting.triggerType) {
 									_setting.triggerType = '';
-									$.responsive.setting = _freeObject(_setting);
+									$.responsive.setting = _copyObject(_setting);
 								}
 							}, option.interval);
 						}
@@ -865,7 +772,7 @@ try {
 						_$window.off('resize.responsive');
 						_$target.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation + ' ' + _setting.inheritClass.property.join(' '));
 						$('body > #responsive_scrollbar').remove();
-						this.setting = _freeObject(_initialSetting);
+						this.setting = _copyObject(_initialSetting);
 						result = true;
 						_setting.isRun = false;
 					}
@@ -874,7 +781,7 @@ try {
 				};
 
 				//전역객체
-				$.responsive.setting = _freeObject(_initialSetting);
+				$.responsive.setting = _copyObject(_initialSetting);
 			});
 		})(jQuery);
 	}else{
