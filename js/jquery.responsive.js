@@ -86,40 +86,40 @@ try {
 			 */
 			if(_consoleType !== 'object' && _consoleType !== 'console') {
 				window.console = {
-					method : ['assert',
-							   'clear',
-							   'count',
-							   'debug',
-							   'dir',
-							   'dirxml',
-							   'error',
-							   'exception',
-							   'group',
-							   'groupCollapsed',
-							   'groupEnd',
-							   'info',
-							   'log',
-							   'markTimeline',
-							   'profile',
-							   'profileEnd',
-							   'table',
-							   'time',
-							   'timeEnd',
-							   'timeStamp',
-							   'trace',
-							   'warn'],
+					method : [
+						'assert',
+						'clear',
+						'count',
+						'debug',
+						'dir',
+						'dirxml',
+						'error',
+						'exception',
+						'group',
+						'groupCollapsed',
+						'groupEnd',
+						'info',
+						'log',
+						'markTimeline',
+						'profile',
+						'profileEnd',
+						'table',
+						'time',
+						'timeEnd',
+						'timeStamp',
+						'trace',
+						'warn'
+					],
 					comment : []
 				};
 
-				for(var i = 0, consoleMethodLength = console.method.length; i < consoleMethodLength; i++) {
+				for(var i = 0, consoleMethodLength = window.console.method.length; i < consoleMethodLength; i++) {
 					if(_getTypeof(window.console[window.console.method[i]]) !== 'function') {
 						window.console[window.console.method[i]] = function() {
-							var result,
+							var result = [],
 								argumentsLength = arguments.length;
                         
 							if(argumentsLength > 1) {
-								result = [];
-
 								for(var i = 0; i < argumentsLength; i++) {
 									result.push(arguments[i]);
 								}
@@ -144,13 +144,7 @@ try {
 			 * @return {*}
 			 */
 			function _copyObject(object) {
-				var result = object;
-
-				if(_getTypeof(result) === 'object') {
-					result = $.extend(true, {}, result);
-				}
-
-				return result;
+				return (_getTypeof(object) === 'object') ? $.extend(true, {}, object) : object;
 			}
 
 			/**
@@ -159,37 +153,37 @@ try {
 			 * @return {object}
 			 */
 			function _getConnectedState() {
-				var USER_AGENT = navigator.userAgent.toLowerCase(),
-					PLATFORM = navigator.platform.toLowerCase(),
+				var userAgent = navigator.userAgent.toLowerCase(),
+					platform = navigator.platform.toLowerCase(),
 					platformCase = ['win16', 'win32', 'win64', 'mac', 'linux'],
 					result = {};
 
-				if(USER_AGENT.indexOf('msie 7.0') > -1) {
+				if(userAgent.indexOf('msie 7.0') > -1) {
 					result.browser = 'ie7';
-				}else if(USER_AGENT.indexOf('msie 8.0') > -1) {
+				}else if(userAgent.indexOf('msie 8.0') > -1) {
 					result.browser = 'ie8';
-				}else if(USER_AGENT.indexOf('msie 9.0') > -1) {
+				}else if(userAgent.indexOf('msie 9.0') > -1) {
 					result.browser = 'ie9';
-				}else if(USER_AGENT.indexOf('msie 10.0') > -1) {
+				}else if(userAgent.indexOf('msie 10.0') > -1) {
 					result.browser = 'ie10';
-				}else if(USER_AGENT.indexOf('trident/7.0') > -1) {
+				}else if(userAgent.indexOf('trident/7.0') > -1) {
 					result.browser = 'ie11';
-				}else if(USER_AGENT.indexOf('edge') > -1) {
+				}else if(userAgent.indexOf('edge') > -1) {
 					result.browser = 'edge';
-				}else if(USER_AGENT.indexOf('opr') > -1) {
+				}else if(userAgent.indexOf('opr') > -1) {
 					result.browser = 'opera'; 
-				}else if(USER_AGENT.indexOf('chrome') > -1) {
+				}else if(userAgent.indexOf('chrome') > -1) {
 					result.browser = 'chrome';
-				}else if(USER_AGENT.indexOf('firefox') > -1) {
+				}else if(userAgent.indexOf('firefox') > -1) {
 					result.browser = 'firefox'; 
-				}else if(USER_AGENT.indexOf('safari') > -1) {
+				}else if(userAgent.indexOf('safari') > -1) {
 					result.browser = 'safari';
 				}else{
 					result.browser = 'unknown';
 				}
 				
 				//platformCase에 platform이 있을때
-				if($.inArray(PLATFORM, platformCase) > -1) {
+				if($.inArray(platform, platformCase) > -1) {
 					result.platform = 'pc';
 				}else{
 					result.platform = 'mobile';
@@ -225,7 +219,7 @@ try {
 			
 			$(function() {
 				var _$target = $('body'),
-					_initialSetting = getDefaultObject();
+					_initialSetting = _getDefaultObject();
 
 				/**
 				 * @name 스크롤바 존재여부
@@ -235,7 +229,7 @@ try {
 				 */
 				function _hasScrollbar(object) {
 					var $this = $(object).first(),
-						$target = $this.add($this.parents()),
+						$parents = $this.add($this.parents()),
 						horizontal = [],
 						vertical = [],
 						result = {
@@ -243,7 +237,7 @@ try {
 							vertical : false
 						};
 					
-					$target.each(function(index, element) {
+					$parents.each(function(index, element) {
 						var $this = $(element),
 							overflow = {
 								x : $this.css('overflow-x'),
@@ -283,7 +277,7 @@ try {
 				 * @since 2017-12-06
 				 * @return {number}
 				 */
-				function getScrollbarWidth() {
+				function _getScrollbarWidth() {
 					var style = {
 							visibility : 'hidden',
 							overflowX : 'scroll',
@@ -299,10 +293,10 @@ try {
 						$scrollbar = $body.children('#responsive_scrollbar'),
 						result = ($scrollbar.length) ? $scrollbar.removeAttr('style').css(style)[0].offsetWidth - $scrollbar[0].clientWidth : 0;
 
-					//스크롤바 객체가 있을때
+					//스크롤바 객체가 없을때
 					if(!$scrollbar.length) {
 						$body.append('<div id="responsive_scrollbar">&nbsp;</div>');
-						result = getScrollbarWidth();
+						result = _getScrollbarWidth();
 					}
 
 					return result;
@@ -313,46 +307,45 @@ try {
 				 * @since 2017-12-06
 				 * @return {object}
 				 */
-				function getDefaultObject() {
+				function _getDefaultObject() {
 					var hasScrollbar = _hasScrollbar(_$target[0]),
-						SCROLLBAR_WIDTH = getScrollbarWidth(),
-						SCREEN_WIDTH = (hasScrollbar.vertical) ? _$window.width() + SCROLLBAR_WIDTH : _$window.width(),
-						SCREEN_HEIGHT = (hasScrollbar.horizontal) ? _$window.height() + SCROLLBAR_WIDTH : _$window.height(),
-						result = _copyObject({
-							isRun : false,
-							range : {},
-							rangeProperty : [],
-							exit : [],
-							lowIE : {
-								is : _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
-								property : [],
-								run : true
-							},
-							nowState : [],
-							prevState : [],
-							scrollbarWidth : SCROLLBAR_WIDTH,
-							orientation : (SCREEN_WIDTH === SCREEN_HEIGHT) ? 'square' : (SCREEN_WIDTH > SCREEN_HEIGHT) ? 'landscape' : 'portrait',
-							screenWidth : SCREEN_WIDTH,
-							screenHeight : SCREEN_HEIGHT,
-							loadedScreenWidth : SCREEN_WIDTH,
-							loadedScreenHeight : SCREEN_HEIGHT,
-							browser : _connectedState.browser,
-							platform : _connectedState.platform,
-							hasVerticalScrollbar : hasScrollbar.vertical,
-							hasHorizontalScrollbar : hasScrollbar.horizontal,
-							isResize : false,
-							triggerType : '',
-							isScreenChange : false,
-							isScreenWidthChange : false,
-							isScreenHeightChange : false,
-							isScreenWidthAndHeightChange : false,
-							inheritClass : {
-								property : [],
-								is : false	
-							}
-						});
+						scrollbarWidth = _getScrollbarWidth(),
+						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
+						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height();
 
-					return result;
+					return _copyObject({
+						isRun : false,
+						range : {},
+						rangeProperty : [],
+						exit : [],
+						lowIE : {
+							is : _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
+							property : [],
+							run : true
+						},
+						nowState : [],
+						prevState : [],
+						scrollbarWidth : scrollbarWidth,
+						orientation : (screenWidth === screenHeight) ? 'square' : (screenWidth > screenHeight) ? 'landscape' : 'portrait',
+						screenWidth : screenWidth,
+						screenHeight : screenHeight,
+						loadedScreenWidth : screenWidth,
+						loadedScreenHeight : screenHeight,
+						browser : _connectedState.browser,
+						platform : _connectedState.platform,
+						hasVerticalScrollbar : hasScrollbar.vertical,
+						hasHorizontalScrollbar : hasScrollbar.horizontal,
+						isResize : false,
+						triggerType : '',
+						isScreenChange : false,
+						isScreenWidthChange : false,
+						isScreenHeightChange : false,
+						isScreenWidthAndHeightChange : false,
+						inheritClass : {
+							property : [],
+							is : false	
+						}
+					});
 				}
 
 				/**
@@ -365,12 +358,14 @@ try {
 					var result = false,
 						setState = [],
 						nowState = [],
-						inheritClass = [];
+						inheritClass = [],
+						stateLength = state.length,
+						i;
 
 					//중복제거
 					state = _removeDuplicate(state);
 
-					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
+					for(i = 0; i < stateLength; i++) {
 						//적용시킬 상태가 있을때
 						if($.inArray(state[i], _setting.nowState) === -1) {
 							setState.push(state[i]);
@@ -390,12 +385,14 @@ try {
 
 						//클래스 상속 옵션을 허용했을 때
 						if(_setting.inheritClass.is) {
+							var nowStateLastIndex = $.inArray(state[state.length - 1], _setting.rangeProperty);
+
 							//상속 클래스 제거
 							if(_setting.inheritClass.property.length) {
 								_$target.removeClass(_setting.inheritClass.property.join(' '));
 							}
 
-							for(var i = 0, nowStateLastIndex = $.inArray(state[state.length - 1], _setting.rangeProperty); i < nowStateLastIndex; i++) {
+							for(i = 0; i < nowStateLastIndex; i++) {
 								//현재상태에 없을때
 								if($.inArray(_setting.rangeProperty[i], state) === -1) {
 									inheritClass.push(_setting.rangeProperty[i]);
@@ -497,7 +494,7 @@ try {
 					_setting.isScreenChange = false;
 
 					//스크롤바 넓이
-					_setting.scrollbarWidth = getScrollbarWidth();
+					_setting.scrollbarWidth = _getScrollbarWidth();
 
 					//브라우저 스크롤바가 있을때
 					if(_setting.scrollbarWidth) {
@@ -544,17 +541,17 @@ try {
 				 */
 				$.responsive = function(option) {
 					//현재상태가 있을경우
-					if(_setting.nowState && _setting.nowState.length) {
+					if(_getTypeof(_setting.nowState) === 'array' && _setting.nowState.length) {
 						_$target.removeClass(_setting.nowState.join(' '));
 					}
 
 					//상속된 클래스가 있을경우
-					if(_setting.inheritClass && _setting.inheritClass.property && _setting.inheritClass.property.length) {
+					if(_getTypeof(_setting.inheritClass) === 'object' && _getTypeof(_setting.inheritClass.property) === 'array' && _setting.inheritClass.property.length) {
 						_$target.removeClass(_setting.inheritClass.property.join(' '));
 					}
 
 					//기본객체
-					_setting = getDefaultObject();
+					_setting = _getDefaultObject();
 
 					//실행등록
 					_setting.isRun = true;
@@ -599,12 +596,14 @@ try {
 					}
 					
 					//option.range에 적은 값을 기준으로 자바스크립트 코드 생성
+					var i;
+
 					option.rangeCode = 'option.enter = [];\n_setting.exit = [];\n\n';
 					option.rangeCode += 'if(!_setting.lowIE.run && _setting.lowIE.is) {\n\toption.enter = _setting.lowIE.property;\n}else{\n';
 					option.rangeFilter = [];
 					option.rangeProperty = [];
 
-					for(var i in option.range) {
+					for(i in option.range) {
 						//필터링
 						if(i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'scrollbar' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							//객체검사
@@ -675,9 +674,11 @@ try {
 					//option.rangeCode작성 끝
 
 					//필터링된 프로퍼티명에서 option.lowIE.property에 이름이 있는지 확인해서 없으면 제거
+					var lowIEPropertyLength = option.lowIE.property.length;
+
 					option.lowIEFilter = [];
 
-					for(var i = 0, lowIEPropertyLength = option.lowIE.property.length; i < lowIEPropertyLength; i++) {
+					for(i = 0; i < lowIEPropertyLength; i++) {
 						if($.inArray(option.lowIE.property[i], option.rangeProperty) > -1) {
 							option.lowIEFilter.push(option.lowIE.property[i]);
 						}

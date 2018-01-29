@@ -2,7 +2,7 @@
 반응형 분기처리 플러그인이며 사용자가 분기를 지정하여 스타일, 스크립트 처리를 쉽게 할 수 있습니다.
 
 ## 호출
-````
+````javascript
 $.responsive({
     range : {
 	wide : {
@@ -44,7 +44,7 @@ $(window).triggerHandler('resize.responsive');가 기본으로 되어있고 콘�
 #### range
 range가 객체가 아니거나 객체안에 프로퍼티가 없을경우 none이 떨어집니다.
 
-````
+````javascript
 # : {
     horizontal : {
 	from : n,
@@ -104,7 +104,7 @@ from과 to가 숫자가 아닐경우 horizontal 또는 vertical은 제외됩니�
 #### lowIE
 ie7 또는 ie8에서의 옵션 입니다.
 
-````
+````javascript
 lowIE : {
     property : ['#']
 }
@@ -178,7 +178,7 @@ setting | object | $.responsive.setting과 같습니다.
 걸린시점의 값이 떨어집니다.
 
 #### 기본
-````
+````javascript
 $(window).on('responsive', function(event) {
      console.log(event);
      console.log(event.state);
@@ -187,7 +187,7 @@ $(window).on('responsive', function(event) {
 ````
 
 #### 필터
-````
+````javascript
 $(window).on('responsive:#', function(event) {
      console.log(event);
      console.log(event.state);
