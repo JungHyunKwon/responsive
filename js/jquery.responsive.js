@@ -144,8 +144,8 @@ try {
 			/**
 			 * @name 객체 복사
 			 * @since 2017-12-06
-			 * @param {object} object
-			 * @return {*}
+			 * @param {*} object
+			 * @return {object}
 			 */
 			function _copyObject(object) {
 				return (_getTypeof(object) === 'object') ? $.extend(true, {}, object) : object;
@@ -200,7 +200,7 @@ try {
 			 * @name 배열 중복값 제거
 			 * @description name에서 중복값을 제거합니다.
 			 * @since 2017-12-06
-			 * @param {array || string} name
+			 * @param {*} name
 			 * @return {array}
 			 */
 			function _removeDuplicate(name) {
@@ -228,49 +228,53 @@ try {
 				/**
 				 * @name 스크롤바 존재여부
 				 * @since 2017-12-06
-				 * @param {object} object
+				 * @param {element || jQueryElement} object
 				 * @return {object}
 				 */
 				function _hasScrollbar(object) {
-					var $this = $(object).first(),
-						$parents = $this.add($this.parents()),
-						horizontal = [],
-						vertical = [],
+					var objectType = _getTypeof(object),
 						result = {
 							horizontal : false,
 							vertical : false
 						};
-					
-					$parents.each(function(index, element) {
-						var $this = $(element),
-							overflow = {
-								x : $this.css('overflow-x'),
-								y : $this.css('overflow-y')
-							};
 
-						//매핑한 객체의 넓이가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
-						if((element.scrollWidth > element.clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
-							horizontal.push(true);
-						}else{
-							horizontal.push(false);
+					if(objectType === 'element' || objectType === 'jQueryElement') {
+						var $this = $(object).first(),
+							$parents = $this.add($this.parents()),
+							horizontal = [],
+							vertical = [];
+						
+						$parents.each(function(index, element) {
+							var $this = $(element),
+								overflow = {
+									x : $this.css('overflow-x'),
+									y : $this.css('overflow-y')
+								};
+
+							//매핑한 객체의 넓이가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
+							if((element.scrollWidth > element.clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
+								horizontal.push(true);
+							}else{
+								horizontal.push(false);
+							}
+							
+							//매핑한 객체의 높이가가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
+							if((element.scrollHeight > element.clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
+								vertical.push(true);
+							}else{
+								vertical.push(false);
+							}
+						});
+						
+						//가로스크롤바가 하나라도 있을경우
+						if($.inArray(true, horizontal) > -1) {
+							result.horizontal = true;
 						}
 						
-						//매핑한 객체의 높이가가 넘치면서 overflow:hidden이 아니거나 스크롤을 강제 지정한경우 스크롤이 있는걸로 간주
-						if((element.scrollHeight > element.clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
-							vertical.push(true);
-						}else{
-							vertical.push(false);
+						//세로스크롤바가 하나라도 있을경우
+						if($.inArray(true, vertical) > -1) {
+							result.vertical = true;
 						}
-					});
-					
-					//가로스크롤바가 하나라도 있을경우
-					if($.inArray(true, horizontal) > -1) {
-						result.horizontal = true;
-					}
-					
-					//세로스크롤바가 하나라도 있을경우
-					if($.inArray(true, vertical) > -1) {
-						result.vertical = true;
 					}
 
 					return result;
@@ -355,7 +359,7 @@ try {
 				/**
 				 * @name 분기 적용
 				 * @since 2017-12-06
-				 * @param {array[string] || string} state
+				 * @param {*} state
 				 * @return {boolean}
 				 */
 				function _setState(state) {
@@ -439,7 +443,7 @@ try {
 				/**
 				 * @name 분기이벤트 실행
 				 * @since 2017-12-06
-				 * @param {array[string] || string} state
+				 * @param {*} state
 				 * @return {array}
 				 */
 				function _callEvent(state) {
@@ -476,6 +480,11 @@ try {
 				 */
 				function _setScreenInfo(event) {
 					var hasScrollbar = _hasScrollbar(_$target[0]);
+					
+					//객체가 아닐때
+					if(_getTypeof(event) !== 'object') {
+						event = {};
+					}
 
 					//트리거
 					if(event.isTrigger === 2) {
