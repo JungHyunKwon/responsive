@@ -37,7 +37,11 @@ try {
 					
 					//Infinity일때(숫자로 처리되서 따로 처리함)
 					}else if(result === 'number' && !isFinite(value)) {
-						result = 'Infinity';
+						if(value.toString() === "-Infinity") {
+							result = '-Infinity';
+						}else{
+						    result = 'Infinity';
+						}
 
 					//document일때
 					}else if(result.substr(-8) === 'document') {
