@@ -144,8 +144,8 @@ try {
 			/**
 			 * @name 객체 복사
 			 * @since 2017-12-06
-			 * @param {*} object
-			 * @return {*}
+			 * @param {object} object
+			 * @return {object}
 			 */
 			function _copyObject(object) {
 				return (_getTypeof(object) === 'object') ? $.extend(true, {}, object) : object;
@@ -200,7 +200,7 @@ try {
 			 * @name 배열 중복값 제거
 			 * @description name에서 중복값을 제거합니다.
 			 * @since 2017-12-06
-			 * @param {*} name
+			 * @param {array || string} name
 			 * @return {array}
 			 */
 			function _removeDuplicate(name) {
@@ -228,7 +228,7 @@ try {
 				/**
 				 * @name 스크롤바 존재여부
 				 * @since 2017-12-06
-				 * @param {*} object
+				 * @param {element || jQueryElement} object
 				 * @return {object}
 				 */
 				function _hasScrollbar(object) {
@@ -359,7 +359,7 @@ try {
 				/**
 				 * @name 분기 적용
 				 * @since 2017-12-06
-				 * @param {*} state
+				 * @param {array[string] || string} state
 				 * @return {boolean}
 				 */
 				function _setState(state) {
@@ -443,7 +443,7 @@ try {
 				/**
 				 * @name 분기이벤트 실행
 				 * @since 2017-12-06
-				 * @param {*} state
+				 * @param {array[string] || string} state
 				 * @return {array}
 				 */
 				function _callEvent(state) {
@@ -475,7 +475,7 @@ try {
 				/**
 				 * @name 화면정보 입력
 				 * @since 2017-12-06
-				 * @param {*} event
+				 * @param {object} event
 				 * @return {object}
 				 */
 				function _setScreenInfo(event) {
