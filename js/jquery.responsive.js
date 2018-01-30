@@ -145,7 +145,7 @@ try {
 			 * @name 객체 복사
 			 * @since 2017-12-06
 			 * @param {*} object
-			 * @return {object}
+			 * @return {*}
 			 */
 			function _copyObject(object) {
 				return (_getTypeof(object) === 'object') ? $.extend(true, {}, object) : object;
@@ -475,7 +475,7 @@ try {
 				/**
 				 * @name 화면정보 입력
 				 * @since 2017-12-06
-				 * @param {object} event
+				 * @param {*} event
 				 * @return {object}
 				 */
 				function _setScreenInfo(event) {
