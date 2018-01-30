@@ -228,7 +228,7 @@ try {
 				/**
 				 * @name 스크롤바 존재여부
 				 * @since 2017-12-06
-				 * @param {element || jQueryElement} object
+				 * @param {*} object
 				 * @return {object}
 				 */
 				function _hasScrollbar(object) {
