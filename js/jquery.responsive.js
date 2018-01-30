@@ -232,15 +232,21 @@ try {
 				 * @return {object}
 				 */
 				function _hasScrollbar(object) {
-					var objectType = _getTypeof(object),
+					var $this,
+						objectType = _getTypeof(object),
 						result = {
 							horizontal : false,
 							vertical : false
 						};
+					
+					if(objectType === 'element') {
+						$this = $(object);
+					}else if(objectType === 'jQueryElement') {
+						$this = object;
+					}
 
-					if(objectType === 'element' || objectType === 'jQueryElement') {
-						var $this = $(object).first(),
-							$parents = $this.add($this.parents()),
+					if(_getTypeof($this) === 'jQueryElement') {
+						var $parents = $this.add($this.parents()),
 							horizontal = [],
 							vertical = [];
 						
