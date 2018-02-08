@@ -42,7 +42,7 @@ try {
 						document.cookie = name + '=' + value + '; expires=' + date.toUTCString() + '; path=/;';
 						
 						//쿠키생성 후 확인해서 있으면
-						if(this.get(name)) {
+						if(this.get(name) !== 'none') {
 							result = true;
 						}
 
@@ -60,7 +60,7 @@ try {
 							result = 'none';
 
 						for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
-							while(cookie[i].charAt(0) == ' ') {
+							while(cookie[i].charAt(0) === ' ') {
 								cookie[i] = cookie[i].substring(1);
 								break;
 							}
