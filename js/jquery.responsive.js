@@ -2,7 +2,7 @@
 
 /**
  * @author JungHyunKwon
- * @version 1.0
+ * @version 1.0.0
  */
 try {
 	//제이쿼리가 있는지 확인
