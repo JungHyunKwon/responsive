@@ -12,7 +12,68 @@ try {
 			var _$window = $(window),
 				_connectedState = _getConnectedState(),
 				_setting = {},
-				_consoleType = _getTypeof(window.console);
+				_consoleType = _getTypeof(window.console),
+				_cookie = {
+					/**
+					 * @name 쿠키 사용가능 여부
+					 * @since 2017-01-16
+					 */
+					support : navigator.cookieEnabled,
+
+					/**
+					 * @name 쿠키 생성
+					 * @since 2017-01-16
+					 * @param {string} name
+					 * @param {string} value
+					 * @param {number} day
+					 * @return {boolean}
+					 */
+					set : function(name, value, day) {
+						var date = new Date(),
+							result = false;
+
+						if(!day) {
+							day = -1;
+						}
+
+						value = escape(value);
+						date.setDate(date.getDate() + day);
+						
+						document.cookie = name + '=' + value + '; expires=' + date.toUTCString() + '; path=/;';
+						
+						//쿠키생성 후 확인해서 있으면
+						if(this.get(name)) {
+							result = true;
+						}
+
+						return result;
+					},
+
+					/**
+					 * @name 쿠키값 얻기
+					 * @since 2017-01-16
+					 * @param {string} name
+					 * @return {string}
+					 */
+					get : function(name) {
+						var cookie = document.cookie.split(';'),
+							result = 'none';
+
+						for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
+							while(cookie[i].charAt(0) == ' ') {
+								cookie[i] = cookie[i].substring(1);
+								break;
+							}
+
+							if(cookie[i].indexOf(name) > -1) {
+								result = unescape(cookie[i].substring(name.length + 1, cookie[i].length));
+								break;
+							}
+						}
+
+						return result;
+					}
+				};
 
 			/**
 			 * @name 형태얻기
@@ -144,11 +205,11 @@ try {
 			/**
 			 * @name 객체 복사
 			 * @since 2017-12-06
-			 * @param {object} object
+			 * @param {object} value
 			 * @return {object}
 			 */
-			function _copyObject(object) {
-				return (_getTypeof(object) === 'object') ? $.extend(true, {}, object) : object;
+			function _copyObject(value) {
+				return (_getTypeof(value) === 'object') ? $.extend(true, {}, value) : value;
 			}
 
 			/**
@@ -221,6 +282,35 @@ try {
 				return result;
 			}
 			
+			/**
+			 * @name 문자열 공백 제거
+			 * @since 2017-12-06
+			 * @param {string} value
+			 * @return {string}
+			 */
+			function _removeBlank(value) {
+				var result = "";
+
+				if(_getTypeof(value) === 'string') {
+					result = value.replace(/\s/, '');
+				}
+				
+				return result;
+			}
+			
+			/**
+			 * @name state에 대한 쿠키얻기
+			 * @since 2017-12-06
+			 * @return {array}
+			 */
+			function _getStateCookie() {
+				return $.map(_removeDuplicate(_removeBlank(_cookie.get('state')).split(',')), function(value, index) {
+					if($.inArray(value, _setting.rangeProperty) > -1) {
+						return value;
+					}
+				});
+			}
+
 			$(function() {
 				var _$target = $('body'),
 					_initialSetting = _getDefaultObject();
@@ -373,11 +463,19 @@ try {
 						setState = [],
 						nowState = [],
 						inheritClass = [],
-						stateLength = state.length,
+						stateCookie = _getStateCookie(),
+						stateLength,
 						i;
 
 					//중복제거
 					state = _removeDuplicate(state);
+
+					//적용시킬 쿠키가 있을때
+					if(stateCookie.length) {
+						state = stateCookie;
+					}
+						
+					stateLength = state.length;
 
 					for(i = 0; i < stateLength; i++) {
 						//적용시킬 상태가 있을때
@@ -389,7 +487,7 @@ try {
 					}
 
 					//적용시킬 상태가 있을때
-					if(setState.length || nowState.length !== _setting.nowState.length) {
+					if(this === 'outer' || setState.length || nowState.length !== _setting.nowState.length) {
 						result = true;
 					}
 
@@ -822,7 +920,48 @@ try {
 					return result;
 				};
 
-				//전역객체
+				/**
+				 * @description _setState 함수를 사용자에게 제공합니다.
+				 */
+				$.responsive.setState = function(state, day) {
+					var stateType = _getTypeof(state),
+						setState = [],
+						result = false;
+					
+					//배열일때
+					if(stateType === 'array') {
+						for(var i = 0, stateLength = state.length; i < stateLength; i++) {
+							if($.inArray(state[i], _setting.rangeProperty) > -1) {
+								setState.push(state[i]);
+							}
+						}
+					
+					//문자열일때
+					}else if(stateType === 'string' && $.inArray(state, _setting.rangeProperty) > -1) {
+						setState.push(state);
+					}
+
+					//숫자일때
+					if(_getTypeof(day) === 'number') {
+						_cookie.set('state', setState.join(', '), day);
+					}
+					
+					//적용시킬 상태가 있으면
+					if(setState.length) {
+						result = _setState.call('outer', setState);
+					}
+
+					return result;
+				};
+				
+				/**
+				 * @description _getStateCookie 함수를 사용자에게 제공합니다.
+				 */
+				$.responsive.getStateCookie = _getStateCookie;
+
+				/**
+				 * @description 기본 객체를 사용자에게 제공합니다.
+				 */
 				$.responsive.setting = _copyObject(_initialSetting);
 			});
 		})(jQuery);
