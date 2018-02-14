@@ -205,11 +205,11 @@ try {
 			/**
 			 * @name 객체 복사
 			 * @since 2017-12-06
-			 * @param {object} value
+			 * @param {object} object
 			 * @return {object}
 			 */
-			function _copyObject(value) {
-				return (_getTypeof(value) === 'object') ? $.extend(true, {}, value) : value;
+			function _copyObject(object) {
+				return (_getTypeof(object) === 'object') ? $.extend(true, {}, object) : object;
 			}
 
 			/**
@@ -259,23 +259,22 @@ try {
 
 			/**
 			 * @name 배열 중복값 제거
-			 * @description name에서 중복값을 제거합니다.
 			 * @since 2017-12-06
-			 * @param {array || string} name
+			 * @param {array || string} value
 			 * @return {array}
 			 */
-			function _removeDuplicate(name) {
+			function _removeDuplicate(value) {
 				var result = [];
 				
 				//배열이 아닐때
-				if(_getTypeof(name) !== 'array') {
-					name = $.makeArray(name);
+				if(_getTypeof(value) !== 'array') {
+					value = $.makeArray(value);
 				}
 
-				for(var i = 0, nameLength = name.length; i < nameLength; i++) {
+				for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 					//result값에 값이 없으면 집어넣는다.
-					if($.inArray(name[i], result) === -1) {
-						result.push(name[i]);
+					if($.inArray(value[i], result) === -1) {
+						result.push(value[i]);
 					}
 				}
 
@@ -292,7 +291,7 @@ try {
 				var result = "";
 
 				if(_getTypeof(value) === 'string') {
-					result = value.replace(/\s/, '');
+					result = value.replace(/\s/g, '');
 				}
 				
 				return result;
@@ -318,21 +317,21 @@ try {
 				/**
 				 * @name 스크롤바 존재여부
 				 * @since 2017-12-06
-				 * @param {element || jQueryElement} object
+				 * @param {element || jQueryElement} element
 				 * @return {object}
 				 */
-				function _hasScrollbar(object) {
+				function _hasScrollbar(element) {
 					var $this,
-						objectType = _getTypeof(object),
+						elementType = _getTypeof(element),
 						result = {
 							horizontal : false,
 							vertical : false
 						};
 					
-					if(objectType === 'element') {
-						$this = $(object);
-					}else if(objectType === 'jQueryElement') {
-						$this = object;
+					if(elementType === 'element') {
+						$this = $(element);
+					}else if(elementType === 'jQueryElement') {
+						$this = element;
 					}
 
 					if(_getTypeof($this) === 'jQueryElement') {
