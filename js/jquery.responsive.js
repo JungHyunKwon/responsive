@@ -288,13 +288,7 @@ try {
 			 * @return {string}
 			 */
 			function _removeBlank(value) {
-				var result = "";
-
-				if(_getTypeof(value) === 'string') {
-					result = value.replace(/\s/g, '');
-				}
-				
-				return result;
+				return (_getTypeof(value) === 'string') ? value.replace(/\s/g, '') : value;
 			}
 			
 			/**
