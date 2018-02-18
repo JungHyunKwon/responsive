@@ -317,16 +317,34 @@ try {
 				 * @name 스크롤바 존재여부
 				 * @since 2017-12-06
 				 * @param {element || jQueryElement} element
+				 * @param {string} type
 				 * @return {object}
 				 */
-				function _hasScrollbar(element) {
+				function _hasScrollbar(element, type) {
 					var $this,
 						elementType = _getTypeof(element),
-						result = {
-							horizontal : false,
-							vertical : false
+						result,
+						hasScrollbar = function($element) {
+							var result = {
+								horizontal : false,
+								vertical : false
+							},
+							overflow = {
+								x : $element.css('overflow-x'),
+								y : $element.css('overflow-y')
+							};
+
+							if(($element[0].scrollWidth > $element[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
+								result.horizontal = true;
+							}
+							
+							if(($element[0].scrollHeight > $element[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
+								result.vertical = true;
+							}
+
+							return result;
 						};
-					
+
 					if(elementType === 'element') {
 						$this = $(element);
 					}else if(elementType === 'jQueryElement') {
@@ -334,17 +352,37 @@ try {
 					}
 
 					if(_getTypeof($this) === 'jQueryElement') {
-						var overflow = {
-								x : $this.css('overflow-x'),
-								y : $this.css('overflow-y')
+						$this = $this.first();
+
+						if(type === 'parents') {
+							result = {
+								horizontal : [],
+								vertical : []
 							};
 
-						if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
-							result.horizontal = true;
-						}
-						
-						if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
-							result.vertical = true;
+							$this.add($this.parents()).each(function(index, element) {
+								var $element = $(element),
+									elementHasScrollbar = hasScrollbar($element);
+
+								result.horizontal.push(elementHasScrollbar.horizontal);
+								result.vertical.push(elementHasScrollbar.vertical);
+							});
+
+							//가로스크롤바가 하나라도 있을경우
+							if($.inArray(true, result.horizontal) > -1) {
+								result.horizontal = true;
+							}else{
+								result.horizontal = false;
+							}
+							
+							//세로스크롤바가 하나라도 있을경우
+							if($.inArray(true, result.vertical) > -1) {
+								result.vertical = true;
+							}else{
+								result.vertical = false;
+							}
+						}else{
+							result = hasScrollbar($this);
 						}
 					}
 
@@ -388,8 +426,10 @@ try {
 				 * @return {object}
 				 */
 				function _getDefaultObject() {
-					var screenWidth = _$window.width(),
-						screenHeight = _$window.height();
+					var hasScrollbar = _hasScrollbar(_$target, 'parents'),
+						scrollbarWidth = _getScrollbarWidth(),
+						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
+						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height();
 
 					return _copyObject({
 						isRun : false,
@@ -403,6 +443,7 @@ try {
 						},
 						nowState : [],
 						prevState : [],
+						scrollbarWidth : scrollbarWidth,
 						orientation : (screenWidth === screenHeight) ? 'square' : (screenWidth > screenHeight) ? 'landscape' : 'portrait',
 						screenWidth : screenWidth,
 						screenHeight : screenHeight,
@@ -410,6 +451,8 @@ try {
 						loadedScreenHeight : screenHeight,
 						browser : _connectedState.browser,
 						platform : _connectedState.platform,
+						hasVerticalScrollbar : hasScrollbar.vertical,
+						hasHorizontalScrollbar : hasScrollbar.horizontal,
 						isResize : false,
 						triggerType : '',
 						isScreenChange : false,
@@ -554,6 +597,8 @@ try {
 				 * @return {object}
 				 */
 				function _setScreenInfo(event) {
+					var hasScrollbar = _hasScrollbar(_$target, 'parents');
+
 					//객체가 아닐때
 					if(_getTypeof(event) !== 'object') {
 						event = {};
@@ -568,6 +613,10 @@ try {
 						_setting.triggerType = '';
 					}
 					
+					//가로, 세로 스크롤바 확인
+					_setting.hasVerticalScrollbar = hasScrollbar.vertical;
+					_setting.hasHorizontalScrollbar = hasScrollbar.horizontal;
+
 					//화면이 변경되었는지 확인하는 변수
 					_setting.isResize = false;
 					_setting.isScreenWidthChange = false;
@@ -575,10 +624,30 @@ try {
 					_setting.isScreenWidthAndHeightChange = false;
 					_setting.isScreenChange = false;
 
+					//스크롤바 넓이
+					_setting.scrollbarWidth = _getScrollbarWidth();
+
+					//브라우저 스크롤바가 있을때
+					if(_setting.scrollbarWidth) {
+						_$target.addClass('scrollbar');
+					}else{
+						_$target.removeClass('scrollbar');
+					}
+
 					//화면 넓이, 높이
 					_setting.screenWidth = _$window.width();
 					_setting.screenHeight = _$window.height();
-					
+				
+					//세로 스크롤바가 있을때
+					if(_setting.hasVerticalScrollbar) {
+						_setting.screenWidth += _setting.scrollbarWidth;
+					}
+
+					//가로 스크롤바가 있을때
+					if(_setting.hasHorizontalScrollbar) {
+						_setting.screenHeight += _setting.scrollbarWidth;
+					}
+
 					//방향
 					_$target.removeClass(_setting.orientation);
 
@@ -667,7 +736,7 @@ try {
 
 					for(i in option.range) {
 						//필터링
-						if(i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
+						if(i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							//객체검사
 							option.hasRangeHorizontal = (_getTypeof(option.range[i].horizontal) === 'object');
 							option.hasRangeVertical = (_getTypeof(option.range[i].vertical) === 'object');
@@ -855,7 +924,7 @@ try {
 					//플러그인을 실행중일때
 					if(_setting.isRun) {
 						_$window.off('resize.responsive');
-						_$target.removeClass(_setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation + ' ' + _setting.inheritClass.property.join(' '));
+						_$target.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation + ' ' + _setting.inheritClass.property.join(' '));
 						$('#scrollbar').remove();
 						this.setting = _copyObject(_initialSetting);
 						result = true;

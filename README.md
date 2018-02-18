@@ -66,6 +66,7 @@ range가 객체가 아니거나 객체안에 프로퍼티가 없을경우 none�
 * none
 * pc
 * mobile
+* scrollbar
 * ie7
 * ie8
 * ie9
@@ -129,12 +130,14 @@ destroy |  | boolean | 플러그인을 소멸시키는 함수 입니다.
 setState | array[string] \|\| string, number | boolean | state에 지정한 분기를 적용시킬 수 있고 일자를 지정하면 일정기간동안 state에 지정한 분기를 볼 수 있습니다.
 getStateCookie | | array | 쿠키에 state에 할당된 값을 공백을 제거하고 콤마(,)단위로 잘라 배열로 만들고 중복제거를 해서 반환합니다.
 getScrollbarWidth | element \|\| jQueryElement \|\| undefined | number | 제이쿼리 엘리먼트 또는 엘리먼트의 스크롤바 넓이를 구합니다. 매개변수가 제이쿼리 엘리먼트 또는 엘리먼트가 아닐경우 브라우저의 스크롤바 넓이를 구합니다.
-hasScrollbar | element \|\| jQueryElement | object[boolean] | 제이쿼리 엘리먼트 또는 엘리먼트에 가로, 세로스크롤바가 있는지 확인합니다.
+hasScrollbar | element \|\| jQueryElement | object[boolean], string | 제이쿼리 엘리먼트 또는 엘리먼트에 가로, 세로스크롤바가 있는지 확인합니다. 두번째 매개변수에 parents 문자열을 넣으면 부모들도 함께 검사합니다.
 
 ### $.responsive.setting
 
 이름 | 형태 | 설명
 | :-- | :- | :-- |
+hasHorizontalScrollbar | boolean | 가로스크롤바가 있는지 확인하는 변수입니다.
+hasVerticalScrollbar | boolean | 세로스크롤바가 있는지 확인하는 변수입니다.
 isRun | boolean | 플러그인이 실행됬는지 확인하는 변수입니다.
 isResize | boolean | 리사이즈 중인지 확인하는 변수입니다.
 isScreenChage | boolean | 넓이 또는 높이가 변경되었는지 확인하는 변수입니다.
@@ -152,6 +155,7 @@ loadedScreenWidth | number | 로드되었을때 창의 넓이입니다.
 loadedScreenHeight | number | 로드되었을때 창의 높이입니다.
 screenWidth | number | 창의 넓이입니다.
 screenHeight | number | 창의 높이입니다.
+scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니다.
 browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
 platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게되며 그 이외로는 mobile이라는 값이 나오게 됩니다.
 inheritClass | object | <ul><li>is(boolean) : 플러그인 옵션에서 inheritClass에 작성한 값입니다.</li><li>property(array) : 상속된 프로퍼티명 입니다.</li></ul>
@@ -201,6 +205,7 @@ $(window).on('responsive:#', function(event) {
   * 브라우저를 찾지 못하면 unknown이라는 클래스가 나오게 됩니다.
 * 플랫폼 : pc, mobile중에서 접속한 플랫폼으로 클래스가 부여됩니다.
 * 분기 : 플러그인 옵션중 range에 적은 프로퍼티명이 클래스로 부여됩니다.
+* 스크롤바 : 스크롤바 넓이가 있으면 scrollbar라는 클래스가 부여됩니다.
 * 방향 : 가로, 세로가 같을때 square가 나오고 세로보다 가로가 더 클때 landscape가 나오고 가로보다 세로가 더 클때 portrait라는 값이 나옵니다.
 
 ### 제이쿼리 개발버전
