@@ -413,7 +413,7 @@ try {
 						}
 					}
 
-					if(_getTypeof($this) === 'jQueryElement' && $this.length) {
+					if(_getTypeof($this) === 'jQueryElement') {
 						result = $this[0].offsetWidth - $this[0].clientWidth;
 					}
 
@@ -972,16 +972,6 @@ try {
 				 * @description _getStateCookie 함수를 사용자에게 제공합니다.
 				 */
 				$.responsive.getStateCookie = _getStateCookie;
-
-				/**
-				 * @description _hasScrollbar 함수를 사용자에게 제공합니다.
-				 */
-				$.responsive.hasScrollbar = _hasScrollbar;
-
-				/**
-				 * @description _getScrollbarWidth 함수를 사용자에게 제공합니다.
-				 */
-				$.responsive.getScrollbarWidth = _getScrollbarWidth;
 
 				/**
 				 * @description 기본 객체를 사용자에게 제공합니다.
