@@ -130,7 +130,7 @@ destroy |  | boolean | 플러그인을 소멸시키는 함수 입니다.
 setState | array[string] \|\| string, number | boolean | state에 지정한 분기를 적용시킬 수 있고 일자를 지정하면 일정기간동안 state에 지정한 분기를 볼 수 있습니다.
 getStateCookie | | array | 쿠키에 state에 할당된 값을 공백을 제거하고 콤마(,)단위로 잘라 배열로 만들고 중복제거를 해서 반환합니다.
 getScrollbarWidth | element \|\| jQueryElement \|\| undefined | number | 제이쿼리 엘리먼트 또는 엘리먼트의 스크롤바 넓이를 구합니다. 매개변수가 제이쿼리 엘리먼트 또는 엘리먼트가 아닐경우 브라우저의 스크롤바 넓이를 구합니다.
-hasScrollbar | element \|\| jQueryElement | object[boolean], string | 제이쿼리 엘리먼트 또는 엘리먼트에 가로, 세로스크롤바가 있는지 확인합니다. 두번째 매개변수에 parents 문자열을 넣으면 부모들도 함께 검사합니다.
+hasScrollbar | element \|\| jQueryElement, string | object[boolean] | 제이쿼리 엘리먼트 또는 엘리먼트에 가로, 세로스크롤바가 있는지 확인합니다. 두번째 매개변수에 parents 문자열을 넣으면 부모들도 함께 검사합니다.
 
 ### $.responsive.setting
 
