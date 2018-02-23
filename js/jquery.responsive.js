@@ -826,7 +826,7 @@ try {
 					option.lowIE.property = option.lowIEFilter;
 					_setting.lowIE.property = option.lowIE.property;
 
-					_$window.off('resize.responsive').on('resize.responsive', function(event) {
+					_$window.on('resize.responsive', function(event) {
 						//화면정보 갱신
 						_setScreenInfo(event);
 
