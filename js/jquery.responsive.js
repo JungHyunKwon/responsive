@@ -671,14 +671,9 @@ try {
 				 * @return {object}
 				 */
 				$.responsive = function(option) {
-					//현재상태가 있을경우
-					if(_getTypeof(_setting.nowState) === 'array' && _setting.nowState.length) {
-						_$target.removeClass(_setting.nowState.join(' '));
-					}
-
-					//상속된 클래스가 있을경우
-					if(_getTypeof(_setting.inheritClass) === 'object' && _getTypeof(_setting.inheritClass.property) === 'array' && _setting.inheritClass.property.length) {
-						_$target.removeClass(_setting.inheritClass.property.join(' '));
+					//소멸
+					if(_setting.isRun) {
+						$.responsive.destroy();
 					}
 
 					//기본객체
