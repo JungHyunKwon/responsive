@@ -5,33 +5,33 @@
 ````javascript
 $.responsive({
     range : {
-	wide : {
-	    horizontal : {
-		from : 9999,
-		to : 1201
-	    }
-	},
-	web : {
-	    horizontal : {
-		from : 1200,
-		to : 801
-	    }
-	},
-	tablet : {
-	    horizontal : {
-		from : 800,
-		to : 641
-	    }
-	},
-	phone : {
-	    horizontal : {
-		from : 640,
-		to : 0
-	    }
-	}
+        wide : {
+            horizontal : {
+                from : 9999,
+                to : 1201
+            }
+        },
+        web : {
+            horizontal : {
+                from : 1200,
+                to : 1001
+            }
+        },
+        tablet : {
+            horizontal : {
+                from : 1000,
+                to : 641
+            }
+        },
+        phone : {
+            horizontal : {
+                from : 640,
+                to : 0
+            }
+        }
     },
     lowIE : {
-	property : ['web']
+        property : ['web']
     },
     inheritClass : false
 });
@@ -47,12 +47,12 @@ range가 객체가 아니거나 객체안에 프로퍼티가 없을경우 none�
 ````javascript
 # : {
     horizontal : {
-	from : n,
-	to : n
+        from : n,
+        to : n
     },
     vertical : {
-	from : n,
-	to : n
+        from : n,
+        to : n
     }
 }
 ````
