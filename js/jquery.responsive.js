@@ -30,8 +30,6 @@ try {
 					 */
 					set : function(name, value, day) {
 						var date = new Date(),
-							nameType = _getTypeof(name),
-							valueType = _getTypeof(value),
 							result = false;
 
 						if(_getTypeof(name) === 'string' && _getTypeof(value) === 'string') {
