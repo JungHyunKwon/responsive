@@ -345,42 +345,25 @@ try {
 				 */
 				function _hasScrollbar(element, type) {
 					var $this = _toJQueryElement(element).first(),
+						overflow = {
+							x : $this.css('overflow-x'),
+							y : $this.css('overflow-y')
+						},
 						result = {
 							horizontal : false,
 							vertical : false
-						},
-						hasScrollbar = function($element) {
-							var result = {
-									horizontal : false,
-									vertical : false
-								},
-								overflow = {
-									x : $element.css('overflow-x'),
-									y : $element.css('overflow-y')
-								};
-
-							if(($element[0].scrollWidth > $element[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
-								result.horizontal = true;
-							}
-							
-							if(($element[0].scrollHeight > $element[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
-								result.vertical = true;
-							}
-
-							return result;
 						};
-
+					
 					if($this.length) {
 						if(type === 'parents') {
 							result.horizontal = [];
 							result.vertical = [];
 
 							$this.add($this.parents()).each(function(index, element) {
-								var $element = $(element),
-									elementHasScrollbar = hasScrollbar($element);
+								var hasScrollbar = _hasScrollbar(element);
 
-								result.horizontal.push(elementHasScrollbar.horizontal);
-								result.vertical.push(elementHasScrollbar.vertical);
+								result.horizontal.push(hasScrollbar.horizontal);
+								result.vertical.push(hasScrollbar.vertical);
 							});
 
 							//가로스크롤바가 하나라도 있을경우
@@ -397,7 +380,13 @@ try {
 								result.vertical = false;
 							}
 						}else{
-							result = hasScrollbar($this);
+							if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
+								result.horizontal = true;
+							}
+							
+							if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
+								result.vertical = true;
+							}
 						}
 					}
 
