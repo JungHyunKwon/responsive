@@ -333,7 +333,7 @@ try {
 			}
 
 			$(function() {
-				var _$target = $('body'),
+				var _$body = $('body'),
 					_initialSetting = _getDefaultObject();
 
 				/**
@@ -417,7 +417,7 @@ try {
 						$this = $('#scrollbar');
 
 						if(!$this.length) {
-							_$target.append('<div id="scrollbar">&nbsp;</div>');
+							_$body.append('<div id="scrollbar">&nbsp;</div>');
 							$this = $('#scrollbar');
 						}
 					}
@@ -431,7 +431,7 @@ try {
 				 * @return {object}
 				 */
 				function _getDefaultObject() {
-					var hasScrollbar = _hasScrollbar(_$target, 'parents'),
+					var hasScrollbar = _hasScrollbar(_$body, 'parents'),
 						scrollbarWidth = _getScrollbarWidth(),
 						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
 						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height();
@@ -512,7 +512,7 @@ try {
 
 					if(result) {
 						//현재상태 클래스 제거
-						_$target.removeClass(_setting.nowState.join(' '));
+						_$body.removeClass(_setting.nowState.join(' '));
 
 						//클래스 상속 옵션을 허용했을 때
 						if(_setting.inheritClass.is) {
@@ -520,7 +520,7 @@ try {
 
 							//상속 클래스 제거
 							if(_setting.inheritClass.property.length) {
-								_$target.removeClass(_setting.inheritClass.property.join(' '));
+								_$body.removeClass(_setting.inheritClass.property.join(' '));
 							}
 
 							for(i = 0; i < nowStateLastIndex; i++) {
@@ -532,7 +532,7 @@ try {
 
 							//상속 클래스 추가
 							if(inheritClass.length) {
-								_$target.addClass(inheritClass.join(' '));
+								_$body.addClass(inheritClass.join(' '));
 							}
 							
 							//상속된 프로퍼티명 추가
@@ -540,7 +540,7 @@ try {
 						}
 
 						//새로운상태 클래스 추가
-						_$target.addClass(state.join(' '));
+						_$body.addClass(state.join(' '));
 
 						//이전상태 추가
 						_setting.prevState = _setting.nowState;
@@ -602,7 +602,7 @@ try {
 				 * @return {object}
 				 */
 				function _setScreenInfo(event) {
-					var hasScrollbar = _hasScrollbar(_$target, 'parents');
+					var hasScrollbar = _hasScrollbar(_$body, 'parents');
 
 					//객체가 아닐때
 					if(_getTypeof(event) !== 'object') {
@@ -634,9 +634,9 @@ try {
 
 					//브라우저 스크롤바가 있을때
 					if(_setting.scrollbarWidth) {
-						_$target.addClass('scrollbar');
+						_$body.addClass('scrollbar');
 					}else{
-						_$target.removeClass('scrollbar');
+						_$body.removeClass('scrollbar');
 					}
 
 					//화면 넓이, 높이
@@ -654,7 +654,7 @@ try {
 					}
 
 					//방향
-					_$target.removeClass(_setting.orientation);
+					_$body.removeClass(_setting.orientation);
 
 					if(_setting.screenWidth === _setting.screenHeight) {
 						_setting.orientation = 'square';
@@ -664,7 +664,7 @@ try {
 						_setting.orientation = 'portrait';
 					}
 					
-					_$target.addClass(_setting.orientation);
+					_$body.addClass(_setting.orientation);
 
 					return _setting;
 				}
@@ -686,7 +686,7 @@ try {
 					_setting.isRun = true;
 
 					//브라우저, 플랫폼 클래스 추가
-					_$target.addClass(_setting.browser + ' ' + _setting.platform);
+					_$body.addClass(_setting.browser + ' ' + _setting.platform);
 					
 					//객체가 아닐때
 					if(_getTypeof(option) !== 'object') {
@@ -904,7 +904,7 @@ try {
 					}).triggerHandler('resize.responsive');
 
 					//객체 반환
-					return _$target;
+					return _$body;
 				};
 
 				/**
@@ -918,7 +918,7 @@ try {
 					//플러그인을 실행중일때
 					if(_setting.isRun) {
 						_$window.off('resize.responsive');
-						_$target.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation + ' ' + _setting.inheritClass.property.join(' '));
+						_$body.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation + ' ' + _setting.inheritClass.property.join(' '));
 						$('#scrollbar').remove();
 						this.setting = _copyObject(_initialSetting);
 						result = true;
