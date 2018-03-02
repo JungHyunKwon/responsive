@@ -29,7 +29,7 @@ try {
 					 * @return {boolean}
 					 */
 					set : function(name, value, day) {
-						var date = new Date(),
+						var date = new Date().toUTCString(),
 							result = false;
 						
 						if(_getTypeof(day) !== 'number') {
@@ -39,7 +39,7 @@ try {
 						value = escape(value);
 						date.setDate(date.getDate() + day);
 						
-						document.cookie = name + '=' + value + '; expires=' + date.toUTCString() + '; path=/;';
+						document.cookie = name + '=' + value + '; expires=' + date + '; path=/;';
 						
 						//쿠키생성 후 확인해서 있으면
 						if(this.get(name) !== 'none') {
