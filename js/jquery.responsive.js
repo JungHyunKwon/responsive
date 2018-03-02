@@ -31,8 +31,8 @@ try {
 					set : function(name, value, day) {
 						var date = new Date(),
 							result = false;
-
-						if(!day) {
+						
+						if(_getTypeof(day) !== 'number') {
 							day = -1;
 						}
 
@@ -147,6 +147,24 @@ try {
 				}
 
 				return result;
+			}
+
+			/**
+			 * @name 제이쿼리 엘리먼트로 변경
+			 * @since 2017-12-18
+			 * @param {element || window || document || jQueryElement} element
+			 * @return {jQueryObject || jQueryElement}
+			 */
+			function _toJQueryElement(element) {
+				var elementType = _getTypeof(element);
+				
+				if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
+					element = $(element);
+				}else if(elementType !== 'jQueryElement') {
+					element = $();
+				}
+
+				return element;
 			}
 
 			/**
@@ -269,11 +287,16 @@ try {
 			 * @return {array}
 			 */
 			function _removeDuplicate(value) {
-				var result = [];
+				var result = [],
+					valueType = _getTypeof(value);
+				
+				//문자형일때
+				if(valueType === 'string') {
+					value = value.split();
 				
 				//배열이 아닐때
-				if(_getTypeof(value) !== 'array') {
-					value = $.makeArray(value);
+				}else if(valueType !== 'array') {
+					value = [];
 				}
 
 				for(var i = 0, valueLength = value.length; i < valueLength; i++) {
@@ -321,18 +344,20 @@ try {
 				 * @return {object}
 				 */
 				function _hasScrollbar(element, type) {
-					var $this,
-						elementType = _getTypeof(element),
-						result,
+					var $this = _toJQueryElement(element).first(),
+						result = {
+							horizontal : false,
+							vertical : false
+						},
 						hasScrollbar = function($element) {
 							var result = {
-								horizontal : false,
-								vertical : false
-							},
-							overflow = {
-								x : $element.css('overflow-x'),
-								y : $element.css('overflow-y')
-							};
+									horizontal : false,
+									vertical : false
+								},
+								overflow = {
+									x : $element.css('overflow-x'),
+									y : $element.css('overflow-y')
+								};
 
 							if(($element[0].scrollWidth > $element[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
 								result.horizontal = true;
@@ -345,20 +370,10 @@ try {
 							return result;
 						};
 
-					if(elementType === 'element') {
-						$this = $(element);
-					}else if(elementType === 'jQueryElement') {
-						$this = element;
-					}
-
-					if(_getTypeof($this) === 'jQueryElement') {
-						$this = $this.first();
-
+					if($this.length) {
 						if(type === 'parents') {
-							result = {
-								horizontal : [],
-								vertical : []
-							};
+							result.horizontal = [];
+							result.vertical = [];
 
 							$this.add($this.parents()).each(function(index, element) {
 								var $element = $(element),
@@ -392,32 +407,22 @@ try {
 				/**
 				 * @name 스크롤바 넓이 구하기
 				 * @since 2017-12-06
-				 * @param {element || jQueryElement || undefined} element
+				 * @param {element || jQueryElement} element
 				 * @return {number}
 				 */
 				function _getScrollbarWidth(element) {
-					var $this,
-						elementType = _getTypeof(element),
-						result = 0;
+					var $this = _toJQueryElement(element);
 					
-					if(elementType === 'element') {
-						$this = $(element);
-					}else if(elementType === 'jQueryElement') {
-						$this = element;
-					}else{
+					if(!$this.length) {
 						$this = $('#scrollbar');
 
 						if(!$this.length) {
-							$('body').append('<div id="scrollbar">&nbsp;</div>');
+							_$target.append('<div id="scrollbar">&nbsp;</div>');
 							$this = $('#scrollbar');
 						}
 					}
 
-					if(_getTypeof($this) === 'jQueryElement') {
-						result = $this[0].offsetWidth - $this[0].clientWidth;
-					}
-
-					return result;
+					return $this[0].offsetWidth - $this[0].clientWidth;
 				}
 
 				/**
@@ -720,31 +725,29 @@ try {
 					}
 					
 					//option.range에 적은 값을 기준으로 자바스크립트 코드 생성
-					var i;
-
 					option.rangeCode = 'option.enter = [];\n_setting.exit = [];\n\n';
 					option.rangeCode += 'if(!_setting.lowIE.run && _setting.lowIE.is) {\n\toption.enter = _setting.lowIE.property;\n}else{\n';
 					option.rangeFilter = [];
 					option.rangeProperty = [];
 
-					for(i in option.range) {
+					for(option.i in option.range) {
 						//필터링
-						if(i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
+						if(option.i !== 'square' && option.i !== 'portrait' && option.i !== 'landscape' && option.i.substr(-3) !== 'All' && option.i.substr(-7) !== 'Resized' && option.i !== 'none' && option.i.substr(-3) !== 'all' && option.i !== 'mobile' && option.i !== 'pc' && option.i !== 'ie7' && option.i !== 'ie8' && option.i !== 'ie9' && option.i !== 'ie10' && option.i !== 'ie11' && option.i !== 'scrollbar' && option.i !== 'edge' && option.i !== 'opera' && option.i !== 'chrome' && option.i !== 'firefox' && option.i !== 'safari' && option.i !== 'unknown') {
 							//객체검사
-							option.hasRangeHorizontal = (_getTypeof(option.range[i].horizontal) === 'object');
-							option.hasRangeVertical = (_getTypeof(option.range[i].vertical) === 'object');
+							option.hasRangeHorizontal = (_getTypeof(option.range[option.i].horizontal) === 'object');
+							option.hasRangeVertical = (_getTypeof(option.range[option.i].vertical) === 'object');
 
 							//horizontal 또는 vertical이 객체일때
 							if(option.hasRangeHorizontal || option.hasRangeVertical) {
 								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeHorizontal && _getTypeof(option.range[i].horizontal.from) === 'number' && _getTypeof(option.range[i].horizontal.to) === 'number') {
+								if(option.hasRangeHorizontal && _getTypeof(option.range[option.i].horizontal.from) === 'number' && _getTypeof(option.range[option.i].horizontal.to) === 'number') {
 									option.rangeFilter.push(true);
 								}else{
 									option.rangeFilter.push(false);
 								}
 								
 								//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeVertical && _getTypeof(option.range[i].vertical.from) === 'number' && _getTypeof(option.range[i].vertical.to) === 'number') {
+								if(option.hasRangeVertical && _getTypeof(option.range[option.i].vertical.from) === 'number' && _getTypeof(option.range[option.i].vertical.to) === 'number') {
 									option.rangeFilter.push(true);
 								}else{
 									option.rangeFilter.push(false);
@@ -756,7 +759,7 @@ try {
 									
 									//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
 									if(option.rangeFilter[0]) {
-										option.rangeCode += '_setting.screenWidth <= ' + option.range[i].horizontal.from + ' && _setting.screenWidth >= ' + option.range[i].horizontal.to;
+										option.rangeCode += '_setting.screenWidth <= ' + option.range[option.i].horizontal.from + ' && _setting.screenWidth >= ' + option.range[option.i].horizontal.to;
 									}
 									
 									//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
@@ -766,20 +769,20 @@ try {
 											option.rangeCode += ' && ';
 										}
 
-										option.rangeCode += '_setting.screenHeight <= ' + option.range[i].vertical.from + ' && _setting.screenHeight >= ' + option.range[i].vertical.to;
+										option.rangeCode += '_setting.screenHeight <= ' + option.range[option.i].vertical.from + ' && _setting.screenHeight >= ' + option.range[option.i].vertical.to;
 									}
 
 									option.rangeCode += ') {\n';
-									option.rangeCode += '\t\toption.enter.push("' + i + '");\n';
+									option.rangeCode += '\t\toption.enter.push("' + option.i + '");\n';
 									option.rangeCode += '\t}else{\n';
-									option.rangeCode += '\t\t_setting.exit.push("' + i + '");\n';
+									option.rangeCode += '\t\t_setting.exit.push("' + option.i + '");\n';
 									option.rangeCode += '\t}\n\n';
 
 									//프로퍼티명 기입
-									option.rangeProperty.push(i);
+									option.rangeProperty.push(option.i);
 								}else{
 									//프로퍼티 삭제
-									delete option.range[i];
+									delete option.range[option.i];
 								}
 
 								//초기화
@@ -787,7 +790,7 @@ try {
 							}
 						}else{
 							//프로퍼티 삭제
-							delete option.range[i];
+							delete option.range[option.i];
 						}
 					}
 
@@ -798,13 +801,11 @@ try {
 					//option.rangeCode작성 끝
 
 					//필터링된 프로퍼티명에서 option.lowIE.property에 이름이 있는지 확인해서 없으면 제거
-					var lowIEPropertyLength = option.lowIE.property.length;
-
 					option.lowIEFilter = [];
 
-					for(i = 0; i < lowIEPropertyLength; i++) {
-						if($.inArray(option.lowIE.property[i], option.rangeProperty) > -1) {
-							option.lowIEFilter.push(option.lowIE.property[i]);
+					for(option.i = 0; option.i < option.lowIE.property.length; option.i++) {
+						if($.inArray(option.lowIE.property[option.i], option.rangeProperty) > -1) {
+							option.lowIEFilter.push(option.lowIE.property[option.i]);
 						}
 					}
 					
