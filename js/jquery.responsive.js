@@ -29,21 +29,24 @@ try {
 					 * @return {boolean}
 					 */
 					set : function(name, value, day) {
-						var date = new Date().toUTCString(),
+						var date = new Date(),
+							nameType = _getTypeof(name),
+							valueType = _getTypeof(value),
 							result = false;
-						
-						if(_getTypeof(day) !== 'number') {
-							day = -1;
-						}
 
-						value = escape(value);
-						date.setDate(date.getDate() + day);
-						
-						document.cookie = name + '=' + value + '; expires=' + date + '; path=/;';
-						
-						//쿠키생성 후 확인해서 있으면
-						if(this.get(name) !== 'none') {
-							result = true;
+						if(_getTypeof(name) === 'string' && _getTypeof(value) === 'string') {
+							if(_getTypeof(day) !== 'number') {
+								day = -1;
+							}
+
+							value = escape(value);
+							date.setDate(date.getDate() + day);
+							document.cookie = name + '=' + value + '; expires=' + date.toUTCString() + '; path=/;';
+
+							//쿠키생성 후 확인해서 있으면
+							if(this.get(name) !== 'none') {
+								result = true;
+							}
 						}
 
 						return result;
@@ -58,16 +61,18 @@ try {
 					get : function(name) {
 						var cookie = document.cookie.split(';'),
 							result = 'none';
+						
+						if(_getTypeof(name) === 'string') {
+							for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
+								while(cookie[i].charAt(0) === ' ') {
+									cookie[i] = cookie[i].substring(1);
+									break;
+								}
 
-						for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
-							while(cookie[i].charAt(0) === ' ') {
-								cookie[i] = cookie[i].substring(1);
-								break;
-							}
-
-							if(cookie[i].indexOf(name) > -1) {
-								result = unescape(cookie[i].substring(name.length + 1, cookie[i].length));
-								break;
+								if(cookie[i].indexOf(name) > -1) {
+									result = unescape(cookie[i].substring(name.length + 1, cookie[i].length));
+									break;
+								}
 							}
 						}
 
