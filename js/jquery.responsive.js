@@ -101,11 +101,7 @@ try {
 					
 					//Infinity일때(숫자로 처리되서 따로 처리함)
 					}else if(result === 'number' && !isFinite(value)) {
-						if(value.toString() === '-Infinity') {
-							result = '-Infinity';
-						}else{
-						    result = 'Infinity';
-						}
+						result = value.toString();
 
 					//window일때
 					}else if(value === window) {
