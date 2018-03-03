@@ -155,11 +155,9 @@ try {
 			 * @return {jQueryObject || jQueryElement}
 			 */
 			function _toJQueryElement(element) {
-				var elementType = _getTypeof(element);
-				
-				if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
-					element = $(element);
-				}else if(elementType !== 'jQueryElement') {
+				element = $(element);
+
+				if(_getTypeof(element) !== 'jQueryElement') {
 					element = $();
 				}
 
