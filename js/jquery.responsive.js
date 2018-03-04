@@ -149,22 +149,6 @@ try {
 			}
 
 			/**
-			 * @name 제이쿼리 엘리먼트로 변경
-			 * @since 2017-12-18
-			 * @param {element || window || document || jQueryElement} element
-			 * @return {jQueryObject || jQueryElement}
-			 */
-			function _toJQueryElement(element) {
-				element = $(element);
-
-				if(_getTypeof(element) !== 'jQueryElement') {
-					element = $();
-				}
-
-				return element;
-			}
-
-			/**
 			 * @name 콘솔오류방지
 			 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
 			 * @since 2017-10-11
@@ -341,7 +325,7 @@ try {
 				 * @return {object}
 				 */
 				function _hasScrollbar(element, type) {
-					var $this = _toJQueryElement(element).first(),
+					var $this = $(element).first(),
 						overflow = {
 							x : $this.css('overflow-x'),
 							y : $this.css('overflow-y')
@@ -397,7 +381,7 @@ try {
 				 * @return {number}
 				 */
 				function _getScrollbarWidth(element) {
-					var $this = _toJQueryElement(element).first();
+					var $this = $(element).first();
 					
 					if(!$this.length) {
 						$this = $('#scrollbar');
