@@ -225,11 +225,11 @@ try {
 			/**
 			 * @name 객체 복사
 			 * @since 2017-12-06
-			 * @param {object} object
+			 * @param {object} value
 			 * @return {object}
 			 */
-			function _copyObject(object) {
-				return (_getTypeof(object) === 'object') ? $.extend(true, {}, object) : object;
+			function _copyObject(value) {
+				return (_getTypeof(value) === 'object') ? $.extend(true, {}, value) : value;
 			}
 
 			/**
@@ -397,7 +397,7 @@ try {
 				 * @return {number}
 				 */
 				function _getScrollbarWidth(element) {
-					var $this = _toJQueryElement(element);
+					var $this = _toJQueryElement(element).first();
 					
 					if(!$this.length) {
 						$this = $('#scrollbar');
@@ -663,7 +663,7 @@ try {
 				 */
 				$.responsive = function(option) {
 					//소멸
-					$.responsive.destroy();
+					this.destroy();
 
 					//기본객체
 					_setting = _getDefaultObject();
@@ -907,8 +907,8 @@ try {
 						_$body.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation + ' ' + _setting.inheritClass.property.join(' '));
 						$('#scrollbar').remove();
 						this.setting = _copyObject(_initialSetting);
-						result = true;
 						_setting.isRun = false;
+						result = true;
 					}
 
 					return result;
