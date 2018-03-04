@@ -947,11 +947,6 @@ try {
 
 					return result;
 				};
-				
-				/**
-				 * @description _getStateCookie 함수를 사용자에게 제공합니다.
-				 */
-				$.responsive.getStateCookie = _getStateCookie;
 
 				/**
 				 * @description 기본 객체를 사용자에게 제공합니다.

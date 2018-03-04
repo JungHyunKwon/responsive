@@ -128,7 +128,6 @@ lowIE : {
 | :-- | :---- | :-- | :-- |
 destroy |  | boolean | 플러그인을 소멸시키는 함수 입니다.
 setState | array[string] \|\| string, number | boolean | state에 지정한 분기를 적용시킬 수 있고 일자를 지정하면 일정기간동안 state에 지정한 분기를 볼 수 있습니다.
-getStateCookie | | array | 쿠키에 state에 할당된 값을 공백을 제거하고 콤마(,)단위로 잘라 배열로 만들고 중복제거를 해서 반환합니다.
 
 ### $.responsive.setting
 
