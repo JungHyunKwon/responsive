@@ -647,7 +647,7 @@ try {
 				 */
 				$.responsive = function(option) {
 					//소멸
-					this.destroy();
+					$.responsive.destroy();
 
 					//기본객체
 					_setting = _getDefaultObject();
