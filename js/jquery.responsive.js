@@ -117,19 +117,18 @@ try {
 
 					//제이쿼리 객체일때
 					}else if(typeof window.jQuery === 'function' && value instanceof window.jQuery) {
-						var iCount = 0,
-							valueLength = value.length;
+						var valueLength = value.length,
+							element = window.jQuery.map(value, function(element, index) {
+								var elementType = _getTypeof(element);
 
-						for(var i = 0; i < valueLength; i++) {
-							var iType = _getTypeof(value[i]);
-
-							if(iType === 'window' || iType === 'document' || iType === 'element') {
-								iCount++;
-							}
-						}
+								if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
+									return element;
+								}
+							}),
+							elementLength = element.length;
 
 						//제이쿼리 엘리먼트일때
-						if(valueLength === iCount) {
+						if(valueLength === elementLength && elementLength) {
 							result = 'jQueryElement';
 						}else{
 							result = 'jQueryObject';
