@@ -539,9 +539,9 @@ try {
 				 * @return {array}
 				 */
 				function _callEvent(state) {
-					var event = $.Event('responsive', {
+					var event = {
 						setting : _copyObject(_setting)
-					});
+					};
 
 					//중복제거
 					state = _removeDuplicate(state);
@@ -554,16 +554,15 @@ try {
 						event.state = state[i];
 
 						//모든 이벤트 호출
-						_$window.triggerHandler(event);
+						_$window.triggerHandler($.Event('responsive', event));
 
 						//필터 이벤트 호출
-						event.type = 'responsive:' + state[i];
-						_$window.triggerHandler(event);
+						_$window.triggerHandler($.Event('responsive:' + state[i], event));
 					}
 
 					return event;
 				}
-				
+
 				/**
 				 * @name 화면정보 입력
 				 * @since 2017-12-06
