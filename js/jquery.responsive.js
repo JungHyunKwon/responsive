@@ -432,11 +432,7 @@ try {
 						isScreenChange : false,
 						isScreenWidthChange : false,
 						isScreenHeightChange : false,
-						isScreenWidthAndHeightChange : false,
-						inheritClass : {
-							property : [],
-							is : false	
-						}
+						isScreenWidthAndHeightChange : false
 					});
 				}
 
@@ -450,7 +446,6 @@ try {
 					var result = false,
 						setState = [],
 						nowState = [],
-						inheritClass = [],
 						stateCookie = _getStateCookie(),
 						stateLength,
 						i;
@@ -482,31 +477,6 @@ try {
 					if(result) {
 						//현재상태 클래스 제거
 						_$body.removeClass(_setting.nowState.join(' '));
-
-						//클래스 상속 옵션을 허용했을 때
-						if(_setting.inheritClass.is) {
-							var nowStateLastIndex = $.inArray(state[state.length - 1], _setting.rangeProperty);
-
-							//상속 클래스 제거
-							if(_setting.inheritClass.property.length) {
-								_$body.removeClass(_setting.inheritClass.property.join(' '));
-							}
-
-							for(i = 0; i < nowStateLastIndex; i++) {
-								//현재상태에 없을때
-								if($.inArray(_setting.rangeProperty[i], state) === -1) {
-									inheritClass.push(_setting.rangeProperty[i]);
-								}
-							}
-
-							//상속 클래스 추가
-							if(inheritClass.length) {
-								_$body.addClass(inheritClass.join(' '));
-							}
-							
-							//상속된 프로퍼티명 추가
-							_setting.inheritClass.property = inheritClass;
-						}
 
 						//새로운상태 클래스 추가
 						_$body.addClass(state.join(' '));
@@ -640,7 +610,7 @@ try {
 				/**
 				 * @name responsive
 				 * @since 2017-12-06
-				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ['#']}, inheritClass : boolean}
+				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ['#']}}
 				 * @return {object}
 				 */
 				$.responsive = function(option) {
@@ -675,14 +645,6 @@ try {
 					}else{
 						option.lowIE.property = [];
 					}
-					
-					//불린이 아닐경우
-					if(_getTypeof(option.inheritClass) !== 'boolean') {
-						option.inheritClass = false;
-					}
-					
-					//클래스 상속여부
-					_setting.inheritClass.is = option.inheritClass;
 
 					//리사이즈 종료 간격
 					option.interval = 250;
@@ -886,7 +848,7 @@ try {
 					//플러그인을 실행중일때
 					if(_setting.isRun) {
 						_$window.off('resize.responsive');
-						_$body.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation + ' ' + _setting.inheritClass.property.join(' '));
+						_$body.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation);
 						$('#scrollbar').remove();
 						this.setting = _copyObject(_initialSetting);
 						_setting.isRun = false;
