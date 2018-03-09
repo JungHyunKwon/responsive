@@ -374,39 +374,37 @@ try {
 							vertical : false
 						};
 					
-					if(isJQueryElement) {
-						if(type === 'parents') {
-							result.horizontal = [];
-							result.vertical = [];
+					if(type === 'parents') {
+						result.horizontal = [];
+						result.vertical = [];
 
-							$this.add($this.parents()).each(function(index, element) {
-								var hasScrollbar = _hasScrollbar(element);
+						$this.add($this.parents()).each(function(index, element) {
+							var hasScrollbar = _hasScrollbar(element);
 
-								result.horizontal.push(hasScrollbar.horizontal);
-								result.vertical.push(hasScrollbar.vertical);
-							});
+							result.horizontal.push(hasScrollbar.horizontal);
+							result.vertical.push(hasScrollbar.vertical);
+						});
 
-							//가로스크롤바가 하나라도 있을경우
-							if($.inArray(true, result.horizontal) > -1) {
-								result.horizontal = true;
-							}else{
-								result.horizontal = false;
-							}
-							
-							//세로스크롤바가 하나라도 있을경우
-							if($.inArray(true, result.vertical) > -1) {
-								result.vertical = true;
-							}else{
-								result.vertical = false;
-							}
+						//가로스크롤바가 하나라도 있을경우
+						if($.inArray(true, result.horizontal) > -1) {
+							result.horizontal = true;
 						}else{
-							if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
-								result.horizontal = true;
-							}
-							
-							if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
-								result.vertical = true;
-							}
+							result.horizontal = false;
+						}
+						
+						//세로스크롤바가 하나라도 있을경우
+						if($.inArray(true, result.vertical) > -1) {
+							result.vertical = true;
+						}else{
+							result.vertical = false;
+						}
+					}else if(isJQueryElement) {
+						if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
+							result.horizontal = true;
+						}
+						
+						if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
+							result.vertical = true;
 						}
 					}
 
