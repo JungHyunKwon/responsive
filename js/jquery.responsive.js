@@ -317,6 +317,45 @@ try {
 					_initialSetting = _getDefaultObject();
 
 				/**
+				 * @name 엘리먼트 또는 제이쿼리 엘리먼트 인지 구하기
+				 * @since 2017-12-06
+				 * @param {element || jQueryElement} element
+				 * @return {boolean}
+				 */
+				function _isElement(element) {
+					var elementType = _getTypeof(element),
+						result = false;
+
+					if(elementType === 'window' || elementType === 'document' || elementType === 'element' || elementType === 'jQueryElement') {
+						result = true;						
+					}
+
+					return result;
+				}
+
+				/**
+				 * @name 스크롤바 넓이 구하기
+				 * @since 2017-12-06
+				 * @param {element || jQueryElement} element
+				 * @return {number}
+				 */
+				function _getScrollbarWidth(element) {
+					var $this = $(element).first(),
+						isJQueryElement = _isElement($this);
+					
+					if(!isJQueryElement) {
+						$this = $('#scrollbar');
+
+						if(!$this.length) {
+							_$body.append('<div id="scrollbar">&nbsp;</div>');
+							$this = $('#scrollbar');
+						}
+					}
+
+					return $this[0].offsetWidth - $this[0].clientWidth;
+				}
+
+				/**
 				 * @name 스크롤바 존재여부
 				 * @since 2017-12-06
 				 * @param {element || jQueryElement} element
@@ -325,6 +364,7 @@ try {
 				 */
 				function _hasScrollbar(element, type) {
 					var $this = $(element).first(),
+						isJQueryElement = _isElement($this),
 						overflow = {
 							x : $this.css('overflow-x'),
 							y : $this.css('overflow-y')
@@ -334,7 +374,7 @@ try {
 							vertical : false
 						};
 					
-					if($this.length) {
+					if(isJQueryElement) {
 						if(type === 'parents') {
 							result.horizontal = [];
 							result.vertical = [];
@@ -371,27 +411,6 @@ try {
 					}
 
 					return result;
-				}
-
-				/**
-				 * @name 스크롤바 넓이 구하기
-				 * @since 2017-12-06
-				 * @param {element || jQueryElement} element
-				 * @return {number}
-				 */
-				function _getScrollbarWidth(element) {
-					var $this = $(element).first();
-					
-					if(!$this.length) {
-						$this = $('#scrollbar');
-
-						if(!$this.length) {
-							_$body.append('<div id="scrollbar">&nbsp;</div>');
-							$this = $('#scrollbar');
-						}
-					}
-
-					return $this[0].offsetWidth - $this[0].clientWidth;
 				}
 
 				/**
