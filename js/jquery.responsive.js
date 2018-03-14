@@ -206,6 +206,23 @@ try {
 			}
 
 			/**
+			 * @name 엘리먼트 또는 제이쿼리 엘리먼트 인지 구하기
+			 * @since 2017-12-06
+			 * @param {element || jQueryElement} element
+			 * @return {boolean}
+			 */
+			function _isElement(element) {
+				var elementType = _getTypeof(element),
+					result = false;
+
+				if(elementType === 'window' || elementType === 'document' || elementType === 'element' || elementType === 'jQueryElement') {
+					result = true;						
+				}
+
+				return result;
+			}
+
+			/**
 			 * @name 객체 복사
 			 * @since 2017-12-06
 			 * @param {object} value
@@ -317,23 +334,6 @@ try {
 					_initialSetting = _getDefaultObject();
 
 				/**
-				 * @name 엘리먼트 또는 제이쿼리 엘리먼트 인지 구하기
-				 * @since 2017-12-06
-				 * @param {element || jQueryElement} element
-				 * @return {boolean}
-				 */
-				function _isElement(element) {
-					var elementType = _getTypeof(element),
-						result = false;
-
-					if(elementType === 'window' || elementType === 'document' || elementType === 'element' || elementType === 'jQueryElement') {
-						result = true;						
-					}
-
-					return result;
-				}
-
-				/**
 				 * @name 스크롤바 넓이 구하기
 				 * @since 2017-12-06
 				 * @param {element || jQueryElement} element
@@ -374,6 +374,10 @@ try {
 							vertical : false
 						};
 					
+					if(_getTypeof(type) === 'string') {
+						type = type.toLowerCase();
+					}
+
 					if(type === 'parents') {
 						result.horizontal = [];
 						result.vertical = [];
