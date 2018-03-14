@@ -208,7 +208,7 @@ try {
 			/**
 			 * @name 엘리먼트 또는 제이쿼리 엘리먼트 인지 구하기
 			 * @since 2017-12-06
-			 * @param {element || jQueryElement} element
+			 * @param {window || document || element || jQueryElement} element
 			 * @return {boolean}
 			 */
 			function _isElement(element) {
@@ -352,7 +352,7 @@ try {
 						}
 					}
 
-					return $this[0].offsetWidth - $this[0].clientWidth;
+					return $this[0].offsetWidth - $this[0].clientWidth || 0;
 				}
 
 				/**
