@@ -337,11 +337,12 @@ try {
 				 * @name 스크롤바 넓이 구하기
 				 * @since 2017-12-06
 				 * @param {element || jQueryElement} element
-				 * @return {number}
+				 * @return {array || number}
 				 */
 				function _getScrollbarWidth(element) {
-					var $this = $(element).first(),
-						isJQueryElement = _isElement($this);
+					var $this = $(element),
+						isJQueryElement = _isElement($this),
+						result = [];
 					
 					if(!isJQueryElement) {
 						$this = $('#scrollbar');
@@ -351,8 +352,18 @@ try {
 							$this = $('#scrollbar');
 						}
 					}
+					
+					$this.each(function(index, element) {
+						result.push(element.offsetWidth - element.clientWidth || 0);
+					});
+						
+					if(result.length === 1) {
+						result = result[0];
+					}else if(result.length === 0) {
+						result = 0;
+					}
 
-					return $this[0].offsetWidth - $this[0].clientWidth || 0;
+					return result;
 				}
 
 				/**
@@ -360,56 +371,70 @@ try {
 				 * @since 2017-12-06
 				 * @param {element || jQueryElement} element
 				 * @param {string} type
-				 * @return {object}
+				 * @return {object || array}
 				 */
 				function _hasScrollbar(element, type) {
-					var $this = $(element).first(),
-						isJQueryElement = _isElement($this),
-						overflow = {
-							x : $this.css('overflow-x'),
-							y : $this.css('overflow-y')
-						},
-						result = {
-							horizontal : false,
-							vertical : false
-						};
+					var $this = $(element),
+						result = [];
 					
 					if(_getTypeof(type) === 'string') {
 						type = type.toLowerCase();
 					}
-
-					if(type === 'parents') {
-						result.horizontal = [];
-						result.vertical = [];
-
-						$this.add($this.parents()).each(function(index, element) {
-							var hasScrollbar = _hasScrollbar(element);
-
-							result.horizontal.push(hasScrollbar.horizontal);
-							result.vertical.push(hasScrollbar.vertical);
-						});
-
-						//가로스크롤바가 하나라도 있을경우
-						if($.inArray(true, result.horizontal) > -1) {
-							result.horizontal = true;
-						}else{
-							result.horizontal = false;
-						}
+					
+					$this.each(function(index, element) {
+						var $this = $(element),
+							$parents = $this.add($this.parents()),
+							isJQueryElement = _isElement($this),
+							overflow = {
+								x : $this.css('overflow-x'),
+								y : $this.css('overflow-y')
+							},
+							scrollbar = {
+								horizontal : false,
+								vertical : false
+							};
 						
-						//세로스크롤바가 하나라도 있을경우
-						if($.inArray(true, result.vertical) > -1) {
-							result.vertical = true;
-						}else{
-							result.vertical = false;
+						if(type === 'parents') {
+							scrollbar.horizontal = [];
+							scrollbar.vertical = [];
+
+							$parents.each(function(index, element) {
+								var hasScrollbar = _hasScrollbar(element);
+
+								scrollbar.horizontal.push(hasScrollbar.horizontal);
+								scrollbar.vertical.push(hasScrollbar.vertical);
+							});
+
+							//가로스크롤바가 하나라도 있을경우
+							if($.inArray(true, scrollbar.horizontal) > -1) {
+								scrollbar.horizontal = true;
+							}else{
+								scrollbar.horizontal = false;
+							}
+							
+							//세로스크롤바가 하나라도 있을경우
+							if($.inArray(true, scrollbar.vertical) > -1) {
+								scrollbar.vertical = true;
+							}else{
+								scrollbar.vertical = false;
+							}
+						}else if(isJQueryElement) {
+							if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
+								scrollbar.horizontal = true;
+							}
+							
+							if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
+								scrollbar.vertical = true;
+							}
 						}
-					}else if(isJQueryElement) {
-						if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
-							result.horizontal = true;
-						}
-						
-						if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
-							result.vertical = true;
-						}
+
+						result.push(scrollbar);
+					});
+				
+					if(result.length === 1) {
+						result = result[0];
+					}else if(result.length === 0) {
+						result = 0;
 					}
 
 					return result;
