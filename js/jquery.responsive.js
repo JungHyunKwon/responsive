@@ -341,10 +341,10 @@ try {
 				 */
 				function _getScrollbarWidth(element) {
 					var $this = $(element),
-						isJQueryElement = _isElement($this),
+						isElement = _isElement($this),
 						result = [];
 					
-					if(!isJQueryElement) {
+					if(!isElement) {
 						$this = $('#scrollbar');
 
 						if(!$this.length) {
@@ -384,7 +384,7 @@ try {
 					$this.each(function(index, element) {
 						var $this = $(element),
 							$parents = $this.add($this.parents()),
-							isJQueryElement = _isElement($this),
+							isElement = _isElement($this),
 							overflow = {
 								x : $this.css('overflow-x'),
 								y : $this.css('overflow-y')
@@ -418,7 +418,7 @@ try {
 							}else{
 								scrollbar.vertical = false;
 							}
-						}else if(isJQueryElement) {
+						}else if(isElement) {
 							if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
 								scrollbar.horizontal = true;
 							}
