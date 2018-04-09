@@ -348,8 +348,7 @@ try {
 						$this = $('#scrollbar');
 
 						if(!$this.length) {
-							_$body.append('<div id="scrollbar">&nbsp;</div>');
-							$this = $('#scrollbar');
+							$this = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
 						}
 					}
 					
@@ -394,37 +393,39 @@ try {
 								vertical : false
 							};
 						
-						if(type === 'parents') {
-							scrollbar.horizontal = [];
-							scrollbar.vertical = [];
+						if(isElement) {
+							if(type === 'parents') {
+								scrollbar.horizontal = [];
+								scrollbar.vertical = [];
 
-							$parents.each(function(index, element) {
-								var hasScrollbar = _hasScrollbar(element);
+								$parents.each(function(index, element) {
+									var hasScrollbar = _hasScrollbar(element);
 
-								scrollbar.horizontal.push(hasScrollbar.horizontal);
-								scrollbar.vertical.push(hasScrollbar.vertical);
-							});
+									scrollbar.horizontal.push(hasScrollbar.horizontal);
+									scrollbar.vertical.push(hasScrollbar.vertical);
+								});
 
-							//가로스크롤바가 하나라도 있을경우
-							if($.inArray(true, scrollbar.horizontal) > -1) {
-								scrollbar.horizontal = true;
+								//가로스크롤바가 하나라도 있을경우
+								if($.inArray(true, scrollbar.horizontal) > -1) {
+									scrollbar.horizontal = true;
+								}else{
+									scrollbar.horizontal = false;
+								}
+								
+								//세로스크롤바가 하나라도 있을경우
+								if($.inArray(true, scrollbar.vertical) > -1) {
+									scrollbar.vertical = true;
+								}else{
+									scrollbar.vertical = false;
+								}
 							}else{
-								scrollbar.horizontal = false;
-							}
-							
-							//세로스크롤바가 하나라도 있을경우
-							if($.inArray(true, scrollbar.vertical) > -1) {
-								scrollbar.vertical = true;
-							}else{
-								scrollbar.vertical = false;
-							}
-						}else if(isElement) {
-							if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
-								scrollbar.horizontal = true;
-							}
-							
-							if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
-								scrollbar.vertical = true;
+								if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
+									scrollbar.horizontal = true;
+								}
+								
+								if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
+									scrollbar.vertical = true;
+								}
 							}
 						}
 
