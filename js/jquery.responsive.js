@@ -358,7 +358,7 @@ try {
 						
 					if(result.length === 1) {
 						result = result[0];
-					}else if(result.length === 0) {
+					}else if(!result.length) {
 						result = 0;
 					}
 
@@ -434,7 +434,7 @@ try {
 				
 					if(result.length === 1) {
 						result = result[0];
-					}else if(result.length === 0) {
+					}else if(!result.length) {
 						result = 0;
 					}
 
