@@ -711,7 +711,7 @@ try {
 						option.lowIE = {};
 					}
 
-					//option.lowIE.property 형태검사
+					//형태검사
 					option.lowIEPropertyType = _getTypeof(option.lowIE.property);
 					
 					//배열 또는 문자일때
@@ -815,6 +815,7 @@ try {
 						}
 					}
 					
+					//걸려나온게 있을때
 					if(option.lowIEFilter.length) {
 						option.lowIE.run = false;
 					}else{
