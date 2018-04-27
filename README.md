@@ -42,18 +42,18 @@ $.responsive({
 range가 객체가 아니거나 객체안에 프로퍼티가 없을경우 none이 떨어집니다.
 
 ````javascript
-# : {
+string || number : {
     horizontal : {
-        from : n,
-        to : n
+        from : number,
+        to : number
     },
     vertical : {
-        from : n,
-        to : n
+        from : number,
+        to : number
     }
 }
 ````
-##### \#
+##### \string
 분기의 이름이며 사용자가 작명하여 사용한다.
 
 ###### 필터링
@@ -95,7 +95,7 @@ range가 객체가 아니거나 객체안에 프로퍼티가 없을경우 none�
 
 from과 to가 숫자가 아닐경우 horizontal 또는 vertical은 제외됩니다.
 
-*n*
+*number*
 값은 숫자만 사용가능합니다.
 
 #### lowIE
@@ -103,7 +103,7 @@ ie7 또는 ie8에서의 옵션 입니다.
 
 ````javascript
 lowIE : {
-    property : ['#']
+    property : array[string] || string
 }
 ````
 

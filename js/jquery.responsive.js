@@ -685,7 +685,7 @@ try {
 				/**
 				 * @name responsive
 				 * @since 2017-12-06
-				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ['#']}}
+				 * @param {object} option {range : {string || number : {from : number, to : number}}, lowIE : {property : array[string] || string}}
 				 * @return {jqueryElement}
 				 */
 				$.responsive = function(option) {
