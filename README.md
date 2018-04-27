@@ -36,8 +36,6 @@ $.responsive({
 });
 ````
 
-$(window).triggerHandler('resize.responsive');가 기본으로 되어있고 콘솔에 현재상태가 표기됩니다.
-
 ### 옵션
 
 #### range

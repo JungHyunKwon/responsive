@@ -182,19 +182,24 @@ try {
 				};
 
 				for(var i = 0, consoleMethodLength = window.console.method.length; i < consoleMethodLength; i++) {
+					//함수가아닐때
 					if(_getTypeof(window.console[window.console.method[i]]) !== 'function') {
 						window.console[window.console.method[i]] = function() {
 							var result = [],
 								argumentsLength = arguments.length;
                         
+							//매개변수가 2개이상일때
 							if(argumentsLength > 1) {
 								for(var i = 0; i < argumentsLength; i++) {
 									result.push(arguments[i]);
 								}
+							
+							//매개변수가 한개일때
 							}else if(argumentsLength === 1) {
 								result = arguments[0];
 							}
-                            
+                           
+							//console.comment에 기입
 							if(argumentsLength) {
 							    this.comment.push(result);
 							}
@@ -206,7 +211,7 @@ try {
 			}
 
 			/**
-			 * @name 엘리먼트 또는 제이쿼리 엘리먼트 인지 구하기
+			 * @name 엘리먼트 인지 구하기
 			 * @since 2017-12-06
 			 * @param {window || document || element || jQueryElement} element
 			 * @return {boolean}
@@ -307,7 +312,7 @@ try {
 			}
 			
 			/**
-			 * @name 문자열 공백 제거
+			 * @name 문자열 모든공백 제거
 			 * @since 2017-12-06
 			 * @param {string} value
 			 * @return {string}
@@ -322,6 +327,7 @@ try {
 			 * @return {array}
 			 */
 			function _getStateCookie() {
+				//state에 대한 쿠키를 얻어서 콤마 단위로 자르고 모든 공백을 없애고 중복제거를한다.
 				return $.map(_removeDuplicate(_removeBlank(_cookie.get('state')).split(',')), function(value, index) {
 					if($.inArray(value, _setting.rangeProperty) > -1) {
 						return value;
@@ -344,20 +350,26 @@ try {
 						isElement = _isElement($this),
 						result = [];
 					
+					//요소가 없을때 대체
 					if(!isElement) {
 						$this = $('#scrollbar');
-
+						
+						//스크롤바 객체가 없을때
 						if(!$this.length) {
 							$this = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
 						}
 					}
 					
 					$this.each(function(index, element) {
+						//NaN이 나오면 0으로 대체
 						result.push(element.offsetWidth - element.clientWidth || 0);
 					});
-						
+					
+					//결과가 1개일때
 					if(result.length === 1) {
 						result = result[0];
+					
+					//결과가 없을때
 					}else if(!result.length) {
 						result = 0;
 					}
@@ -376,10 +388,12 @@ try {
 					var $this = $(element),
 						result = [];
 					
+					//소문자 치환
 					if(_getTypeof(type) === 'string') {
 						type = type.toLowerCase();
 					}
 					
+					//받은요소 갯수만큼 루프
 					$this.each(function(index, element) {
 						var $this = $(element),
 							$parents = $this.add($this.parents()),
@@ -393,11 +407,14 @@ try {
 								vertical : false
 							};
 						
+						//요소확인
 						if(isElement) {
+							//부모까지 조사시키는 타입이 들어왔을때
 							if(type === 'parents') {
 								scrollbar.horizontal = [];
 								scrollbar.vertical = [];
-
+								
+								//상위부모 루핑
 								$parents.each(function(index, element) {
 									var hasScrollbar = _hasScrollbar(element);
 
@@ -419,21 +436,27 @@ try {
 									scrollbar.vertical = false;
 								}
 							}else{
+								//clineWidth보다 scrollWidth가 더 크면서 overflow-x가 hidden이 아니거나 overflow-x가 scroll일때
 								if(($this[0].scrollWidth > $this[0].clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
 									scrollbar.horizontal = true;
 								}
 								
+								//clineHeight보다 scrollHeight가 더 크면서 overflow-y가 hidden이 아니거나 overflow-y가 scroll일때
 								if(($this[0].scrollHeight > $this[0].clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
 									scrollbar.vertical = true;
 								}
 							}
 						}
-
+						
+						//결과 기입
 						result.push(scrollbar);
 					});
-				
+					
+					//결과가 1개일때
 					if(result.length === 1) {
 						result = result[0];
+					
+					//결과가 없을때
 					}else if(!result.length) {
 						result = 0;
 					}
@@ -640,11 +663,16 @@ try {
 
 					//방향
 					_$body.removeClass(_setting.orientation);
-
+					
+					//화면이 가로세로가 같을때
 					if(_setting.screenWidth === _setting.screenHeight) {
 						_setting.orientation = 'square';
+					
+					//화면이 세로보다 가로가 클때
 					}else if(_setting.screenWidth > _setting.screenHeight) {
 						_setting.orientation = 'landscape';
+					
+					//화면이 가로보다 세로가 클때
 					}else{
 						_setting.orientation = 'portrait';
 					}
@@ -658,7 +686,7 @@ try {
 				 * @name responsive
 				 * @since 2017-12-06
 				 * @param {object} option {range : {# : {from : n, to : n}}, lowIE : {property : ['#']}}
-				 * @return {object}
+				 * @return {jqueryElement}
 				 */
 				$.responsive = function(option) {
 					//소멸
@@ -781,6 +809,7 @@ try {
 					option.lowIEFilter = [];
 
 					for(option.i = 0; option.i < option.lowIE.property.length; option.i++) {
+						//lowIE에 적은 프로퍼티명이 있을때
 						if($.inArray(option.lowIE.property[option.i], option.rangeProperty) > -1) {
 							option.lowIEFilter.push(option.lowIE.property[option.i]);
 						}
@@ -916,12 +945,13 @@ try {
 					//배열일때
 					if(stateType === 'array') {
 						for(var i = 0, stateLength = state.length; i < stateLength; i++) {
+							//분기명이 있을때
 							if($.inArray(state[i], _setting.rangeProperty) > -1) {
 								setState.push(state[i]);
 							}
 						}
 					
-					//문자열일때
+					//문자열일때 && 분기명이 있을때
 					}else if(stateType === 'string' && $.inArray(state, _setting.rangeProperty) > -1) {
 						setState.push(state);
 					}
