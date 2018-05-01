@@ -117,8 +117,7 @@ try {
 
 					//제이쿼리 객체일때
 					}else if(typeof window.jQuery === 'function' && value instanceof window.jQuery) {
-						var valueLength = value.length,
-							element = window.jQuery.map(value, function(element, index) {
+						var element = window.jQuery.map(value, function(element, index) {
 								var elementType = _getTypeof(element);
 
 								if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
@@ -128,7 +127,7 @@ try {
 							elementLength = element.length;
 
 						//제이쿼리 엘리먼트일때
-						if(valueLength === elementLength && elementLength) {
+						if(value.length === elementLength && elementLength) {
 							result = 'jQueryElement';
 						}else{
 							result = 'jQueryObject';
@@ -347,11 +346,10 @@ try {
 				 */
 				function _getScrollbarWidth(element) {
 					var $this = $(element),
-						isElement = _isElement($this),
 						result = [];
 					
 					//요소가 없을때 대체
-					if(!isElement) {
+					if(!_isElement(element)) {
 						$this = $('#scrollbar');
 						
 						//스크롤바 객체가 없을때
@@ -396,8 +394,6 @@ try {
 					//받은요소 갯수만큼 루프
 					$this.each(function(index, element) {
 						var $this = $(element),
-							$parents = $this.add($this.parents()),
-							isElement = _isElement($this),
 							overflow = {
 								x : $this.css('overflow-x'),
 								y : $this.css('overflow-y')
@@ -408,14 +404,14 @@ try {
 							};
 						
 						//요소확인
-						if(isElement) {
+						if(_isElement(element)) {
 							//부모까지 조사시키는 타입이 들어왔을때
 							if(type === 'parents') {
 								scrollbar.horizontal = [];
 								scrollbar.vertical = [];
 								
 								//상위부모 루핑
-								$parents.each(function(index, element) {
+								$this.add($this.parents()).each(function(index, element) {
 									var hasScrollbar = _hasScrollbar(element);
 
 									scrollbar.horizontal.push(hasScrollbar.horizontal);
