@@ -466,7 +466,7 @@ try {
 				 * @return {object}
 				 */
 				function _getDefaultObject() {
-					var hasScrollbar = _hasScrollbar(_$body, 'parents'),
+					var hasScrollbar = _hasScrollbar(_$body[0], 'parents'),
 						scrollbarWidth = _getScrollbarWidth(),
 						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
 						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height();
@@ -606,7 +606,7 @@ try {
 				 * @return {object}
 				 */
 				function _setScreenInfo(event) {
-					var hasScrollbar = _hasScrollbar(_$body, 'parents');
+					var hasScrollbar = _hasScrollbar(_$body[0], 'parents');
 
 					//객체가 아닐때
 					if(_getTypeof(event) !== 'object') {
