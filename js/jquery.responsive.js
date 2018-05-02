@@ -127,7 +127,7 @@ try {
 							elementLength = element.length;
 
 						//제이쿼리 엘리먼트일때
-						if(value.length === elementLength && elementLength) {
+						if(elementLength && value.length === elementLength) {
 							result = 'jQueryElement';
 						}else{
 							result = 'jQueryObject';
