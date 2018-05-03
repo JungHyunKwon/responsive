@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @author JungHyunKwon
  * @version 1.0.0
@@ -9,6 +7,8 @@ try {
 	if(typeof window.jQuery === 'function') {
 		//$ 중첩 방지
 		(function($) {
+			'use strict';
+
 			var _$window = $(window),
 				_connectedState = _getConnectedState(),
 				_setting = {},
