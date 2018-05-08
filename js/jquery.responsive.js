@@ -731,57 +731,51 @@ try {
 					$.each(option.range, function(name, value) {
 						//필터링
 						if(_getTypeof(value) === 'object' && name !== 'square' && name !== 'portrait' && name !== 'landscape' && name.substr(-3) !== 'All' && name.substr(-7) !== 'Resized' && name !== 'none' && name.substr(-3) !== 'all' && name !== 'mobile' && name !== 'pc' && name !== 'ie7' && name !== 'ie8' && name !== 'ie9' && name !== 'ie10' && name !== 'ie11' && name !== 'scrollbar' && name !== 'edge' && name !== 'opera' && name !== 'chrome' && name !== 'firefox' && name !== 'safari' && name !== 'unknown') {
-							var horizontalIsObject = (_getTypeof(value.horizontal) === 'object'),
-								verticalIsObject = (_getTypeof(value.vertical) === 'object'),
+							var horizontalType = _getTypeof(value.horizontal),
+								verticalType = _getTypeof(value.vertical),
 								result = [];
 
-							//horizontal 또는 vertical이 객체일때
-							if(horizontalIsObject || verticalIsObject) {
+							//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
+							if(horizontalType === 'object' && _getTypeof(value.horizontal.from) === 'number' && _getTypeof(value.horizontal.to) === 'number') {
+								result.push(true);
+							}else{
+								result.push(false);
+							}
+							
+							//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
+							if(verticalType === 'object' && _getTypeof(value.vertical.from) === 'number' && _getTypeof(value.vertical.to) === 'number') {
+								result.push(true);
+							}else{
+								result.push(false);
+							}
+							
+							//horizontal이 객체이면서 from, to 프로퍼티가 숫자이거나 vertical이 객체이면서 from, to 프로퍼티가 숫자일때
+							if(result[0] || result[1]) {
+								option.rangeCode += '\tif(';
+								
 								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(horizontalIsObject && _getTypeof(value.horizontal.from) === 'number' && _getTypeof(value.horizontal.to) === 'number') {
-									result.push(true);
-								}else{
-									result.push(false);
+								if(result[0]) {
+									option.rangeCode += 'option.screenWidth <= ' + value.horizontal.from + ' && option.screenWidth >= ' + value.horizontal.to;
 								}
 								
 								//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(verticalIsObject && _getTypeof(value.vertical.from) === 'number' && _getTypeof(value.vertical.to) === 'number') {
-									result.push(true);
-								}else{
-									result.push(false);
-								}
-								
-								//horizontal이 객체이면서 from, to 프로퍼티가 숫자이거나 vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(result[0] || result[1]) {
-									option.rangeCode += '\tif(';
-									
-									//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-									if(result[0]) {
-										option.rangeCode += 'option.screenWidth <= ' + value.horizontal.from + ' && option.screenWidth >= ' + value.horizontal.to;
-									}
-									
-									//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-									if(result[1]) {
-										//가로 객체가 있을경우
-										if(horizontalIsObject) {
-											option.rangeCode += ' && ';
-										}
-
-										option.rangeCode += 'option.screenHeight <= ' + value.vertical.from + ' && option.screenHeight >= ' + value.vertical.to;
+								if(result[1]) {
+									//가로 객체가 있을경우
+									if(horizontalType === 'object') {
+										option.rangeCode += ' && ';
 									}
 
-									option.rangeCode += ') {\n';
-									option.rangeCode += '\t\toption.enter.push("' + name + '");\n';
-									option.rangeCode += '\t}else{\n';
-									option.rangeCode += '\t\toption.exit.push("' + name + '");\n';
-									option.rangeCode += '\t}\n\n';
-
-									//프로퍼티명 기입
-									option.rangeProperty.push(name);
-								}else{
-									//프로퍼티 삭제
-									delete option.range[name];
+									option.rangeCode += 'option.screenHeight <= ' + value.vertical.from + ' && option.screenHeight >= ' + value.vertical.to;
 								}
+
+								option.rangeCode += ') {\n';
+								option.rangeCode += '\t\toption.enter.push("' + name + '");\n';
+								option.rangeCode += '\t}else{\n';
+								option.rangeCode += '\t\toption.exit.push("' + name + '");\n';
+								option.rangeCode += '\t}\n\n';
+
+								//프로퍼티명 기입
+								option.rangeProperty.push(name);
 							}else{
 								//프로퍼티 삭제
 								delete option.range[name];
