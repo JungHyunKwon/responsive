@@ -11,6 +11,7 @@ try {
 		(function($) {
 			var _$window = $(window),
 				_connectedState = _getConnectedState(),
+				_isLowIE = _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
 				_setting = {},
 				_consoleType = _getTypeof(window.console),
 				_cookie = {
@@ -291,7 +292,7 @@ try {
 				var result = [],
 					valueType = _getTypeof(value);
 				
-				//문자형일때
+				//문자일때
 				if(valueType === 'string') {
 					value = value.split();
 				
@@ -299,13 +300,13 @@ try {
 				}else if(valueType !== 'array') {
 					value = [];
 				}
-
-				for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-					//result값에 값이 없으면 집어넣는다.
-					if($.inArray(value[i], result) === -1) {
-						result.push(value[i]);
+				
+				//result값에 값이 없으면 집어넣는다.
+				$.each(value, function(index, value) {
+					if($.inArray(value, result) === -1) {
+						result.push(value);
 					}
-				}
+				});
 
 				return result;
 			}
@@ -477,7 +478,7 @@ try {
 						rangeProperty : [],
 						exit : [],
 						lowIE : {
-							is : _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
+							is : _isLowIE,
 							property : [],
 							run : true
 						},
@@ -512,9 +513,7 @@ try {
 					var result = false,
 						setState = [],
 						nowState = [],
-						stateCookie = _getStateCookie(),
-						stateLength,
-						i;
+						stateCookie = _getStateCookie();
 
 					//중복제거
 					state = _removeDuplicate(state);
@@ -523,23 +522,22 @@ try {
 					if(stateCookie.length) {
 						state = stateCookie;
 					}
-						
-					stateLength = state.length;
-
-					for(i = 0; i < stateLength; i++) {
-						//적용시킬 상태가 있을때
-						if($.inArray(state[i], _setting.nowState) === -1) {
-							setState.push(state[i]);
+					
+					//적용된 상태와 현재상태 분류
+					$.each(state, function(index, value) {
+						if($.inArray(value, _setting.nowState) === -1) {
+							setState.push(value);
 						}else{
-							nowState.push(state[i]);
+							nowState.push(value);
 						}
-					}
+					});
 
 					//적용시킬 상태가 있을때
 					if(this === 'outer' || setState.length || nowState.length !== _setting.nowState.length) {
 						result = true;
 					}
-
+					
+					//결과가 있을때
 					if(result) {
 						//현재상태 클래스 제거
 						_$body.removeClass(_setting.nowState.join(' '));
@@ -584,17 +582,17 @@ try {
 					
 					//전역객체 갱신
 					$.responsive.setting = event.setting;
-
-					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
+					
+					$.each(state, function(index, value) {
 						//분기값 적용
-						event.state = state[i];
+						event.state = value;
 
 						//모든 이벤트 호출
 						_$window.triggerHandler($.Event('responsive', event));
 
 						//필터 이벤트 호출
-						_$window.triggerHandler($.Event('responsive:' + state[i], event));
-					}
+						_$window.triggerHandler($.Event('responsive:' + value, event));
+					});
 
 					return event;
 				}
@@ -726,74 +724,73 @@ try {
 					}
 					
 					//option.range에 적은 값을 기준으로 자바스크립트 코드 생성
-					option.rangeCode = 'option.enter = [];\n_setting.exit = [];\n\n';
-					option.rangeCode += 'if(!_setting.lowIE.run && _setting.lowIE.is) {\n\toption.enter = _setting.lowIE.property;\n}else{\n';
-					option.rangeFilter = [];
+					option.rangeCode = 'option.enter = [];\noption.exit = [];\n\n';
+					option.rangeCode += 'if(!option.lowIE.run && _isLowIE) {\n\toption.enter = option.lowIE.result;\n}else{\n';
 					option.rangeProperty = [];
-
-					for(option.i in option.range) {
+					
+					$.each(option.range, function(name, value) {
 						//필터링
-						if(option.i !== 'square' && option.i !== 'portrait' && option.i !== 'landscape' && option.i.substr(-3) !== 'All' && option.i.substr(-7) !== 'Resized' && option.i !== 'none' && option.i.substr(-3) !== 'all' && option.i !== 'mobile' && option.i !== 'pc' && option.i !== 'ie7' && option.i !== 'ie8' && option.i !== 'ie9' && option.i !== 'ie10' && option.i !== 'ie11' && option.i !== 'scrollbar' && option.i !== 'edge' && option.i !== 'opera' && option.i !== 'chrome' && option.i !== 'firefox' && option.i !== 'safari' && option.i !== 'unknown') {
-							//객체검사
-							option.hasRangeHorizontal = (_getTypeof(option.range[option.i].horizontal) === 'object');
-							option.hasRangeVertical = (_getTypeof(option.range[option.i].vertical) === 'object');
+						if(_getTypeof(value) === 'object' && name !== 'square' && name !== 'portrait' && name !== 'landscape' && name.substr(-3) !== 'All' && name.substr(-7) !== 'Resized' && name !== 'none' && name.substr(-3) !== 'all' && name !== 'mobile' && name !== 'pc' && name !== 'ie7' && name !== 'ie8' && name !== 'ie9' && name !== 'ie10' && name !== 'ie11' && name !== 'scrollbar' && name !== 'edge' && name !== 'opera' && name !== 'chrome' && name !== 'firefox' && name !== 'safari' && name !== 'unknown') {
+							var horizontalIsObject = (_getTypeof(value.horizontal) === 'object'),
+								verticalIsObject = (_getTypeof(value.vertical) === 'object'),
+								result = [];
 
 							//horizontal 또는 vertical이 객체일때
-							if(option.hasRangeHorizontal || option.hasRangeVertical) {
+							if(horizontalIsObject || verticalIsObject) {
 								//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeHorizontal && _getTypeof(option.range[option.i].horizontal.from) === 'number' && _getTypeof(option.range[option.i].horizontal.to) === 'number') {
-									option.rangeFilter.push(true);
+								if(horizontalIsObject && _getTypeof(value.horizontal.from) === 'number' && _getTypeof(value.horizontal.to) === 'number') {
+									result.push(true);
 								}else{
-									option.rangeFilter.push(false);
+									result.push(false);
 								}
 								
 								//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.hasRangeVertical && _getTypeof(option.range[option.i].vertical.from) === 'number' && _getTypeof(option.range[option.i].vertical.to) === 'number') {
-									option.rangeFilter.push(true);
+								if(verticalIsObject && _getTypeof(value.vertical.from) === 'number' && _getTypeof(value.vertical.to) === 'number') {
+									result.push(true);
 								}else{
-									option.rangeFilter.push(false);
+									result.push(false);
 								}
 								
 								//horizontal이 객체이면서 from, to 프로퍼티가 숫자이거나 vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-								if(option.rangeFilter[0] || option.rangeFilter[1]) {
+								if(result[0] || result[1]) {
 									option.rangeCode += '\tif(';
 									
 									//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-									if(option.rangeFilter[0]) {
-										option.rangeCode += '_setting.screenWidth <= ' + option.range[option.i].horizontal.from + ' && _setting.screenWidth >= ' + option.range[option.i].horizontal.to;
+									if(result[0]) {
+										option.rangeCode += 'option.screenWidth <= ' + value.horizontal.from + ' && option.screenWidth >= ' + value.horizontal.to;
 									}
 									
 									//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-									if(option.rangeFilter[1]) {
+									if(result[1]) {
 										//가로 객체가 있을경우
-										if(option.hasRangeHorizontal) {
+										if(horizontalIsObject) {
 											option.rangeCode += ' && ';
 										}
 
-										option.rangeCode += '_setting.screenHeight <= ' + option.range[option.i].vertical.from + ' && _setting.screenHeight >= ' + option.range[option.i].vertical.to;
+										option.rangeCode += 'option.screenHeight <= ' + value.vertical.from + ' && option.screenHeight >= ' + value.vertical.to;
 									}
 
 									option.rangeCode += ') {\n';
-									option.rangeCode += '\t\toption.enter.push("' + option.i + '");\n';
+									option.rangeCode += '\t\toption.enter.push("' + name + '");\n';
 									option.rangeCode += '\t}else{\n';
-									option.rangeCode += '\t\t_setting.exit.push("' + option.i + '");\n';
+									option.rangeCode += '\t\toption.exit.push("' + name + '");\n';
 									option.rangeCode += '\t}\n\n';
 
 									//프로퍼티명 기입
-									option.rangeProperty.push(option.i);
+									option.rangeProperty.push(name);
 								}else{
 									//프로퍼티 삭제
-									delete option.range[option.i];
+									delete option.range[name];
 								}
-
-								//초기화
-								option.rangeFilter = [];
+							}else{
+								//프로퍼티 삭제
+								delete option.range[name];
 							}
 						}else{
 							//프로퍼티 삭제
-							delete option.range[option.i];
+							delete option.range[name];
 						}
-					}
+					});
 
 					option.rangeCode = option.rangeCode.replace(/\n$/, '');
 					option.rangeCode += '}';
@@ -802,26 +799,24 @@ try {
 					//option.rangeCode작성 끝
 
 					//필터링된 프로퍼티명에서 option.lowIE.property에 이름이 있는지 확인해서 없으면 제거
-					option.lowIEFilter = [];
-
-					for(option.i = 0; option.i < option.lowIE.property.length; option.i++) {
-						//lowIE에 적은 프로퍼티명이 있을때
-						if($.inArray(option.lowIE.property[option.i], option.rangeProperty) > -1) {
-							option.lowIEFilter.push(option.lowIE.property[option.i]);
+					option.lowIE.result = [];
+					
+					//lowIE에 적은 프로퍼티명이 있을때
+					$.each(option.lowIE.property, function(index, value) {
+						if($.inArray(value, option.rangeProperty) > -1) {
+							option.lowIE.result.push(value);
 						}
-					}
+					});
 					
 					//걸려나온게 있을때
-					if(option.lowIEFilter.length) {
+					if(option.lowIE.result.length) {
 						option.lowIE.run = false;
 					}else{
 						option.lowIE.run = true;
 					}
 
 					_setting.lowIE.run = option.lowIE.run;
-
-					option.lowIE.property = option.lowIEFilter;
-					_setting.lowIE.property = option.lowIE.property;
+					_setting.lowIE.property = option.lowIE.result;
 
 					_$window.on('resize.responsive', function(event) {
 						//화면정보 갱신
@@ -868,6 +863,9 @@ try {
 							
 							//범위실행
 							eval(option.rangeCode);
+							
+							//나간분기 갱신
+							_setting.exit = option.exit;
 
 							//상태적용, 이벤트 호출
 							if(option.enter.length) {
@@ -941,12 +939,12 @@ try {
 					
 					//배열일때
 					if(stateType === 'array') {
-						for(var i = 0, stateLength = state.length; i < stateLength; i++) {
-							//분기명이 있을때
-							if($.inArray(state[i], _setting.rangeProperty) > -1) {
-								setState.push(state[i]);
+						//분기명이 있을때
+						$.each(state, function(index, value) {
+							if($.inArray(value, _setting.rangeProperty) > -1) {
+								setState.push(value);
 							}
-						}
+						});
 					
 					//문자열일때 && 분기명이 있을때
 					}else if(stateType === 'string' && $.inArray(state, _setting.rangeProperty) > -1) {

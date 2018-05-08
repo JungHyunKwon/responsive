@@ -123,7 +123,7 @@ setState | array[string] \|\| string, number | boolean | state에 지정한 분�
 ### $.responsive.setting
 
 이름 | 형태 | 설명
-| :-- | :- | :-- |
+| :-- | :-- | :-- |
 hasHorizontalScrollbar | boolean | 가로스크롤바가 있는지 확인하는 변수입니다.
 hasVerticalScrollbar | boolean | 세로스크롤바가 있는지 확인하는 변수입니다.
 isRun | boolean | 플러그인이 실행됬는지 확인하는 변수입니다.
