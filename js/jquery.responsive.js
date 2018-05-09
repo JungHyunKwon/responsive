@@ -728,11 +728,10 @@ try {
 					option.rangeCode += 'if(!option.lowIE.run && _isLowIE) {\n\toption.enter = option.lowIE.result;\n}else{\n';
 					option.rangeProperty = [];
 					
-					$.each(option.range, function(name, value) {
+					$.each(_copyObject(option.range), function(name, value) {
 						//필터링
 						if(_getTypeof(value) === 'object' && name !== 'square' && name !== 'portrait' && name !== 'landscape' && name.substr(-3) !== 'All' && name.substr(-7) !== 'Resized' && name !== 'none' && name.substr(-3) !== 'all' && name !== 'mobile' && name !== 'pc' && name !== 'ie7' && name !== 'ie8' && name !== 'ie9' && name !== 'ie10' && name !== 'ie11' && name !== 'scrollbar' && name !== 'edge' && name !== 'opera' && name !== 'chrome' && name !== 'firefox' && name !== 'safari' && name !== 'unknown') {
 							var horizontalType = _getTypeof(value.horizontal),
-								verticalType = _getTypeof(value.vertical),
 								result = [];
 
 							//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
@@ -743,7 +742,7 @@ try {
 							}
 							
 							//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(verticalType === 'object' && _getTypeof(value.vertical.from) === 'number' && _getTypeof(value.vertical.to) === 'number') {
+							if(_getTypeof(value.vertical) === 'object' && _getTypeof(value.vertical.from) === 'number' && _getTypeof(value.vertical.to) === 'number') {
 								result.push(true);
 							}else{
 								result.push(false);
