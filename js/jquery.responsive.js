@@ -353,7 +353,7 @@ try {
 					if(!_isElement(element)) {
 						$this = $('#scrollbar');
 						
-						//스크롤바 객체가 없을때
+						//스크롤바 요소가 없을때
 						if(!$this.length) {
 							$this = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
 						}
@@ -462,7 +462,7 @@ try {
 				}
 
 				/**
-				 * @name 기본옵션 객체 얻기
+				 * @name 기본옵션 얻기
 				 * @since 2017-12-06
 				 * @return {object}
 				 */
@@ -897,7 +897,7 @@ try {
 						}
 					}).triggerHandler('resize.responsive');
 
-					//객체 반환
+					//요소 반환
 					return _$body;
 				};
 
