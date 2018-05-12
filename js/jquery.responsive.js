@@ -33,7 +33,7 @@ try {
 						var date = new Date(),
 							result = false;
 
-						if(_getTypeof(name) === 'string' && _getTypeof(value) === 'string') {
+						if(typeof name === 'string' && typeof value === 'string') {
 							if(_getTypeof(day) !== 'number') {
 								day = -1;
 							}
@@ -61,7 +61,7 @@ try {
 						var cookie = document.cookie.split(';'),
 							result = 'none';
 						
-						if(_getTypeof(name) === 'string') {
+						if(typeof name === 'string') {
 							for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
 								while(cookie[i].charAt(0) === ' ') {
 									cookie[i] = cookie[i].substring(1);
@@ -302,11 +302,13 @@ try {
 				}
 				
 				//result값에 값이 없으면 집어넣는다.
-				$.each(value, function(index, value) {
-					if($.inArray(value, result) === -1) {
-						result.push(value);
+				for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+					var valueI = value[i];
+
+					if($.inArray(valueI, result) === -1) {
+						result.push(valueI);
 					}
-				});
+				}
 
 				return result;
 			}
@@ -318,7 +320,7 @@ try {
 			 * @return {string}
 			 */
 			function _removeBlank(value) {
-				return (_getTypeof(value) === 'string') ? value.replace(/\s/g, '') : value;
+				return (typeof value === 'string') ? value.replace(/\s/g, '') : value;
 			}
 			
 			/**
@@ -346,23 +348,24 @@ try {
 				 * @return {array || number}
 				 */
 				function _getScrollbarWidth(element) {
-					var $this = $(element),
+					var $element = $(element),
 						result = [];
 					
 					//요소가 없을때 대체
-					if(!_isElement(element)) {
-						$this = $('#scrollbar');
+					if(!_isElement($element)) {
+						$element = $('#scrollbar');
 						
 						//스크롤바 요소가 없을때
-						if(!$this.length) {
-							$this = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
+						if(!$element.length) {
+							$element = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
 						}
 					}
 					
-					$this.each(function(index, element) {
-						//NaN이 나오면 0으로 대체
-						result.push(element.offsetWidth - element.clientWidth || 0);
-					});
+					for(var i = 0, elementLength = $element.length; i < elementLength; i++) {
+						var elementI = $element[i];
+
+						result.push(elementI.offsetWidth - elementI.clientWidth || 0);
+					}
 					
 					//결과가 1개일때
 					if(result.length === 1) {
@@ -384,70 +387,70 @@ try {
 				 * @return {object || array}
 				 */
 				function _hasScrollbar(element, type) {
-					var $this = $(element),
+					var $element = $(element),
 						result = [];
 					
 					//소문자 치환
-					if(_getTypeof(type) === 'string') {
+					if(typeof type === 'string') {
 						type = type.toLowerCase();
 					}
 					
 					//받은요소 갯수만큼 루프
-					$this.each(function(index, element) {
-						var $this = $(element),
+					for(var i = 0, elementLength = $element.length; i < elementLength; i++) {
+						var $elementI = $element.eq(i),
+							elementI = $elementI[0],
 							overflow = {
-								x : $this.css('overflow-x'),
-								y : $this.css('overflow-y')
+								x : $elementI.css('overflow-x'),
+								y : $elementI.css('overflow-y')
 							},
 							scrollbar = {
 								horizontal : false,
 								vertical : false
 							};
-						
-						//요소확인
-						if(_isElement(element)) {
-							//부모까지 조사시키는 타입이 들어왔을때
-							if(type === 'parents') {
-								scrollbar.horizontal = [];
-								scrollbar.vertical = [];
-								
-								//상위부모 루핑
-								$this.add($this.parents()).each(function(index, element) {
-									var hasScrollbar = _hasScrollbar(element);
+					
+						//부모까지 조사시키는 타입이 들어왔을때
+						if(type === 'parents') {
+							var $parents = $elementI.add($elementI.parents());
 
-									scrollbar.horizontal.push(hasScrollbar.horizontal);
-									scrollbar.vertical.push(hasScrollbar.vertical);
-								});
+							scrollbar.horizontal = [];
+							scrollbar.vertical = [];
+							
+							//상위부모 반복
+							for(var j = 0, parentsLength = $parents.length; j < parentsLength; j++) {
+								var hasScrollbar = _hasScrollbar($parents[j]);
 
-								//가로스크롤바가 하나라도 있을경우
-								if($.inArray(true, scrollbar.horizontal) > -1) {
-									scrollbar.horizontal = true;
-								}else{
-									scrollbar.horizontal = false;
-								}
-								
-								//세로스크롤바가 하나라도 있을경우
-								if($.inArray(true, scrollbar.vertical) > -1) {
-									scrollbar.vertical = true;
-								}else{
-									scrollbar.vertical = false;
-								}
+								scrollbar.horizontal.push(hasScrollbar.horizontal);
+								scrollbar.vertical.push(hasScrollbar.vertical);
+							}
+
+							//가로스크롤바가 하나라도 있을경우
+							if($.inArray(true, scrollbar.horizontal) > -1) {
+								scrollbar.horizontal = true;
 							}else{
-								//clineWidth보다 scrollWidth가 더 크면서 overflow-x가 hidden이 아니거나 overflow-x가 scroll일때
-								if((element.scrollWidth > element.clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
-									scrollbar.horizontal = true;
-								}
-								
-								//clineHeight보다 scrollHeight가 더 크면서 overflow-y가 hidden이 아니거나 overflow-y가 scroll일때
-								if((element.scrollHeight > element.clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
-									scrollbar.vertical = true;
-								}
+								scrollbar.horizontal = false;
+							}
+							
+							//세로스크롤바가 하나라도 있을경우
+							if($.inArray(true, scrollbar.vertical) > -1) {
+								scrollbar.vertical = true;
+							}else{
+								scrollbar.vertical = false;
+							}
+						}else{
+							//clineWidth보다 scrollWidth가 더 크면서 overflow-x가 hidden이 아니거나 overflow-x가 scroll일때
+							if((elementI.scrollWidth > elementI.clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
+								scrollbar.horizontal = true;
+							}
+							
+							//clineHeight보다 scrollHeight가 더 크면서 overflow-y가 hidden이 아니거나 overflow-y가 scroll일때
+							if((elementI.scrollHeight > elementI.clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
+								scrollbar.vertical = true;
 							}
 						}
 						
 						//결과 기입
 						result.push(scrollbar);
-					});
+					}
 					
 					//결과가 1개일때
 					if(result.length === 1) {
@@ -524,13 +527,15 @@ try {
 					}
 					
 					//적용된 상태와 현재상태 분류
-					$.each(state, function(index, value) {
-						if($.inArray(value, _setting.nowState) === -1) {
-							setState.push(value);
+					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
+						var stateI = state[i];
+
+						if($.inArray(stateI, _setting.nowState) === -1) {
+							setState.push(stateI);
 						}else{
-							nowState.push(value);
+							nowState.push(stateI);
 						}
-					});
+					}
 
 					//적용시킬 상태가 있을때
 					if(this === 'outer' || setState.length || nowState.length !== _setting.nowState.length) {
@@ -583,16 +588,18 @@ try {
 					//전역객체 갱신
 					$.responsive.setting = event.setting;
 					
-					$.each(state, function(index, value) {
+					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
+						var stateI = state[i];
+
 						//분기값 적용
-						event.state = value;
+						event.state = stateI;
 
 						//모든 이벤트 호출
 						_$window.triggerHandler($.Event('responsive', event));
 
 						//필터 이벤트 호출
-						_$window.triggerHandler($.Event('responsive:' + value, event));
-					});
+						_$window.triggerHandler($.Event('responsive:' + stateI, event));
+					}
 
 					return event;
 				}
@@ -727,10 +734,13 @@ try {
 					option.rangeCode = 'option.enter = [];\noption.exit = [];\n\n';
 					option.rangeCode += 'if(!option.lowIE.run && _isLowIE) {\n\toption.enter = option.lowIE.result;\n}else{\n';
 					option.rangeProperty = [];
-					
-					$.each(_copyObject(option.range), function(name, value) {
+					option.copyRange = _copyObject(option.range);
+
+					for(var i in option.copyRange) {
+						var value = option.range[i];
+
 						//필터링
-						if(_getTypeof(value) === 'object' && name !== 'square' && name !== 'portrait' && name !== 'landscape' && name.substr(-3) !== 'All' && name.substr(-7) !== 'Resized' && name !== 'none' && name.substr(-3) !== 'all' && name !== 'mobile' && name !== 'pc' && name !== 'ie7' && name !== 'ie8' && name !== 'ie9' && name !== 'ie10' && name !== 'ie11' && name !== 'scrollbar' && name !== 'edge' && name !== 'opera' && name !== 'chrome' && name !== 'firefox' && name !== 'safari' && name !== 'unknown') {
+						if(_getTypeof(value) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							var horizontalType = _getTypeof(value.horizontal),
 								result = [];
 
@@ -768,22 +778,22 @@ try {
 								}
 
 								option.rangeCode += ') {\n';
-								option.rangeCode += '\t\toption.enter.push("' + name + '");\n';
+								option.rangeCode += '\t\toption.enter.push("' + i + '");\n';
 								option.rangeCode += '\t}else{\n';
-								option.rangeCode += '\t\toption.exit.push("' + name + '");\n';
+								option.rangeCode += '\t\toption.exit.push("' + i + '");\n';
 								option.rangeCode += '\t}\n\n';
 
 								//프로퍼티명 기입
-								option.rangeProperty.push(name);
+								option.rangeProperty.push(i);
 							}else{
 								//프로퍼티 삭제
-								delete option.range[name];
+								delete option.range[i];
 							}
 						}else{
 							//프로퍼티 삭제
-							delete option.range[name];
+							delete option.range[i];
 						}
-					});
+					}
 
 					option.rangeCode = option.rangeCode.replace(/\n$/, '');
 					option.rangeCode += '}';
@@ -795,11 +805,13 @@ try {
 					option.lowIE.result = [];
 					
 					//lowIE에 적은 프로퍼티명이 있을때
-					$.each(option.lowIE.property, function(index, value) {
-						if($.inArray(value, option.rangeProperty) > -1) {
-							option.lowIE.result.push(value);
+					for(var i = 0, lowIEPropertyLength = option.lowIE.property.length; i < lowIEPropertyLength; i++) {
+						var lowIEPropertyI = option.lowIE.property[i];
+
+						if($.inArray(lowIEPropertyI, option.rangeProperty) > -1) {
+							option.lowIE.result.push(lowIEPropertyI);
 						}
-					});
+					}
 					
 					//걸려나온게 있을때
 					if(option.lowIE.result.length) {
@@ -933,11 +945,13 @@ try {
 					//배열일때
 					if(stateType === 'array') {
 						//분기명이 있을때
-						$.each(state, function(index, value) {
-							if($.inArray(value, _setting.rangeProperty) > -1) {
-								setState.push(value);
+						for(var i = 0, stateLength = state.length; i < stateLength; i++) {
+							var stateI = state[i];
+
+							if($.inArray(stateI, _setting.rangeProperty) > -1) {
+								setState.push(stateI);
 							}
-						});
+						}
 					
 					//문자열일때 && 분기명이 있을때
 					}else if(stateType === 'string' && $.inArray(state, _setting.rangeProperty) > -1) {

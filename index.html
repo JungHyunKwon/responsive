@@ -11,21 +11,18 @@
 	<script>
 		'use strict';
 
-		var $window = $(window),
-			$document = $(document);
-
 		$(function() {
 			//console.log(1);
 			//console.log($.responsive.setting);
 
-			$window.on('responsive', function(event) {
+			$(window).on('responsive', function(event) {
 				//console.log(3);
 				//console.log(event);
 				//console.log(event.state);
 				//console.log(event.setting);
 			});
 
-			$window.on('responsive:wide', function(event) {
+			$(window).on('responsive:wide', function(event) {
 				//console.log(4);
 				//console.log(event);
 				//console.log(event.state);
@@ -35,7 +32,7 @@
 			//console.log(2);
 		});
 
-		$document.on('ready', function(event) {
+		$(document).on('ready', function(event) {
 		   $.responsive({
 				range : {
 					wide : {
