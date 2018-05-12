@@ -118,22 +118,29 @@ try {
 
 					//제이쿼리 객체일때
 					}else if(typeof window.jQuery === 'function' && value instanceof window.jQuery) {
-						var element = window.jQuery.map(value, function(element, index) {
-								var elementType = _getTypeof(element);
+						var valueLength = value.length,
+							i = 0;
 
-								if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
-									return element;
-								}
-							}),
-							elementLength = element.length;
+						result = [];
+
+						for(; i < valueLength; i++) {
+							var valueI = value[i],
+								elementType = _getTypeof(valueI);
+
+							if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
+								result.push(valueI);
+							}
+						}
+						
+						var resultLength = result.length;
 
 						//제이쿼리 엘리먼트일때
-						if(elementLength && value.length === elementLength) {
+						if(resultLength && valueLength === resultLength) {
 							result = 'jQueryElement';
 						}else{
 							result = 'jQueryObject';
 						}
-					
+
 					//Invalid Date일때(date로 처리되서 따로 처리함)
 					}else if(result === 'date' && isNaN(new Date(value))) {
 						result = 'Invalid Date';
