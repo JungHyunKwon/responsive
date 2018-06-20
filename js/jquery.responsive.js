@@ -316,7 +316,7 @@ try {
 					}
 				}
 
-				return result;
+				return result.sort();
 			}
 			
 			/**
@@ -328,19 +328,26 @@ try {
 			function _removeBlank(value) {
 				return (typeof value === 'string') ? value.replace(/\s/g, '') : value;
 			}
-			
+
 			/**
-			 * @name state에 대한 쿠키얻기
+			 * @name 상태 쿠키얻기
 			 * @since 2017-12-06
 			 * @return {array}
 			 */
 			function _getStateCookie() {
-				//state에 대한 쿠키를 얻어서 콤마 단위로 자르고 모든 공백을 없애고 중복제거를한다.
-				return $.map(_removeDuplicate(_removeBlank(_cookie.get('state')).split(',')), function(value, index) {
-					if($.inArray(value, _setting.rangeProperty) > -1) {
-						return value;
+				var result = [],
+					stateCookie = _removeDuplicate(_removeBlank(_cookie.get('state')).split(',')); //state에 대한 쿠키를 얻어서 콤마 단위로 자르고 모든 공백을 없애고 중복제거를 한다.
+
+				for(var i = 0, stateCookieLength = stateCookie.length; i < stateCookieLength; i++) {
+					var stateCookieI = stateCookie[i];
+					
+					//분기이름이 있는지 확인
+					if($.inArray(stateCookieI, _setting.rangeProperty) > -1) {
+						result.push(stateCookieI);
 					}
-				});
+				}
+
+				return result;
 			}
 
 			$(function() {
@@ -520,31 +527,18 @@ try {
 				 */
 				function _setState(state) {
 					var result = false,
-						setState = [],
-						nowState = [],
 						stateCookie = _getStateCookie();
 
 					//중복제거
 					state = _removeDuplicate(state);
 
-					//적용시킬 쿠키가 있을때
-					if(stateCookie.length) {
+					//메서드로 호출하지 않고 적용시킬 쿠키가 있을때
+					if(this.toString() !== 'method' && stateCookie.length) {
 						state = stateCookie;
 					}
-					
-					//적용된 상태와 현재상태 분류
-					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
-						var stateI = state[i];
 
-						if($.inArray(stateI, _setting.nowState) === -1) {
-							setState.push(stateI);
-						}else{
-							nowState.push(stateI);
-						}
-					}
-
-					//적용시킬 상태가 있을때
-					if(this === 'outer' || setState.length || nowState.length !== _setting.nowState.length) {
+					//현재상태와 들어온 분기가 다를때
+					if(state.toString() !== _setting.nowState.toString()) {
 						result = true;
 					}
 					
@@ -565,12 +559,16 @@ try {
 						//console에 상태표기
 						console.log('현재상태 : ' + state.join(', '));
 					}
-
-					//함수실행
-					_callEvent((state.join('All, ') + 'All').split(', '));
 					
-					//위에서 처리하고나서 불러야 해서 따로 처리함
+					//state 갯수가 있을때
+					if(state.length) {
+						//분기범위
+						_callEvent((state.join('All, ') + 'All').split(', '));	
+					}
+					
+					//결과가 있을때
 					if(result) {
+						//분기
 						_callEvent(state);					
 					}
 
@@ -934,6 +932,7 @@ try {
 						$('#scrollbar').remove();
 						this.setting = _copyObject(_initialSetting);
 						_setting.isRun = false;
+						_cookie.set('state', '', -1);
 						result = true;
 					}
 
@@ -941,12 +940,17 @@ try {
 				};
 
 				/**
-				 * @description _setState 함수를 사용자에게 제공합니다.
+				 * @name 분기적용
+				 * @since 2017-12-06
+				 * @param {array || string} state
+				 * @param {number} day
+				 * @return {boolean}
 				 */
 				$.responsive.setState = function(state, day) {
 					var stateType = _getTypeof(state),
 						setState = [],
-						result = false;
+						result = false,
+						isSetCookie = false;
 					
 					//배열일때
 					if(stateType === 'array') {
@@ -963,19 +967,36 @@ try {
 					}else if(stateType === 'string' && $.inArray(state, _setting.rangeProperty) > -1) {
 						setState.push(state);
 					}
-
-					//숫자일때
-					if(_getTypeof(day) === 'number') {
-						_cookie.set('state', setState.join(', '), day);
-					}
 					
 					//적용시킬 상태가 있으면
 					if(setState.length) {
-						result = _setState.call('outer', setState);
+						//숫자일때
+						if(_getTypeof(day) === 'number') {
+							_cookie.set('state', setState.join(', '), day);
+							
+							//0보다 클때
+							if(day > 0) {
+								isSetCookie = true;
+							}
+						}
+
+						result = _setState.call('method', setState);
+						
+						//쿠키를 적용했을때
+						if(isSetCookie) {
+							result = true;
+						}
 					}
 
 					return result;
 				};
+
+				/**
+				 * @name 상태 쿠키얻기
+				 * @since 2017-12-06
+				 * @return {array}
+				 */
+				$.responsive.getStateCookie = _getStateCookie;
 
 				/**
 				 * @description 기본 객체를 사용자에게 제공합니다.
