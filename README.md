@@ -31,7 +31,7 @@ $.responsive({
         }
     },
     lowIE : {
-        property : ['web']
+        property : 'web'
     }
 });
 ````
