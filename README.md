@@ -154,11 +154,8 @@ triggerType | string | resize 또는 resize.responsive 이벤트를 trigger 또�
 1. all
 2. #All
 3. \#
-4. noneAll
-5. none
-6. allResized
-7. #AllResized
-8. noneAllResized
+4. allResized
+5. #AllResized
 
 ### 이벤트
 이벤트는 $(window)에 걸어야 합니다.
