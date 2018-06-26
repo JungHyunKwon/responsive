@@ -7,7 +7,7 @@
 	<title>responsive</title>
 	<link href="css/responsive.css" type="text/css" rel="stylesheet" />
 	<script src="js/jquery-1.12.4.min.js"></script>
-	<script src="js/jquery.responsive.js"></script>
+	<script src="js/jquery.responsive.min.js"></script>
 	<script>
 		'use strict';
 
@@ -16,10 +16,7 @@
 
 			$(window).on('responsive', function(event) {
 				//console.log(event);
-				if($.inArray(event.state, event.setting.rangeProperty) > -1) {
-					console.log(event.state);
-				}
-
+				//console.log(event.state);
 				//console.log(event.setting);
 			});
 
