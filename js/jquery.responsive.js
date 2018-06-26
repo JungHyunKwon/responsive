@@ -219,7 +219,7 @@ try {
 			}
 
 			/**
-			 * @name 엘리먼트 인지 구하기
+			 * @name 엘리먼트인지 구하기
 			 * @since 2017-12-06
 			 * @param {window || document || element || jQueryElement} element
 			 * @return {boolean}
@@ -349,6 +349,30 @@ try {
 						
 						//등록된 프로퍼티가 있을때
 						if($.inArray(valueI, standard) > -1) {
+							result.push(valueI);
+						}
+					}
+				}
+
+				return result;
+			}
+			
+			/**
+			 * @name 새로운 상태 얻기
+			 * @since 2017-12-06
+			 * @param {array} value
+			 * @return {array}
+			 */
+			function _getNewState(value) {
+				var result = [];
+
+				//배열일때
+				if(_getTypeof(value) === 'array') {
+					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+						var valueI = value[i];
+						
+						//새로운 상태가 있을때
+						if($.inArray(valueI, _setting.nowState) === -1) {
 							result.push(valueI);
 						}
 					}
@@ -535,7 +559,7 @@ try {
 				}
 
 				/**
-				 * @name 분기 적용
+				 * @name 상태 적용
 				 * @since 2017-12-06
 				 * @param {array || string} value
 				 * @return {boolean}
@@ -551,8 +575,8 @@ try {
 						value[0] = 'none';
 					}
 
-					//현재상태와 적용시킬 상태가 다르면
-					if((value.slice().sort() + '') !== (_setting.nowState.slice().sort() + '')) {
+					//새로적용시킬 상태가 있을때
+					if(_getNewState(value).length) {
 						//현재상태 클래스 제거
 						_$body.removeClass(_setting.nowState.join(' '));
 
@@ -843,10 +867,10 @@ try {
 							//범위실행
 							eval(rangeCode);
 
-							var state = ['all'],
-								resizedState = ['allResized'],
+							var beforeState = ['all'],
+								afterState = ['allResized'],
 								stateCookie = _getStateCookie();
-							
+
 							//적용시킬 분기가 없을때
 							if(!enter.length) {
 								enter[0] = 'none';
@@ -857,26 +881,26 @@ try {
 								enter = stateCookie;
 							}
 							
-							//분기적용
-							var isChangeState = _setState(enter);
+							var newState = _getNewState(enter), //새로운 분기
+								isChangeState = _setState(enter); //분기가 바뀌었는지
 
 							//분기분류
-							for(var i = 0, enterLength = enter.length; i < enterLength; i++) {
-								var enterI = enter[i],
-									stateAll = enterI + 'All';
+							for(var i = 0, newStateLength = newState.length; i < newStateLength; i++) {
+								var newStateI = newState[i],
+									stateAll = newStateI + 'All';
 								
-								state.push(stateAll);
+								beforeState.push(stateAll);
 
 								//적용시킬 분기가 있을때
 								if(isChangeState) {
-									state.push(enterI);
+									beforeState.push(newStateI);
 								}
 
-								resizedState.push(stateAll + 'Resized');
+								afterState.push(stateAll + 'Resized');
 							}
 
 							//이벤트 실행
-							_callEvent(state);
+							_callEvent(beforeState);
 
 							//돌던 setTimeout이 있으면 중단
 							if(timer) {
@@ -890,7 +914,7 @@ try {
 								_setScreenInfo(event);
 
 								//이벤트 실행
-								_callEvent(resizedState);
+								_callEvent(afterState);
 
 								//트리거 갱신
 								if(_setting.triggerType) {
