@@ -859,7 +859,7 @@ try {
 								
 								beforeState.push(stateAll);
 
-								//적용시킬 상태에 있을때
+								//적용시킬 상태가 있을때
 								if($.inArray(enterI, setState) > -1) {
 									beforeState.push(enterI);
 								}
@@ -929,8 +929,8 @@ try {
 				$.responsive.setState = function(value, day) {
 					var result = false;
 					
-					//중복제거
-					value = _removeDuplicate(_filter(value, _setting.rangeProperty).truth);
+					//분기이름 필터
+					value = _filter(value, _setting.rangeProperty).truth;
 
 					//적용시킬 상태가 있으면
 					if(value.length) {
