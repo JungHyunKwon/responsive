@@ -37,9 +37,8 @@ try {
 								day = -1;
 							}
 
-							value = escape(value);
 							date.setDate(date.getDate() + day);
-							document.cookie = name + '=' + value + '; expires=' + date.toUTCString() + '; path=/;';
+							document.cookie = name + '=' + escape(value) + '; expires=' + date.toUTCString() + '; path=/;';
 
 							//쿠키생성 후 확인해서 있으면
 							if(this.get(name) === value) {
@@ -326,10 +325,13 @@ try {
 			 * @since 2017-12-06
 			 * @param {array || string} value
 			 * @param {array} standard
-			 * @return {array}
+			 * @return {object}
 			 */
 			function _filter(value, standard) {
-				var result = [];
+				var result = {
+					truth : [],
+					untruth : []
+				};
 				
 				//배열일때
 				if(_getTypeof(standard) === 'array') {
@@ -349,31 +351,9 @@ try {
 						
 						//등록된 프로퍼티가 있을때
 						if($.inArray(valueI, standard) > -1) {
-							result.push(valueI);
-						}
-					}
-				}
-
-				return result;
-			}
-			
-			/**
-			 * @name 새로운 상태 얻기
-			 * @since 2017-12-06
-			 * @param {array} value
-			 * @return {array}
-			 */
-			function _getNewState(value) {
-				var result = [];
-
-				//배열일때
-				if(_getTypeof(value) === 'array') {
-					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-						var valueI = value[i];
-						
-						//새로운 상태가 있을때
-						if($.inArray(valueI, _setting.nowState) === -1) {
-							result.push(valueI);
+							result.truth.push(valueI);
+						}else{
+							result.untruth.push(valueI);
 						}
 					}
 				}
@@ -387,7 +367,7 @@ try {
 			 * @return {array}
 			 */
 			function _getStateCookie() {
-				return _removeDuplicate(_filter(_cookie.get('state').split(','), _setting.rangeProperty));
+				return _removeDuplicate(_filter(_cookie.get('state').split(','), _setting.rangeProperty).truth);
 			}
 
 			$(function() {
@@ -562,38 +542,31 @@ try {
 				 * @name 상태 적용
 				 * @since 2017-12-06
 				 * @param {array || string} value
-				 * @return {boolean}
+				 * @return {array}
 				 */
 				function _setState(value) {
-					var result = false;
-
 					//중복제거
 					value = _removeDuplicate(value);
 					
-					//적용시킬 상태가 없을때
-					if(!value.length) {
-						value[0] = 'none';
-					}
+					var nowState = _setting.nowState.slice(),
+						result = _filter(value, _setting.nowState).untruth;
 
-					//새로적용시킬 상태가 있을때
-					if(_getNewState(value).length) {
+					//현재상태와 적용시킬 상태가 다를때
+					if((value.slice().sort() + '') !== (nowState.sort() + '')) {
 						//현재상태 클래스 제거
-						_$body.removeClass(_setting.nowState.join(' '));
+						_$body.removeClass(nowState.join(' '));
 
 						//새로운상태 클래스 추가
 						_$body.addClass(value.join(' '));
 
 						//이전상태 추가
-						_setting.prevState = _setting.nowState.slice();
+						_setting.prevState = nowState;
 
 						//새로운상태 추가
 						_setting.nowState = value;
 
 						//console에 상태표기
 						console.log('현재상태 : ' + value.join(', '));
-						
-						//결과 변경
-						result = true;
 					}
 					
 					return result;
@@ -615,11 +588,6 @@ try {
 
 					//중복제거
 					value = _removeDuplicate(value);
-					
-					//적용시킬 상태가 없을때
-					if(!value.length) {
-						value[0] = 'none';
-					}
 
 					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 						var valueI = value[i];
@@ -881,19 +849,19 @@ try {
 								enter = stateCookie;
 							}
 							
-							var newState = _getNewState(enter), //새로운 분기
-								isChangeState = _setState(enter); //분기가 바뀌었는지
+							//분기적용
+							var setState = _setState(enter);
 
 							//분기분류
-							for(var i = 0, newStateLength = newState.length; i < newStateLength; i++) {
-								var newStateI = newState[i],
-									stateAll = newStateI + 'All';
+							for(var i = 0, enterLength = enter.length; i < enterLength; i++) {
+								var enterI = enter[i],
+									stateAll = enterI + 'All';
 								
 								beforeState.push(stateAll);
 
-								//적용시킬 분기가 있을때
-								if(isChangeState) {
-									beforeState.push(newStateI);
+								//적용시킬 상태에 있을때
+								if($.inArray(enterI, setState) > -1) {
+									beforeState.push(enterI);
 								}
 
 								afterState.push(stateAll + 'Resized');
@@ -944,7 +912,7 @@ try {
 						$('#scrollbar').remove();
 						this.setting = _copyObject(_initialSetting);
 						_setting.isRun = false;
-						_cookie.set('state', '');
+						_cookie.set('state', '', -1);
 						result = true;
 					}
 
@@ -956,35 +924,36 @@ try {
 				 * @since 2017-12-06
 				 * @param {array || string} value
 				 * @param {number} day
-				 * @return {boolean}
+				 * @return {boolean || string}
 				 */
 				$.responsive.setState = function(value, day) {
 					var result = false;
 					
 					//중복제거
-					value = _removeDuplicate(_filter(value, _setting.rangeProperty));
+					value = _removeDuplicate(_filter(value, _setting.rangeProperty).truth);
 
 					//적용시킬 상태가 있으면
 					if(value.length) {
-						var isSetCookie = false;
-
-						//숫자일때 && 쿠키적용
-						if(_getTypeof(day) === 'number' && _cookie.set('state', value.join(','), day)) {
-							isSetCookie = true;
-						}
-						
 						//분기적용
-						result = _setState(value);
+						var setState = _setState(value);
 						
-						//분기적용
-						if(result) {
+						//적용시킬 상태가 있을때
+						if(setState.length) {
 							//이벤트 실행
-							_callEvent(value);
+							_callEvent(setState);
+							
+							//결과 변경
+							result = true;
+						}
+						
+						//쿠키적용
+						if(_cookie.set('state', value.join(','), day)) {
+							result = true;
 						}
 
-						//쿠키를 적용했을때
-						if(isSetCookie) {
-							result = true;
+						//0이하일때
+						if(day <= 0) {
+							result = 'delete';
 						}
 					}
 
