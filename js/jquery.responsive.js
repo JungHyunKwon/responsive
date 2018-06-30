@@ -946,14 +946,17 @@ try {
 							result = true;
 						}
 						
-						//쿠키적용
-						if(_cookie.set('state', value.join(','), day)) {
-							result = true;
-						}
+						//숫자일때
+						if(_getTypeof(day) === 'number') {
+							//쿠키적용
+							if(_cookie.set('state', value.join(','), day)) {
+								result = true;
+							}
 
-						//0이하일때
-						if(day <= 0) {
-							result = 'delete';
+							//0이하일때
+							if(day <= 0) {
+								result = 'delete';
+							}
 						}
 					}
 
