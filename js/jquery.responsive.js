@@ -245,6 +245,16 @@ try {
 			}
 
 			/**
+			 * @name 배열 복사
+			 * @since 2017-12-06
+			 * @param {array} value
+			 * @return {*}
+			 */
+			function _copyArray(value) {
+				return (_getTypeof(value) === 'array') ? value.slice() : value;
+			}
+
+			/**
 			 * @name 접속상태 가져오기
 			 * @since 2017-12-06
 			 * @return {object}
@@ -548,11 +558,11 @@ try {
 					//중복제거
 					value = _removeDuplicate(value);
 					
-					var nowState = _setting.nowState.slice(),
+					var nowState = _copyArray(_setting.nowState),
 						result = _filter(value, _setting.nowState).untruth;
 
 					//현재상태와 적용시킬 상태가 다를때
-					if((value.slice().sort() + '') !== (nowState.sort() + '')) {
+					if((_copyArray(value).sort() + '') !== (nowState.sort() + '')) {
 						//현재상태 클래스 제거
 						_$body.removeClass(nowState.join(' '));
 
