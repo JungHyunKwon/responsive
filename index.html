@@ -10,23 +10,28 @@
 	<script src="js/jquery.responsive.min.js"></script>
 	<script>
 		'use strict';
+		
+		var $window = $(window),
+			$document = $(document);
 
 		$(function() {
 			//console.log($.responsive.setting);
 
-			$(window).on('responsive', function(event) {
+			$window.on('responsive', function(event) {
 				//console.log(event);
 				//console.log(event.state);
 				//console.log(event.setting);
 			});
 
-			$(window).on('responsive:wide', function(event) {
+			$window.on('responsive:wide', function(event) {
 				//console.log(event);
 				//console.log(event.state);
 				//console.log(event.setting);
 			});
+		});
 
-		   $.responsive({
+		$document.on('ready', function(event) {
+			$.responsive({
 				range : {
 					wide : {
 						horizontal : {
