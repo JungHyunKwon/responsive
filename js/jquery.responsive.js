@@ -35,7 +35,7 @@ try {
 						//문자일때
 						if(typeof name === 'string' && typeof value === 'string') {
 							//숫자가 아닐때
-							if(_getTypeof(day) !== 'number') {
+							if(typeof day !== 'number') {
 								day = -1;
 							}
 
@@ -83,88 +83,6 @@ try {
 						return result;
 					}
 				};
-
-			/**
-			 * @name 형태얻기
-			 * @since 2017-12-18
-			 * @param {*} value
-			 * @return {string}
-			 */
-			function _getTypeof(value) {
-				var result = 'none';
-				
-				//매개변수가 있을때
-				if(arguments.length) {
-					result = Object.prototype.toString.call(value).toLowerCase().replace('[object ', '').replace(']', '');
-
-					//undefined일때(ie7, ie8에서 찾지 못함)
-					if(value === undefined) {
-						result = 'undefined';
-					
-					//NaN일때(숫자로 처리되서 따로 처리함)
-					}else if(result === 'number' && isNaN(value)) {
-						result = 'NaN';
-					
-					//Infinity일때(숫자로 처리되서 따로 처리함)
-					}else if(result === 'number' && !isFinite(value)) {
-						result = value.toString();
-
-					//Invalid Date일때(date로 처리되서 따로 처리함)
-					}else if(result === 'date' && isNaN(new Date(value))) {
-						result = 'Invalid Date';
-					
-					//class일때
-					}else if(result === 'function' && /^class\s/.test(value.toString())) {
-						result = 'class';
-					
-					//window일때
-					}else if(value === window) {
-						result = 'window';
-
-					//document일때
-					}else if(value === document) {
-						result = 'document';
-					}else{
-						try {
-							if(document.documentElement.contains(value)) {
-								result = 'element';
-							}
-						}catch(error) {
-							//console.error(error);
-						}
-						
-						//엘리먼트가 아닐때
-						if(result !== 'element') {
-							//제이쿼리 객체일때
-							if(typeof window.jQuery === 'function' && value instanceof window.jQuery) {
-								var valueLength = value.length;
-
-								result = [];
-
-								for(var i = 0; i < valueLength; i++) {
-									var valueI = value[i],
-										elementType = _getTypeof(valueI);
-
-									if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
-										result.push(valueI);
-									}
-								}
-								
-								var resultLength = result.length;
-
-								//제이쿼리 엘리먼트일때
-								if(resultLength && valueLength === resultLength) {
-									result = 'jQueryElement';
-								}else{
-									result = 'jQueryObject';
-								}
-							}
-						}
-					}
-				}
-
-				return result;
-			}
 
 			/**
 			 * @name 콘솔오류방지
@@ -236,11 +154,68 @@ try {
 			 * @return {boolean}
 			 */
 			function _isElement(element) {
-				var elementType = _getTypeof(element),
-					result = false;
+				var result = false;
 
-				if(elementType === 'window' || elementType === 'document' || elementType === 'element' || elementType === 'jQueryElement') {
-					result = true;						
+				/**
+				 * @name 엘리먼트인지 구하기
+				 * @since 2017-12-06
+				 * @param {window || document || element} element
+				 * @return {boolean}
+				 */
+				function isElement(element) {
+					var result = false;
+					
+					try {
+						result = document.documentElement.contains(element);
+					}catch(error) {
+						//console.error(error);
+					}
+
+					//window 또는 document 또는 element일때
+					if(element === window || element === document) {
+						result = true;						
+					}
+
+					return result;
+				}
+
+				/**
+				 * @name 제이쿼리 엘리먼트인지 구하기
+				 * @since 2017-12-06
+				 * @param {jQueryElement || jQueryObject} element
+				 * @return {boolean}
+				 */
+				function isJQueryElement(element) {
+					var result = false;
+
+					//제이쿼리 객체일때
+					if(typeof window.jQuery === 'function' && element instanceof window.jQuery) {
+						var elementLength = element.length;
+						
+						result = [];
+
+						for(var i = 0; i < elementLength; i++) {
+							var elementI = element[i];
+
+							if(isElement(elementI)) {
+								result.push(elementI);
+							}
+						}
+
+						var resultLength = result.length;
+
+						//제이쿼리 엘리먼트일때
+						if(resultLength && elementLength === resultLength) {
+							result = true;
+						}
+					}
+
+					return result;
+				}
+				
+				//window 또는 document 또는 element 또는 jQueryElement일때
+				if(isElement(element) || isJQueryElement(element)) {
+					result = true;
 				}
 
 				return result;
@@ -754,12 +729,12 @@ try {
 								hasVertical = false;
 
 							//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(rangeI.horizontal instanceof Object && _getTypeof(rangeI.horizontal.from) === 'number' && _getTypeof(rangeI.horizontal.to) === 'number') {
+							if(rangeI.horizontal instanceof Object && typeof rangeI.horizontal.from === 'number' && typeof rangeI.horizontal.to === 'number') {
 								hasHorizontal = true;
 							}
 							
 							//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(rangeI.vertical instanceof Object && _getTypeof(rangeI.vertical.from) === 'number' && _getTypeof(rangeI.vertical.to) === 'number') {
+							if(rangeI.vertical instanceof Object && typeof rangeI.vertical.from === 'number' && typeof rangeI.vertical.to === 'number') {
 								hasVertical = true;
 							}
 							
@@ -963,7 +938,7 @@ try {
 						}
 						
 						//숫자일때
-						if(_getTypeof(day) === 'number') {
+						if(typeof day === 'number') {
 							//쿠키적용
 							if(_cookie.set('state', value.join(','), day)) {
 								result = true;
