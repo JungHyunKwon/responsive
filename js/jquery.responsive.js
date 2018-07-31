@@ -31,8 +31,10 @@ try {
 					set : function(name, value, day) {
 						var date = new Date(),
 							result = false;
-
+						
+						//문자일때
 						if(typeof name === 'string' && typeof value === 'string') {
+							//숫자가 아닐때
 							if(_getTypeof(day) !== 'number') {
 								day = -1;
 							}
@@ -59,15 +61,18 @@ try {
 						var cookie = document.cookie.split(';'),
 							result = '';
 						
+						//문자일때
 						if(typeof name === 'string') {
 							for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
 								var cookieI = cookie[i];
-
+								
+								//첫번째 글자가 공백일때
 								while(cookieI.charAt(0) === ' ') {
 									cookieI = cookieI.substring(1);
 									break;
 								}
-
+								
+								//쿠키값이 있을때
 								if(cookieI.indexOf(name) > -1) {
 									result = unescape(cookieI.substring(name.length + 1, cookieI.length));
 									break;
@@ -104,43 +109,6 @@ try {
 					}else if(result === 'number' && !isFinite(value)) {
 						result = value.toString();
 
-					//window일때
-					}else if(value === window) {
-						result = 'window';
-
-					//document일때
-					}else if(value === document) {
-						result = 'document';
-
-					//엘리먼트일때
-					}else if(value.tagName) {
-						result = 'element';
-
-					//제이쿼리 객체일때
-					}else if(typeof window.jQuery === 'function' && value instanceof window.jQuery) {
-						var valueLength = value.length,
-							i = 0;
-
-						result = [];
-
-						for(; i < valueLength; i++) {
-							var valueI = value[i],
-								elementType = _getTypeof(valueI);
-
-							if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
-								result.push(valueI);
-							}
-						}
-						
-						var resultLength = result.length;
-
-						//제이쿼리 엘리먼트일때
-						if(resultLength && valueLength === resultLength) {
-							result = 'jQueryElement';
-						}else{
-							result = 'jQueryObject';
-						}
-
 					//Invalid Date일때(date로 처리되서 따로 처리함)
 					}else if(result === 'date' && isNaN(new Date(value))) {
 						result = 'Invalid Date';
@@ -148,6 +116,50 @@ try {
 					//class일때
 					}else if(result === 'function' && /^class\s/.test(value.toString())) {
 						result = 'class';
+					
+					//window일때
+					}else if(value === window) {
+						result = 'window';
+
+					//document일때
+					}else if(value === document) {
+						result = 'document';
+					}else{
+						try {
+							if(document.documentElement.contains(value)) {
+								result = 'element';
+							}
+						}catch(error) {
+							//console.error(error);
+						}
+						
+						//엘리먼트가 아닐때
+						if(result !== 'element') {
+							//제이쿼리 객체일때
+							if(typeof window.jQuery === 'function' && value instanceof window.jQuery) {
+								var valueLength = value.length;
+
+								result = [];
+
+								for(var i = 0; i < valueLength; i++) {
+									var valueI = value[i],
+										elementType = _getTypeof(valueI);
+
+									if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
+										result.push(valueI);
+									}
+								}
+								
+								var resultLength = result.length;
+
+								//제이쿼리 엘리먼트일때
+								if(resultLength && valueLength === resultLength) {
+									result = 'jQueryElement';
+								}else{
+									result = 'jQueryObject';
+								}
+							}
+						}
 					}
 				}
 
@@ -241,7 +253,7 @@ try {
 			 * @return {*}
 			 */
 			function _copyObject(value) {
-				return (_getTypeof(value) === 'object') ? $.extend(true, {}, value) : value;
+				return (value instanceof Object) ? $.extend(true, {}, value) : value;
 			}
 
 			/**
@@ -251,7 +263,7 @@ try {
 			 * @return {*}
 			 */
 			function _copyArray(value) {
-				return (_getTypeof(value) === 'array') ? value.slice() : value;
+				return (value instanceof Array) ? value.slice() : value;
 			}
 
 			/**
@@ -306,15 +318,14 @@ try {
 			 * @return {array}
 			 */
 			function _removeDuplicate(value) {
-				var result = [],
-					valueType = _getTypeof(value);
+				var result = [];
 				
 				//문자일때
-				if(valueType === 'string') {
+				if(typeof value === 'string') {
 					value = [value];
 				
 				//배열이 아닐때
-				}else if(valueType !== 'array') {
+				}else if(!(value instanceof Array)) {
 					value = [];
 				}
 
@@ -344,15 +355,13 @@ try {
 				};
 				
 				//배열일때
-				if(_getTypeof(standard) === 'array') {
-					var valueType = _getTypeof(value);
-
+				if(standard instanceof Array) {
 					//문자일때
-					if(valueType === 'string') {
+					if(typeof value === 'string') {
 						value = [value];
 					
 					//배열이 아닐때
-					}else if(valueType !== 'array') {
+					}else if(!(value instanceof Array)) {
 						value = [];
 					}
 
@@ -625,7 +634,7 @@ try {
 					var hasScrollbar = _hasScrollbar(_$body[0], true);
 
 					//객체가 아닐때
-					if(_getTypeof(event) !== 'object') {
+					if(!(event instanceof Object)) {
 						event = {};
 					}
 
@@ -721,17 +730,17 @@ try {
 					_$body.addClass(_setting.browser + ' ' + _setting.platform);
 					
 					//객체가 아닐때
-					if(_getTypeof(option) !== 'object') {
+					if(!(option instanceof Object)) {
 						option = {};
 					}
 
 					//객체가 아닐때
-					if(_getTypeof(option.lowIE) !== 'object') {
+					if(!(option.lowIE instanceof Object)) {
 						option.lowIE = {};
 					}
 
 					//객체가 아닐때
-					if(_getTypeof(option.range) !== 'object') {
+					if(!(option.range instanceof Object)) {
 						option.range = {};
 					}
 
@@ -740,17 +749,17 @@ try {
 						var rangeI = option.range[i];
 
 						//필터링
-						if(_getTypeof(rangeI) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
+						if(rangeI instanceof Object && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							var hasHorizontal = false,
 								hasVertical = false;
 
 							//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(_getTypeof(rangeI.horizontal) === 'object' && _getTypeof(rangeI.horizontal.from) === 'number' && _getTypeof(rangeI.horizontal.to) === 'number') {
+							if(rangeI.horizontal instanceof Object && _getTypeof(rangeI.horizontal.from) === 'number' && _getTypeof(rangeI.horizontal.to) === 'number') {
 								hasHorizontal = true;
 							}
 							
 							//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(_getTypeof(rangeI.vertical) === 'object' && _getTypeof(rangeI.vertical.from) === 'number' && _getTypeof(rangeI.vertical.to) === 'number') {
+							if(rangeI.vertical instanceof Object && _getTypeof(rangeI.vertical.from) === 'number' && _getTypeof(rangeI.vertical.to) === 'number') {
 								hasVertical = true;
 							}
 							
@@ -789,11 +798,8 @@ try {
 					rangeCode += '}';
 					//rangeCode작성 끝
 
-					//형태검사
-					var lowIEPropertyType = _getTypeof(option.lowIE.property);
-
 					//배열 또는 문자일때
-					if(lowIEPropertyType === 'array' || lowIEPropertyType === 'string') {
+					if(typeof option.lowIE.property === 'string' || option.lowIE.property instanceof Array) {
 						_setting.lowIE.property = _removeDuplicate(option.lowIE.property);
 					}
 					
@@ -989,6 +995,6 @@ try {
 	}else{
 		throw '제이쿼리가 없습니다.';
 	}
-}catch(e) {
-	console.error(e);
+}catch(error) {
+	console.error(error);
 }
