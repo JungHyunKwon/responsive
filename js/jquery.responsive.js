@@ -89,7 +89,9 @@ try {
 			 * @description 콘솔객체가 없을경우 에뮬레이션이 아닌 실제 인터넷 익스플로러9이하에서 콘솔로그 버그를 막을 수 있습니다. 막지 않고 콘솔을 쓸경우 모든 스크립팅은 중단 됩니다. 대체콘솔은 console.comment에 담겨있습니다.
 			 * @since 2017-10-11
 			 */
-			if(!(window.console instanceof Object)) {
+			
+			//객체일때
+			if(!(window.console instanceof Object && window.console.constructor === Object)) {
 				window.console = {
 					method : [
 						'assert',
@@ -224,23 +226,24 @@ try {
 			}
 
 			/**
-			 * @name 객체 복사
+			 * @name 자료형 복사
 			 * @since 2017-12-06
-			 * @param {object} value
+			 * @param {*} value
 			 * @return {*}
 			 */
-			function _copyObject(value) {
-				return (value instanceof Object) ? $.extend(true, {}, value) : value;
-			}
+			function _copyType(value) {
+				var result = value;
 
-			/**
-			 * @name 배열 복사
-			 * @since 2017-12-06
-			 * @param {array} value
-			 * @return {*}
-			 */
-			function _copyArray(value) {
-				return (value instanceof Array) ? value.slice() : value;
+				//객체일때
+				if(value instanceof Object && value.constructor === Object) {
+					result = $.extend(true, {}, value);
+				
+				//배열일때
+				}else if(value instanceof Array) {
+					result = value.slice();
+				}
+
+				return result;
 			}
 
 			/**
@@ -504,7 +507,7 @@ try {
 						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
 						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height();
 
-					return _copyObject({
+					return _copyType({
 						isRun : false,
 						range : {},
 						rangeProperty : [],
@@ -544,11 +547,11 @@ try {
 					//중복제거
 					value = _removeDuplicate(value);
 					
-					var nowState = _copyArray(_setting.nowState),
+					var nowState = _copyType(_setting.nowState),
 						result = _filter(value, _setting.nowState).untruth;
 
 					//현재상태와 적용시킬 상태가 다를때
-					if((_copyArray(value).sort() + '') !== (nowState.sort() + '')) {
+					if((_copyType(value).sort() + '') !== (nowState.sort() + '')) {
 						//현재상태 클래스 제거
 						_$body.removeClass(nowState.join(' '));
 
@@ -576,11 +579,11 @@ try {
 				 */
 				function _callEvent(value) {
 					var event = {
-							setting : _copyObject(_setting)
+							setting : _copyType(_setting)
 						};
 
 					//전역객체 갱신
-					$.responsive.setting = _copyObject(event.setting);
+					$.responsive.setting = _copyType(event.setting);
 
 					//중복제거
 					value = _removeDuplicate(value);
@@ -611,7 +614,7 @@ try {
 					var hasScrollbar = _hasScrollbar(_$body[0], true);
 
 					//객체가 아닐때
-					if(!(event instanceof Object)) {
+					if(!(event instanceof Object && event.constructor === Object)) {
 						event = {};
 					}
 
@@ -707,17 +710,17 @@ try {
 					_$body.addClass(_setting.browser + ' ' + _setting.platform);
 					
 					//객체가 아닐때
-					if(!(option instanceof Object)) {
+					if(!(option instanceof Object && option.constructor === Object)) {
 						option = {};
 					}
 
 					//객체가 아닐때
-					if(!(option.lowIE instanceof Object)) {
+					if(!(option.lowIE instanceof Object && option.lowIE.constructor === Object)) {
 						option.lowIE = {};
 					}
 
 					//객체가 아닐때
-					if(!(option.range instanceof Object)) {
+					if(!(option.range instanceof Object && option.range.constructor === Object)) {
 						option.range = {};
 					}
 
@@ -726,17 +729,17 @@ try {
 						var rangeI = option.range[i];
 
 						//필터링
-						if(rangeI instanceof Object && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
+						if(rangeI instanceof Object && rangeI.constructor === Object && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							var hasHorizontal = false,
 								hasVertical = false;
 
 							//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(rangeI.horizontal instanceof Object && typeof rangeI.horizontal.from === 'number' && typeof rangeI.horizontal.to === 'number') {
+							if(rangeI.horizontal instanceof Object && rangeI.horizontal.constructor === Object && typeof rangeI.horizontal.from === 'number' && typeof rangeI.horizontal.to === 'number') {
 								hasHorizontal = true;
 							}
 							
 							//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(rangeI.vertical instanceof Object && typeof rangeI.vertical.from === 'number' && typeof rangeI.vertical.to === 'number') {
+							if(rangeI.vertical instanceof Object && rangeI.vertical.constructor === Object && typeof rangeI.vertical.from === 'number' && typeof rangeI.vertical.to === 'number') {
 								hasVertical = true;
 							}
 							
@@ -880,7 +883,7 @@ try {
 								//트리거 갱신
 								if(_setting.triggerType) {
 									_setting.triggerType = '';
-									$.responsive.setting = _copyObject(_setting);
+									$.responsive.setting = _copyType(_setting);
 								}
 							}, interval);
 						}
@@ -903,7 +906,7 @@ try {
 						_$window.off('resize.responsive');
 						_$body.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation);
 						$('#scrollbar').remove();
-						this.setting = _copyObject(_initialSetting);
+						this.setting = _copyType(_initialSetting);
 						_setting.isRun = false;
 						_cookie.set('state', '', -1);
 						result = true;
@@ -966,7 +969,7 @@ try {
 				/**
 				 * @description 기본 객체를 사용자에게 제공합니다.
 				 */
-				$.responsive.setting = _copyObject(_initialSetting);
+				$.responsive.setting = _copyType(_initialSetting);
 			});
 		})(jQuery);
 	}else{
