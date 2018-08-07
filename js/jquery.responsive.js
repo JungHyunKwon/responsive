@@ -173,7 +173,7 @@ try {
 						//console.error(error);
 					}
 
-					//window 또는 document 또는 element일때
+					//window 또는 document일때
 					if(element === window || element === document) {
 						result = true;						
 					}
