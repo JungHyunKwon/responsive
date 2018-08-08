@@ -7,7 +7,6 @@ try {
 
 	//제이쿼리가 함수일때
 	if(typeof window.jQuery === 'function') {
-		//$ 중첩 방지
 		(function($) {
 			var _$window = $(window),
 				_connectedState = _getConnectedState(),
