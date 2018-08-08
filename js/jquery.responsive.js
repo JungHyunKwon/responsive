@@ -5,9 +5,9 @@
 try {
 	'use strict';
 
-	//제이쿼리가 함수일때
-	if(typeof window.jQuery === 'function') {
-		(function($) {
+	(function($) {
+		//제이쿼리가 함수일때
+		if(typeof $ === 'function') {
 			var _$window = $(window),
 				_connectedState = _getConnectedState(),
 				_isLowIE = _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
@@ -949,10 +949,10 @@ try {
 				 */
 				$.responsive.setting = _copyType(_initialSetting);
 			});
-		})(jQuery);
-	}else{
-		throw '제이쿼리가 없습니다.';
-	}
+		}else{
+			throw '제이쿼리가 없습니다.';
+		}
+	})(window.jQuery);
 }catch(error) {
 	console.error(error);
 }
