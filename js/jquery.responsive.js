@@ -548,7 +548,7 @@ try {
 					var hasScrollbar = _hasScrollbar(_$body[0], true);
 
 					//객체가 아닐때
-					if(!(event instanceof Object && event.constructor === Object)) {
+					if(!(event instanceof Object && event.constructor === $.Event)) {
 						event = {};
 					}
 
