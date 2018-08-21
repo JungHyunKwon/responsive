@@ -34,7 +34,7 @@ try {
 						//문자일때
 						if(typeof name === 'string' && typeof value === 'string') {
 							//숫자가 아닐때
-							if(typeof day !== 'number') {
+							if(_getType(day) !== 'number') {
 								day = -1;
 							}
 
@@ -82,6 +82,50 @@ try {
 						return result;
 					}
 				};
+
+			/**
+			 * @name 형태얻기
+			 * @since 2017-12-06
+			 * @param {*} value
+			 * @return {string || undefined}
+			 */
+			function _getType(value) {
+				var result;
+				
+				//매개변수가 있을때
+				if(arguments.length) {
+					//null일때
+					if(value === null) {
+						result = 'null';
+					
+					//undefined일때
+					}else if(value === undefined) {
+						result = 'undefined';
+					}else{
+						result = Object.prototype.toString.call(value).toLowerCase().replace('[object ', '').replace(']', '');
+						
+						//Invalid Date일때
+						if(result === 'date' && isNaN(new Date(value))) {
+							result = 'Invalid Date';
+						
+						//숫자일때
+						}else if(result === 'number') {
+							//NaN일때
+							if(isNaN(value)) {
+								result = 'NaN';
+							
+							//Infinity일때
+							}else if(!isFinite(value)) {
+								result = value.toString();
+							}
+						}else if(result === 'console') {
+							result = 'object';
+						}
+					}
+				}
+
+				return result;
+			}
 
 			/**
 			 * @name 요소 또는 제이쿼리 요소 확인
@@ -166,14 +210,15 @@ try {
 			 * @return {*}
 			 */
 			function _copyType(value) {
-				var result = value;
+				var valueType = _getType(value),
+					result = value;
 
 				//객체일때
-				if(value instanceof Object && value.constructor === Object) {
+				if(valueType === 'object') {
 					result = $.extend(true, {}, value);
 				
 				//배열일때
-				}else if(value instanceof Array) {
+				}else if(valueType === 'array') {
 					result = value.slice();
 				}
 
@@ -239,7 +284,7 @@ try {
 					value = [value];
 				
 				//배열이 아닐때
-				}else if(!(value instanceof Array)) {
+				}else if(_getType(value) !== 'array') {
 					value = [];
 				}
 
@@ -269,13 +314,13 @@ try {
 				};
 				
 				//배열일때
-				if(standard instanceof Array) {
+				if(_getType(standard) === 'array') {
 					//문자일때
 					if(typeof value === 'string') {
 						value = [value];
 					
 					//배열이 아닐때
-					}else if(!(value instanceof Array)) {
+					}else if(_getType(value) !== 'array') {
 						value = [];
 					}
 
@@ -548,7 +593,7 @@ try {
 					var hasScrollbar = _hasScrollbar(_$body[0], true);
 
 					//객체가 아닐때
-					if(!(event instanceof Object && event.constructor === $.Event)) {
+					if(_getType(event) !== 'object') {
 						event = {};
 					}
 
@@ -644,17 +689,17 @@ try {
 					_$body.addClass(_setting.browser + ' ' + _setting.platform);
 					
 					//객체가 아닐때
-					if(!(option instanceof Object && option.constructor === Object)) {
+					if(_getType(option) !== 'object') {
 						option = {};
 					}
 
 					//객체가 아닐때
-					if(!(option.lowIE instanceof Object && option.lowIE.constructor === Object)) {
+					if(_getType(option.lowIE) !== 'object') {
 						option.lowIE = {};
 					}
 
 					//객체가 아닐때
-					if(!(option.range instanceof Object && option.range.constructor === Object)) {
+					if(_getType(option.range) !== 'object') {
 						option.range = {};
 					}
 
@@ -663,17 +708,17 @@ try {
 						var rangeI = option.range[i];
 
 						//필터링
-						if(rangeI instanceof Object && rangeI.constructor === Object && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
+						if(_getType(rangeI) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							var hasHorizontal = false,
 								hasVertical = false;
 
 							//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(rangeI.horizontal instanceof Object && rangeI.horizontal.constructor === Object && typeof rangeI.horizontal.from === 'number' && typeof rangeI.horizontal.to === 'number') {
+							if(_getType(rangeI.horizontal) === 'object' && typeof rangeI.horizontal.from === 'number' && typeof rangeI.horizontal.to === 'number') {
 								hasHorizontal = true;
 							}
 							
 							//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(rangeI.vertical instanceof Object && rangeI.vertical.constructor === Object && typeof rangeI.vertical.from === 'number' && typeof rangeI.vertical.to === 'number') {
+							if(_getType(rangeI.vertical) === 'object' && typeof rangeI.vertical.from === 'number' && typeof rangeI.vertical.to === 'number') {
 								hasVertical = true;
 							}
 							
@@ -713,7 +758,7 @@ try {
 					//rangeCode작성 끝
 
 					//배열 또는 문자일때
-					if(typeof option.lowIE.property === 'string' || option.lowIE.property instanceof Array) {
+					if(typeof option.lowIE.property === 'string' || _getType(option.lowIE.property) === 'array') {
 						_setting.lowIE.property = _removeDuplicate(option.lowIE.property);
 					}
 					
@@ -877,7 +922,7 @@ try {
 						}
 						
 						//숫자일때
-						if(typeof day === 'number') {
+						if(_getType(day) === 'number') {
 							//쿠키적용
 							if(_cookie.set('state', value.join(','), day)) {
 								result = true;
