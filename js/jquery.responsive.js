@@ -491,7 +491,7 @@ try {
 				 * @return {object}
 				 */
 				function _getDefaultObject() {
-					var hasScrollbar = _hasScrollbar(_$html[0], true),
+					var hasScrollbar = _hasScrollbar(_$html[0]),
 						scrollbarWidth = _getScrollbarWidth({
 							id : 'responsive'
 						}),
@@ -603,7 +603,7 @@ try {
 				 * @return {object}
 				 */
 				function _setScreenInfo(event) {
-					var hasScrollbar = _hasScrollbar(_$html[0], true);
+					var hasScrollbar = _hasScrollbar(_$html[0]);
 
 					//객체가 아닐때
 					if(_getType(event) !== 'object') {
@@ -703,7 +703,7 @@ try {
 					//브라우저, 플랫폼 클래스 추가
 					_$html.addClass(_setting.browser + ' ' + _setting.platform);
 					
-					//레티나 디스플레이일때
+					//화면비율이 1배 초과일때
 					if(_isRetina) {
 						_$html.addClass('retina');	
 					}
