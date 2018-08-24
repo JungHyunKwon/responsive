@@ -134,6 +134,7 @@ isScreenChage | boolean | 넓이 또는 높이가 변경되었는지 확인하�
 isScreenHeightChange | boolean | 높이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthChange | boolean | 넓이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthAndHeightChange | boolean | 넓이와 높이가 변경되었는지 확인하는 변수입니다.
+isRetina | boolean | 비율이 1배 초과인지 확인하는 변수입니다.
 lowIE | object | <ul><li>is(boolean) : 브라우저가 ie7 또는 ie8인지 확인하는 변수입니다.</li><li>property(array) : lowIE에 property에 작성한 값을 토대로 반영된 값 입니다.</li><li>run(boolean) :  property가 있으면 false가 나오고 없으면 true로 나옵니다.</li></ul>
 range | object | property(array) : 플러그인 옵션에서 range에 작성한 값을 토대로 반영된 값 입니다.
 rangeProperty | array | 플러그인 옵션에서 range에 작성한 값을 토대로 반영된 프로퍼티명 입니다.
@@ -188,11 +189,14 @@ $(window).on('responsive:#', function(event) {
 
 ### 클래스
 * 브라우저 : ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 중에서 해당되는 브라우저로 클래스가 부여됩니다.
-  * 브라우저를 찾지 못하면 unknown이라는 클래스가 나오게 됩니다.
+  * 브라우저를 찾지 못하면 unknown이라는 클래스가 부여됩니다.
 * 플랫폼 : pc, mobile중에서 접속한 플랫폼으로 클래스가 부여됩니다.
 * 분기 : 플러그인 옵션중 range에 적은 프로퍼티명이 클래스로 부여됩니다.
 * 스크롤바 : 스크롤바 넓이가 있으면 scrollbar라는 클래스가 부여됩니다.
-* 방향 : 가로, 세로가 같을때 square가 나오고 세로보다 가로가 더 클때 landscape가 나오고 가로보다 세로가 더 클때 portrait라는 값이 나옵니다.
+* 방향 : 가로, 세로가 같을때 square가 나오고 세로보다 가로가 더 클때 landscape가 나오고 가로보다 세로가 더 클때 portrait라는 값이 부여됩니다.
+* 화면 : 비율이 1배 초과이면 retina라는 값이 부여됩니다.
+
+html에 부여됩니다.
 
 ### 제이쿼리 개발버전
 1.12.4

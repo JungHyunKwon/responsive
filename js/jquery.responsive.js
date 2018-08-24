@@ -9,8 +9,10 @@ try {
 		//제이쿼리가 함수일때
 		if(typeof $ === 'function') {
 			var _$window = $(window),
+				_$html = $('html'),
 				_connectedState = _getConnectedState(),
 				_isLowIE = _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
+				_isRetina = window.devicePixelRatio > 1,
 				_setting = {},
 				_cookie = {
 					/**
@@ -349,26 +351,34 @@ try {
 			}
 
 			$(function() {
-				var _$body = $('body'),
-					_initialSetting = _getDefaultObject();
+				var _initialSetting = _getDefaultObject();
 				
 				/**
 				 * @name 스크롤바 넓이 구하기
 				 * @since 2017-12-06
-				 * @param {element || jQueryElement} element
+				 * @param {string} id
+				 * @param {object} option {element : element || jQueryElement, id : string}
 				 * @return {array || number}
 				 */
-				function _getScrollbarWidth(element) {
-					var $element = $(element),
-						result = [];
-					
+				function _getScrollbarWidth(option) {
+					var result = [];
+
+					//객체가 아닐때
+					if(_getType(option) !== 'object') {
+						option = {};
+					}
+
+					var $element = $(option.element);
+
 					//요소가 없을때 대체
 					if(!_isElement($element)) {
-						$element = $('#scrollbar');
+						var id = (option.id && typeof option.id === 'string') ? option.id : 'scrollbar';
+
+						$element = $('#' + id);
 						
 						//스크롤바 요소가 없을때
 						if(!$element.length) {
-							$element = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
+							$element = $('<div id="' + id + '">&nbsp;</div>').appendTo('body');
 						}
 					}
 					
@@ -481,8 +491,10 @@ try {
 				 * @return {object}
 				 */
 				function _getDefaultObject() {
-					var hasScrollbar = _hasScrollbar(_$body[0], true),
-						scrollbarWidth = _getScrollbarWidth(),
+					var hasScrollbar = _hasScrollbar(_$html[0], true),
+						scrollbarWidth = _getScrollbarWidth({
+							id : 'responsive'
+						}),
 						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
 						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height();
 
@@ -512,7 +524,8 @@ try {
 						isScreenChange : false,
 						isScreenWidthChange : false,
 						isScreenHeightChange : false,
-						isScreenWidthAndHeightChange : false
+						isScreenWidthAndHeightChange : false,
+						isRetina : _isRetina
 					});
 				}
 
@@ -532,10 +545,10 @@ try {
 					//현재상태와 적용시킬 상태가 다를때
 					if((_copyType(value).sort() + '') !== (nowState.sort() + '')) {
 						//현재상태 클래스 제거
-						_$body.removeClass(nowState.join(' '));
+						_$html.removeClass(nowState.join(' '));
 
 						//새로운상태 클래스 추가
-						_$body.addClass(value.join(' '));
+						_$html.addClass(value.join(' '));
 
 						//이전상태 추가
 						_setting.prevState = nowState;
@@ -590,7 +603,7 @@ try {
 				 * @return {object}
 				 */
 				function _setScreenInfo(event) {
-					var hasScrollbar = _hasScrollbar(_$body[0], true);
+					var hasScrollbar = _hasScrollbar(_$html[0], true);
 
 					//객체가 아닐때
 					if(_getType(event) !== 'object') {
@@ -618,13 +631,15 @@ try {
 					_setting.isScreenChange = false;
 
 					//스크롤바 넓이
-					_setting.scrollbarWidth = _getScrollbarWidth();
+					_setting.scrollbarWidth = _getScrollbarWidth({
+						id : 'responsive'
+					});
 
 					//브라우저 스크롤바가 있을때
 					if(_setting.scrollbarWidth) {
-						_$body.addClass('scrollbar');
+						_$html.addClass('scrollbar');
 					}else{
-						_$body.removeClass('scrollbar');
+						_$html.removeClass('scrollbar');
 					}
 
 					//화면 넓이, 높이
@@ -642,7 +657,7 @@ try {
 					}
 
 					//방향
-					_$body.removeClass(_setting.orientation);
+					_$html.removeClass(_setting.orientation);
 					
 					//화면이 가로세로가 같을때
 					if(_setting.screenWidth === _setting.screenHeight) {
@@ -656,8 +671,8 @@ try {
 					}else{
 						_setting.orientation = 'portrait';
 					}
-					
-					_$body.addClass(_setting.orientation);
+
+					_$html.addClass(_setting.orientation);
 
 					return _setting;
 				}
@@ -686,8 +701,13 @@ try {
 					_setting.isRun = true;
 
 					//브라우저, 플랫폼 클래스 추가
-					_$body.addClass(_setting.browser + ' ' + _setting.platform);
+					_$html.addClass(_setting.browser + ' ' + _setting.platform);
 					
+					//레티나 디스플레이일때
+					if(_isRetina) {
+						_$html.addClass('retina');	
+					}
+
 					//객체가 아닐때
 					if(_getType(option) !== 'object') {
 						option = {};
@@ -869,7 +889,7 @@ try {
 					}).triggerHandler('resize.responsive');
 
 					//요소 반환
-					return _$body;
+					return _$html;
 				};
 
 				/**
@@ -883,8 +903,8 @@ try {
 					//플러그인을 실행중일때
 					if(_setting.isRun) {
 						_$window.off('resize.responsive');
-						_$body.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation);
-						$('#scrollbar').remove();
+						_$html.removeClass('retina scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation);
+						$('#responsive').remove();
 						this.setting = _copyType(_initialSetting);
 						_setting.isRun = false;
 						_cookie.set('state', '', -1);
