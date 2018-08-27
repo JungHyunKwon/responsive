@@ -11,8 +11,7 @@ try {
 			var _$window = $(window),
 				_$html = $('html'),
 				_connectedState = _getConnectedState(),
-				_isLowIE = _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
-				_isRetina = window.devicePixelRatio > 1,
+				_isLowIE = _connectedState.browser === 'ie6' || _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
 				_setting = {},
 				_cookie = {
 					/**
@@ -238,7 +237,9 @@ try {
 					platformCase = ['win16', 'win32', 'win64', 'mac', 'linux'],
 					result = {};
 
-				if(userAgent.indexOf('msie 7.0') > -1) {
+				if(userAgent.indexOf('msie 6.0') > -1) {
+					result.browser = 'ie6';
+				}else if(userAgent.indexOf('msie 7.0') > -1) {
 					result.browser = 'ie7';
 				}else if(userAgent.indexOf('msie 8.0') > -1) {
 					result.browser = 'ie8';
@@ -356,29 +357,20 @@ try {
 				/**
 				 * @name 스크롤바 넓이 구하기
 				 * @since 2017-12-06
-				 * @param {string} id
-				 * @param {object} option {element : element || jQueryElement, id : string}
+				 * @param {element || jQueryElement} element
 				 * @return {array || number}
 				 */
-				function _getScrollbarWidth(option) {
-					var result = [];
-
-					//객체가 아닐때
-					if(_getType(option) !== 'object') {
-						option = {};
-					}
-
-					var $element = $(option.element);
+				function _getScrollbarWidth(element) {
+					var $element = $(element),
+						result = [];
 
 					//요소가 없을때 대체
 					if(!_isElement($element)) {
-						var id = (option.id && typeof option.id === 'string') ? option.id : 'scrollbar';
-
-						$element = $('#' + id);
+						$element = $('#scrollbar');
 						
-						//스크롤바 요소가 없을때
+						//스크롤바 객체가 없을때
 						if(!$element.length) {
-							$element = $('<div id="' + id + '">&nbsp;</div>').appendTo('body');
+							$element = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
 						}
 					}
 					
@@ -492,9 +484,7 @@ try {
 				 */
 				function _getDefaultObject() {
 					var hasScrollbar = _hasScrollbar(_$html[0]),
-						scrollbarWidth = _getScrollbarWidth({
-							id : 'responsive'
-						}),
+						scrollbarWidth = _getScrollbarWidth(),
 						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
 						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height();
 
@@ -521,11 +511,9 @@ try {
 						hasHorizontalScrollbar : hasScrollbar.horizontal,
 						isResize : false,
 						triggerType : '',
-						isScreenChange : false,
 						isScreenWidthChange : false,
 						isScreenHeightChange : false,
-						isScreenWidthAndHeightChange : false,
-						isRetina : _isRetina
+						isScreenWidthAndHeightChange : false
 					});
 				}
 
@@ -628,12 +616,9 @@ try {
 					_setting.isScreenWidthChange = false;
 					_setting.isScreenHeightChange = false;
 					_setting.isScreenWidthAndHeightChange = false;
-					_setting.isScreenChange = false;
 
 					//스크롤바 넓이
-					_setting.scrollbarWidth = _getScrollbarWidth({
-						id : 'responsive'
-					});
+					_setting.scrollbarWidth = _getScrollbarWidth();
 
 					//브라우저 스크롤바가 있을때
 					if(_setting.scrollbarWidth) {
@@ -702,11 +687,6 @@ try {
 
 					//브라우저, 플랫폼 클래스 추가
 					_$html.addClass(_setting.browser + ' ' + _setting.platform);
-					
-					//화면비율이 1배 초과일때
-					if(_isRetina) {
-						_$html.addClass('retina');	
-					}
 
 					//객체가 아닐때
 					if(_getType(option) !== 'object') {
@@ -728,7 +708,7 @@ try {
 						var rangeI = option.range[i];
 
 						//필터링
-						if(_getType(rangeI) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
+						if(_getType(rangeI) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie6' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							var hasHorizontal = false,
 								hasVertical = false;
 
@@ -811,81 +791,72 @@ try {
 							_setting.isScreenWidthAndHeightChange = true;
 						}
 
-						//스크린의 넓이값 또는 세로값이 변경되었을때
-						if(_setting.isScreenWidthChange || _setting.isScreenHeightChange) {
-							_setting.isScreenChange = true;
-						}
-
 						//trigger로 호출하였을때
 						if(_setting.triggerType) {
 							_setting.isResize = false;
 							_setting.isScreenWidthChange = false;
 							_setting.isScreenHeightChange = false;
 							_setting.isScreenWidthAndHeightChange = false;
-							_setting.isScreenChange = false;
 						}
 
-						//스크린의 넓이 또는 높이가 변경되었거나 trigger로 호출하였을때
-						if(_setting.isScreenChange || _setting.triggerType) {
-							//범위실행
-							eval(rangeCode);
+						//범위실행
+						eval(rangeCode);
 
-							var beforeState = ['all'],
-								afterState = ['allResized'],
-								stateCookie = _getStateCookie();
+						var beforeState = ['all'],
+							afterState = ['allResized'],
+							stateCookie = _getStateCookie();
 
-							//적용시킬 분기가 없을때
-							if(!enter.length) {
-								enter[0] = 'none';
-							}
+						//적용시킬 분기가 없을때
+						if(!enter.length) {
+							enter[0] = 'none';
+						}
 
-							//적용시킬 쿠키가 있을때
-							if(stateCookie.length) {
-								enter = stateCookie;
-							}
+						//적용시킬 쿠키가 있을때
+						if(stateCookie.length) {
+							enter = stateCookie;
+						}
+						
+						//분기적용
+						var setState = _setState(enter);
+
+						//분기분류
+						for(var i = 0, enterLength = enter.length; i < enterLength; i++) {
+							var enterI = enter[i],
+								stateAll = enterI + 'All';
 							
-							//분기적용
-							var setState = _setState(enter);
+							beforeState.push(stateAll);
 
-							//분기분류
-							for(var i = 0, enterLength = enter.length; i < enterLength; i++) {
-								var enterI = enter[i],
-									stateAll = enterI + 'All';
-								
-								beforeState.push(stateAll);
-
-								//적용시킬 상태가 있을때
-								if($.inArray(enterI, setState) > -1) {
-									beforeState.push(enterI);
-								}
-
-								afterState.push(stateAll + 'Resized');
+							//적용시킬 상태가 있을때
+							if($.inArray(enterI, setState) > -1) {
+								beforeState.push(enterI);
 							}
+
+							afterState.push(stateAll + 'Resized');
+						}
+
+						//이벤트 실행
+						_callEvent(beforeState);
+
+						//돌던 setTimeout이 있으면 중단
+						if(timer) {
+							clearTimeout(timer);
+							timer = 0;
+						}
+						
+						//setTimeout 재등록
+						timer = setTimeout(function() {
+							//화면정보 갱신
+							_setScreenInfo(event);
 
 							//이벤트 실행
-							_callEvent(beforeState);
+							_callEvent(afterState);
 
-							//돌던 setTimeout이 있으면 중단
-							if(timer) {
-								clearTimeout(timer);
-								timer = 0;
+							//트리거 갱신
+							if(_setting.triggerType) {
+								_setting.triggerType = '';
+								$.responsive.setting = _copyType(_setting);
 							}
-							
-							//setTimeout 재등록
-							timer = setTimeout(function() {
-								//화면정보 갱신
-								_setScreenInfo(event);
-
-								//이벤트 실행
-								_callEvent(afterState);
-
-								//트리거 갱신
-								if(_setting.triggerType) {
-									_setting.triggerType = '';
-									$.responsive.setting = _copyType(_setting);
-								}
-							}, interval);
-						}
+						}, interval);
 					}).triggerHandler('resize.responsive');
 
 					//요소 반환
@@ -903,7 +874,7 @@ try {
 					//플러그인을 실행중일때
 					if(_setting.isRun) {
 						_$window.off('resize.responsive');
-						_$html.removeClass('retina scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation);
+						_$html.removeClass('scrollbar ' + _setting.browser + ' ' + _setting.platform + ' ' + _setting.nowState.join(' ') + ' ' + _setting.orientation);
 						$('#responsive').remove();
 						this.setting = _copyType(_initialSetting);
 						_setting.isRun = false;
