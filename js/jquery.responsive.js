@@ -509,7 +509,6 @@ try {
 						platform : _connectedState.platform,
 						hasVerticalScrollbar : hasScrollbar.vertical,
 						hasHorizontalScrollbar : hasScrollbar.horizontal,
-						isResize : false,
 						triggerType : '',
 						isScreenWidthChange : false,
 						isScreenHeightChange : false,
@@ -612,7 +611,6 @@ try {
 					_setting.hasHorizontalScrollbar = hasScrollbar.horizontal;
 
 					//화면이 변경되었는지 확인하는 변수
-					_setting.isResize = false;
 					_setting.isScreenWidthChange = false;
 					_setting.isScreenHeightChange = false;
 					_setting.isScreenWidthAndHeightChange = false;
@@ -771,9 +769,6 @@ try {
 						//화면정보 갱신
 						_setScreenInfo(event);
 
-						//리사이즈 중
-						_setting.isResize = true;
-
 						//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 같은지 확인
 						if(_setting.screenWidth !== screenWidth) {
 							screenWidth = _setting.screenWidth;
@@ -793,7 +788,6 @@ try {
 
 						//trigger로 호출하였을때
 						if(_setting.triggerType) {
-							_setting.isResize = false;
 							_setting.isScreenWidthChange = false;
 							_setting.isScreenHeightChange = false;
 							_setting.isScreenWidthAndHeightChange = false;
