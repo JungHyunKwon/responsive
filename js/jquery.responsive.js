@@ -512,7 +512,8 @@ try {
 						triggerType : '',
 						isScreenWidthChange : false,
 						isScreenHeightChange : false,
-						isScreenWidthAndHeightChange : false
+						isScreenWidthAndHeightChange : false,
+						isScreenChange : false
 					});
 				}
 
@@ -614,6 +615,7 @@ try {
 					_setting.isScreenWidthChange = false;
 					_setting.isScreenHeightChange = false;
 					_setting.isScreenWidthAndHeightChange = false;
+					_setting.isScreenChange = false;
 
 					//스크롤바 넓이
 					_setting.scrollbarWidth = _getScrollbarWidth();
@@ -769,6 +771,9 @@ try {
 						//화면정보 갱신
 						_setScreenInfo(event);
 
+						//화면이 변경되었을때
+						_setting.isScreenChange = true;
+
 						//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 같은지 확인
 						if(_setting.screenWidth !== screenWidth) {
 							screenWidth = _setting.screenWidth;
@@ -791,6 +796,7 @@ try {
 							_setting.isScreenWidthChange = false;
 							_setting.isScreenHeightChange = false;
 							_setting.isScreenWidthAndHeightChange = false;
+							_setting.isScreenChange = false;
 						}
 
 						//범위실행
