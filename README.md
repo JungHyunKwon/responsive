@@ -146,7 +146,7 @@ loadedScreenHeight | number | 로드되었을때 창의 높이입니다.
 screenWidth | number | 창의 넓이입니다.
 screenHeight | number | 창의 높이입니다.
 scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니다.
-browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
+browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie6, ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
 platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게되며 그 이외로는 mobile이라는 값이 나오게 됩니다.
 triggerType | string | resize 또는 resize.responsive 이벤트를 trigger 또는 triggerHandler로 호출했을때 어떤 메소드로 호출했는지 알수있는 변수입니다. trigger 또는 triggerHandler에의한 호출이 아니거나 모든 이벤트의 호출이 끝나면 공백이 나옵니다.
 
@@ -187,7 +187,7 @@ $(window).on('responsive:#', function(event) {
 * #은 range에 적은 프로퍼티가 분기이름 입니다.
 
 ### 클래스
-* 브라우저 : ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 중에서 해당되는 브라우저로 클래스가 부여됩니다.
+* 브라우저 : ie6, ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 중에서 해당되는 브라우저로 클래스가 부여됩니다.
   * 브라우저를 찾지 못하면 unknown이라는 클래스가 부여됩니다.
 * 플랫폼 : pc, mobile중에서 접속한 플랫폼으로 클래스가 부여됩니다.
 * 분기 : 플러그인 옵션중 range에 적은 프로퍼티명이 클래스로 부여됩니다.
