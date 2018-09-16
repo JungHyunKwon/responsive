@@ -119,6 +119,8 @@ try {
 							}else if(!isFinite(value)) {
 								result = value.toString();
 							}
+						
+						//콘솔일때
 						}else if(result === 'console') {
 							result = 'object';
 						}
