@@ -675,10 +675,10 @@ try {
 				/**
 				 * @name responsive
 				 * @since 2017-12-06
-				 * @param {object} option {range : {string || number : {from : number, to : number}}, lowIE : {property : array[string] || string}}
+				 * @param {object} options {range : {string || number : {from : number, to : number}}, lowIE : {property : array[string] || string}}
 				 * @return {jqueryElement}
 				 */
-				$.responsive = function(option) {
+				$.responsive = function(options) {
 					var rangeCode = 'var enter = [],\n\texit = [];\n\nif(!_setting.lowIE.run && _isLowIE) {\n\tenter = _setting.lowIE.property;\n}else{\n',
 						rangeProperty = [],
 						screenWidth = 0,
@@ -699,23 +699,23 @@ try {
 					_$html.addClass(_setting.browser + ' ' + _setting.platform);
 
 					//객체가 아닐때
-					if(_getType(option) !== 'object') {
-						option = {};
+					if(_getType(options) !== 'object') {
+						options = {};
 					}
 
 					//객체가 아닐때
-					if(_getType(option.lowIE) !== 'object') {
-						option.lowIE = {};
+					if(_getType(options.lowIE) !== 'object') {
+						options.lowIE = {};
 					}
 
 					//객체가 아닐때
-					if(_getType(option.range) !== 'object') {
-						option.range = {};
+					if(_getType(options.range) !== 'object') {
+						options.range = {};
 					}
 
-					//option.range에 적은 값을 기준으로 자바스크립트 코드 생성
-					for(var i in option.range) {
-						var rangeI = option.range[i];
+					//options.range에 적은 값을 기준으로 자바스크립트 코드 생성
+					for(var i in options.range) {
+						var rangeI = options.range[i];
 
 						//필터링
 						if(_getType(rangeI) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie6' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
@@ -768,8 +768,8 @@ try {
 					//rangeCode작성 끝
 
 					//배열 또는 문자일때
-					if(typeof option.lowIE.property === 'string' || _getType(option.lowIE.property) === 'array') {
-						_setting.lowIE.property = _removeDuplicate(option.lowIE.property);
+					if(typeof options.lowIE.property === 'string' || _getType(options.lowIE.property) === 'array') {
+						_setting.lowIE.property = _removeDuplicate(options.lowIE.property);
 					}
 					
 					//걸려나온게 없을때
