@@ -146,15 +146,19 @@ try {
 			 */
 			function _isElement(options) {
 				var optionsType = _getType(options),
+					hasJQuery = (typeof $ === 'function') ? true : false,
 					result = false;
 				
-				//요소이거나 배열일때
-				if(optionsType === 'element' || optionsType === 'array') {
+				//요소이거나 배열이거나 제이쿼리 요소일때
+				if(optionsType === 'element' || optionsType === 'array' || (hasJQuery && options)) {
 					options = {
 						element : options
 					};
-
-					optionsType = 'object';
+					
+					//요소이거나 배열일때
+					if(optionsType === 'element' || optionsType === 'array') {
+						optionsType = 'object';
+					}
 				}
 
 				//객체 또는 요소일때
@@ -169,7 +173,7 @@ try {
 					}
 
 					//배열이거나 제이쿼리 요소일때
-					if(elementType === 'array' || (typeof $ === 'function' && element instanceof $)) {
+					if(elementType === 'array' || (hasJQuery && element instanceof $)) {
 						var checkedElement = [],
 							elementLength = element.length,
 							isIncludeWindow = (options.isIncludeWindow === true) ? true : false,
