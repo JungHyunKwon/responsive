@@ -731,12 +731,12 @@ try {
 								hasVertical = false;
 
 							//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(_getType(rangeI.horizontal) === 'object' && typeof rangeI.horizontal.from === 'number' && typeof rangeI.horizontal.to === 'number') {
+							if(_getType(rangeI.horizontal) === 'object' && _getType(rangeI.horizontal.from) === 'number' && _getType(rangeI.horizontal.to) === 'number') {
 								hasHorizontal = true;
 							}
 							
 							//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(_getType(rangeI.vertical) === 'object' && typeof rangeI.vertical.from === 'number' && typeof rangeI.vertical.to === 'number') {
+							if(_getType(rangeI.vertical) === 'object' && _getType(rangeI.vertical.from) === 'number' && _getType(rangeI.vertical.to) === 'number') {
 								hasVertical = true;
 							}
 							
