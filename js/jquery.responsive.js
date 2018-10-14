@@ -230,15 +230,25 @@ try {
 			 */
 			function _copyType(value) {
 				var valueType = _getType(value),
-					result = value;
+					result = {};
 
 				//객체일때
 				if(valueType === 'object') {
-					result = $.extend(true, {}, value);
-				
+					//제이쿼리가 함수일때
+					if(typeof $ === 'function') {
+						result = $.extend(true, {}, value);
+					}else{
+						for(var i in value) {
+							if(value.hasOwnProperty(i)) {
+								result[i] = window.copyType(value[i]);
+							}
+						}
+					}
 				//배열일때
 				}else if(valueType === 'array') {
 					result = value.slice();
+				}else{
+					result = value;
 				}
 
 				return result;
