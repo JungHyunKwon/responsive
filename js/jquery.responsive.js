@@ -146,17 +146,18 @@ try {
 			 */
 			function _isElement(options) {
 				var optionsType = _getType(options),
-					hasJQuery = (typeof $ === 'function') ? true : false,
+					hasJQuery = typeof $ === 'function',
+					isElementOrArrayType = optionsType === 'element' || optionsType === 'array',
 					result = false;
 				
 				//요소이거나 배열이거나 제이쿼리 요소일때
-				if(optionsType === 'element' || optionsType === 'array' || (hasJQuery && options)) {
+				if(isElementOrArrayType || (hasJQuery && options)) {
 					options = {
 						element : options
 					};
 					
 					//요소이거나 배열일때
-					if(optionsType === 'element' || optionsType === 'array') {
+					if(isElementOrArrayType) {
 						optionsType = 'object';
 					}
 				}
@@ -176,20 +177,21 @@ try {
 					if(elementType === 'array' || (hasJQuery && element instanceof $)) {
 						var checkedElement = [],
 							elementLength = element.length,
-							isIncludeWindow = (options.isIncludeWindow === true) ? true : false,
-							isIncludeDocument = (options.isIncludeDocument === true) ? true : false,
-							isInPage = (options.isInPage === true) ? true : false,
+							isIncludeWindow = options.isIncludeWindow === true,
+							isIncludeDocument = options.isIncludeDocument === true,
+							isInPage = options.isInPage === true,
 							html = document.documentElement;
 
 						for(var i = 0; i < elementLength; i++) {
 							var elementI = element[i],
 								elementIType = _getType(elementI),
+								isElementType = elementIType === 'element',
 								isElement = false;
 
 							//요소이거나 window이면서 window를 포함시키는 옵션을 허용했거나 document이면서 document를 포함시키는 옵션을 허용했을때
-							if(elementIType === 'element' || (elementIType === 'window' && isIncludeWindow) || (elementIType === 'document' && isIncludeDocument)) {
+							if(isElementType || (elementIType === 'window' && isIncludeWindow) || (elementIType === 'document' && isIncludeDocument)) {
 								//요소이면서 페이지안에 존재여부를 허용했을때
-								if(elementIType === 'element' && isInPage) {
+								if(isElementType && isInPage) {
 									isElement = html.contains(elementI);
 								}else{
 									isElement = true;
@@ -240,7 +242,7 @@ try {
 					}else{
 						for(var i in value) {
 							if(value.hasOwnProperty(i)) {
-								result[i] = window.copyType(value[i]);
+								result[i] = _copyType(value[i]);
 							}
 						}
 					}
@@ -424,17 +426,12 @@ try {
 				 * @name 스크롤바 존재여부
 				 * @since 2017-12-06
 				 * @param {element || jQueryElement} element
-				 * @param {boolean} parentsToo
+				 * @param {boolean} isIncludeParents
 				 * @return {object || array}
 				 */
-				function _hasScrollbar(element, parentsToo) {
+				function _hasScrollbar(element, isIncludeParents) {
 					var $element = $(element),
 						result = [];
-					
-					//소문자 치환
-					if(typeof parentsToo !== 'boolean') {
-						parentsToo = false;
-					}
 					
 					//받은요소 갯수만큼 루프
 					for(var i = 0, elementLength = $element.length; i < elementLength; i++) {
@@ -450,7 +447,7 @@ try {
 							};
 					
 						//부모까지 조사시키는 타입이 들어왔을때
-						if(parentsToo) {
+						if(isIncludeParents === true) {
 							var $parents = $elementI.add($elementI.parents());
 
 							scrollbar.horizontal = [];
@@ -737,18 +734,8 @@ try {
 
 						//필터링
 						if(_getType(rangeI) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie6' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
-							var hasHorizontal = false,
-								hasVertical = false;
-
-							//horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(_getType(rangeI.horizontal) === 'object' && _getType(rangeI.horizontal.from) === 'number' && _getType(rangeI.horizontal.to) === 'number') {
-								hasHorizontal = true;
-							}
-							
-							//vertical이 객체이면서 from, to 프로퍼티가 숫자일때
-							if(_getType(rangeI.vertical) === 'object' && _getType(rangeI.vertical.from) === 'number' && _getType(rangeI.vertical.to) === 'number') {
-								hasVertical = true;
-							}
+							var hasHorizontal = _getType(rangeI.horizontal) === 'object' && _getType(rangeI.horizontal.from) === 'number' && _getType(rangeI.horizontal.to) === 'number', //horizontal이 객체이면서 from, to 프로퍼티가 숫자일때
+								hasVertical = _getType(rangeI.vertical) === 'object' && _getType(rangeI.vertical.from) === 'number' && _getType(rangeI.vertical.to) === 'number'; //vertical이 객체이면서 from, to 프로퍼티가 숫자일때
 							
 							//horizontal이 객체이면서 from, to 프로퍼티가 숫자이거나 vertical이 객체이면서 from, to 프로퍼티가 숫자일때
 							if(hasHorizontal || hasVertical) {
