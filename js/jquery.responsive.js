@@ -64,17 +64,17 @@ try {
 						//문자일때
 						if(typeof name === 'string') {
 							for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
-								var cookieI = cookie[i];
+								var cookie = cookie[i];
 								
 								//첫번째 글자가 공백일때
-								while(cookieI.charAt(0) === ' ') {
-									cookieI = cookieI.substring(1);
+								while(cookie.charAt(0) === ' ') {
+									cookie = cookie.substring(1);
 									break;
 								}
 								
 								//쿠키값이 있을때
-								if(cookieI.indexOf(name) > -1) {
-									result = unescape(cookieI.substring(name.length + 1, cookieI.length));
+								if(cookie.indexOf(name) > -1) {
+									result = unescape(cookie.substring(name.length + 1, cookie.length));
 									break;
 								}
 							}
