@@ -584,11 +584,11 @@ try {
 				 */
 				function _callEvent(value) {
 					var event = {
-							setting : _copyType(_settings)
+							settings : _copyType(_settings)
 						};
 
 					//전역객체 갱신
-					$.responsive.setting = _copyType(event.setting);
+					$.responsive.settings = _copyType(event.settings);
 
 					//중복제거
 					value = _removeDuplicate(value);
@@ -869,7 +869,7 @@ try {
 							//트리거 갱신
 							if(_settings.triggerType) {
 								_settings.triggerType = '';
-								$.responsive.setting = _copyType(_settings);
+								$.responsive.settings = _copyType(_settings);
 							}
 						}, interval);
 					}).triggerHandler('resize.responsive');
@@ -891,7 +891,7 @@ try {
 						_$window.off('resize.responsive');
 						_$html.removeClass('scrollbar ' + _settings.browser + ' ' + _settings.platform + ' ' + _settings.nowState.join(' ') + ' ' + _settings.orientation);
 						$('#responsive').remove();
-						this.setting = _copyType(_initialSetting);
+						this.settings = _copyType(_initialSetting);
 						_settings.isRun = false;
 						_cookie.set('state', '', -1);
 						result = true;
@@ -954,7 +954,7 @@ try {
 				/**
 				 * @description 기본 객체를 사용자에게 제공합니다.
 				 */
-				$.responsive.setting = _copyType(_initialSetting);
+				$.responsive.settings = _copyType(_initialSetting);
 			});
 		}else{
 			throw '제이쿼리가 없습니다.';
