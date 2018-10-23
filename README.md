@@ -123,7 +123,7 @@ destroy |  | boolean | 플러그인을 소멸시키는 함수 입니다.
 setState | array[string] \|\| string, number | boolean \|\| string | state에 지정한 분기를 적용시킬 수 있고 일자를 지정하면 일정기간동안 state에 지정한 분기를 볼 수 있습니다.
 getStateCookie | | array | 기간이 등록된 분기를 얻을 수 있습니다.
 
-### $.responsive.setting
+### $.responsive.settings
 
 이름 | 형태 | 설명
 | :-- | :-- | :-- |
@@ -163,7 +163,7 @@ triggerType | string | resize 또는 resize.responsive 이벤트를 trigger 또�
 이름 | 형태 | 설명
 | :-- | :-- | :-- |
 state | string | 범위에 걸린 분기이름입니다.
-setting | object | $.responsive.setting과 같습니다.
+settings | object | $.responsive.settings과 같습니다.
 
 걸린시점의 값이 떨어집니다.
 
@@ -172,7 +172,7 @@ setting | object | $.responsive.setting과 같습니다.
 $(window).on('responsive', function(event) {
      console.log(event);
      console.log(event.state);
-     console.log(event.setting);
+     console.log(event.settings);
 });
 ````
 
@@ -181,7 +181,7 @@ $(window).on('responsive', function(event) {
 $(window).on('responsive:#', function(event) {
      console.log(event);
      console.log(event.state);
-     console.log(event.setting);
+     console.log(event.settings);
 });
 ````
 * #은 range에 적은 프로퍼티가 분기이름 입니다.
