@@ -190,7 +190,7 @@ try {
 
 							//요소이거나 window이면서 window를 포함시키는 옵션을 허용했거나 document이면서 document를 포함시키는 옵션을 허용했을 때
 							if(isElementType || (elementIType === 'window' && isIncludeWindow) || (elementIType === 'document' && isIncludeDocument)) {
-								//요소이면서 페이지안에 존재여부를 허용했을 때
+								//요소이면서 페이지안에 존재 여부를 허용했을 때
 								if(isElementType && isInPage) {
 									isElement = html.contains(elementI);
 								}else{
