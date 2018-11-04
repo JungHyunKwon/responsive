@@ -890,7 +890,7 @@ try {
 					if(_settings.isRun) {
 						_$window.off('resize.responsive');
 						_$html.removeClass('scrollbar ' + _settings.browser + ' ' + _settings.platform + ' ' + _settings.nowState.join(' ') + ' ' + _settings.orientation);
-						$('#responsive').remove();
+						$('#scrollbar').remove();
 						this.settings = _copyType(_initialSetting);
 						_settings.isRun = false;
 						_cookie.set('state', '', -1);
