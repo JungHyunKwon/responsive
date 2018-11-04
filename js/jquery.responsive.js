@@ -581,7 +581,6 @@ try {
 				 * @name 분기 이벤트 실행
 				 * @since 2017-12-06
 				 * @param {array || string} value
-				 * @return {object}
 				 */
 				function _callEvent(value) {
 					var event = {
@@ -606,15 +605,12 @@ try {
 						//필터 이벤트 호출
 						_$window.triggerHandler($.Event('responsive:' + valueI, event));
 					}
-
-					return event;
 				}
 
 				/**
 				 * @name 화면 정보 입력
 				 * @since 2017-12-06
 				 * @param {object} event
-				 * @return {object}
 				 */
 				function _setScreenInfo(event) {
 					var hasScrollbar = _hasScrollbar(_$html[0]);
@@ -684,15 +680,45 @@ try {
 					}
 
 					_$html.addClass(_settings.orientation);
-
-					return _settings;
 				}
+
+				/**
+				 * @name 소멸
+				 * @since 2017-12-06
+				 * @return {boolean}
+				 */
+				function _destroy() {
+					var result = false;
+					
+					//플러그인을 실행 중일 때
+					if(_settings.isRun) {
+						//이벤트 제거
+						_$window.off('resize.responsive');
+
+						//클래스 제거
+						_$html.removeClass('scrollbar ' + _settings.browser + ' ' + _settings.platform + ' ' + _settings.nowState.join(' ') + ' ' + _settings.orientation);
+						
+						//스크롤바 요소 제거
+						$('#scrollbar').remove();
+						
+						//셋팅 초기화
+						this.settings = _copyType(_initialSetting);
+
+						//실행 플래그 초기화
+						_settings.isRun = false;
+						
+						//결과 기입
+						result = true;
+					}
+
+					return result;
+				};
 
 				/**
 				 * @name responsive
 				 * @since 2017-12-06
 				 * @param {object} options {range : {string || number : {from : number, to : number}}, lowIE : {property : array[string] || string}}
-				 * @return {jqueryElement}
+				 * @return {jQueryElement}
 				 */
 				$.responsive = function(options) {
 					var rangeCode = 'var enter = [],\n\texit = [];\n\nif(!_settings.lowIE.run && _isLowIE) {\n\tenter = _settings.lowIE.property;\n}else{\n',
@@ -703,7 +729,7 @@ try {
 						interval = 250;
 
 					//소멸
-					$.responsive.destroy();
+					_destroy();
 
 					//기본 객체
 					_settings = _getDefaultObject();
@@ -877,28 +903,13 @@ try {
 					//요소 반환
 					return _$html;
 				};
-
+				
 				/**
 				 * @name 소멸
 				 * @since 2017-12-06
 				 * @return {boolean}
 				 */
-				$.responsive.destroy = function() {
-					var result = false;
-					
-					//플러그인을 실행 중일 때
-					if(_settings.isRun) {
-						_$window.off('resize.responsive');
-						_$html.removeClass('scrollbar ' + _settings.browser + ' ' + _settings.platform + ' ' + _settings.nowState.join(' ') + ' ' + _settings.orientation);
-						$('#scrollbar').remove();
-						this.settings = _copyType(_initialSetting);
-						_settings.isRun = false;
-						_cookie.set('state', '', -1);
-						result = true;
-					}
-
-					return result;
-				};
+				$.responsive.destroy = _destroy;
 
 				/**
 				 * @name 분기 적용
