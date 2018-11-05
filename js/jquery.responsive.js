@@ -95,7 +95,7 @@ try {
 				
 				//매개변수가 있을 때
 				if(arguments.length) {
-					//null일 때
+					//null일때
 					if(value === null) {
 						result = 'null';
 					
@@ -146,76 +146,66 @@ try {
 			 */
 			function _isElement(options) {
 				var optionsType = _getType(options),
-					hasJQuery = typeof $ === 'function',
-					isElementOrArrayType = optionsType === 'element' || optionsType === 'array',
 					result = false;
-				
-				//요소이거나 배열이거나 제이쿼리 요소일 때
-				if(isElementOrArrayType || (hasJQuery && options)) {
-					options = {
-						element : options
-					};
-					
-					//요소이거나 배열일 때
-					if(isElementOrArrayType) {
-						optionsType = 'object';
-					}
-				}
 
-				//객체 또는 요소일 때
-				if(optionsType === 'object') {
-					var element = options.element,
+				//요소이거나 배열이거나 객체일 때
+				if(optionsType === 'element' || optionsType === 'array' || optionsType === 'object') {
+					var element = options.element || options,
 						elementType = _getType(element);
-					
+
 					//window 또는 document 또는 요소일 때
 					if(elementType === 'window' || elementType === 'document' || elementType === 'element') {
 						element = [element];
 						elementType = 'array';
 					}
+					
+					//배열 또는 객체일 때
+					if(elementType === 'array' || elementType === 'object') {
+						var elementLength = element.length;
+						
+						//요소 갯수가 있을 때
+						if(elementLength) {
+							var checkedElement = [],
+								isIncludeWindow = options.isIncludeWindow === true,
+								isIncludeDocument = options.isIncludeDocument === true,
+								isInPage = options.isInPage === true,
+								html = document.documentElement;
 
-					//배열이거나 제이쿼리 요소일 때
-					if(elementType === 'array' || (hasJQuery && element instanceof $)) {
-						var checkedElement = [],
-							elementLength = element.length,
-							isIncludeWindow = options.isIncludeWindow === true,
-							isIncludeDocument = options.isIncludeDocument === true,
-							isInPage = options.isInPage === true,
-							html = document.documentElement;
+							for(var i = 0; i < elementLength; i++) {
+								var elementI = element[i],
+									elementIType = _getType(elementI),
+									isElementI = elementIType === 'element',
+									isElement = false;
 
-						for(var i = 0; i < elementLength; i++) {
-							var elementI = element[i],
-								elementIType = _getType(elementI),
-								isElementType = elementIType === 'element',
-								isElement = false;
+								//요소이거나 window이면서 window를 포함시키는 옵션을 허용했거나 document이면서 document를 포함시키는 옵션을 허용했을 때
+								if(isElementI || (elementIType === 'window' && isIncludeWindow) || (elementIType === 'document' && isIncludeDocument)) {
+									//요소이면서 페이지안에 존재 여부를 허용했을 때
+									if(isElementI && isInPage) {
+										isElement = html.contains(elementI);
+									}else{
+										isElement = true;
+									}
+								}
 
-							//요소이거나 window이면서 window를 포함시키는 옵션을 허용했거나 document이면서 document를 포함시키는 옵션을 허용했을 때
-							if(isElementType || (elementIType === 'window' && isIncludeWindow) || (elementIType === 'document' && isIncludeDocument)) {
-								//요소이면서 페이지안에 존재 여부를 허용했을 때
-								if(isElementType && isInPage) {
-									isElement = html.contains(elementI);
-								}else{
-									isElement = true;
+								//요소일때
+								if(isElement) {
+									checkedElement.push(elementI);
 								}
 							}
 
-							//요소일 때
-							if(isElement) {
-								checkedElement.push(elementI);
-							}
-						}
-
-						var checkedElementLength = checkedElement.length;
-						
-						//결과가 있을 때
-						if(checkedElementLength) {
-							//일치를 허용했을 때
-							if(options.isMatch === true) {
-								//요소갯수와 결과갯수가 같을 때
-								if(elementLength === checkedElementLength) {
+							var checkedElementLength = checkedElement.length;
+							
+							//결과가 있을 때
+							if(checkedElementLength) {
+								//일치를 허용했을 때
+								if(options.isMatch === true) {
+									//요소갯수와 결과갯수가 같을 때
+									if(elementLength === checkedElementLength) {
+										result = true;
+									}
+								}else{
 									result = true;
 								}
-							}else{
-								result = true;
 							}
 						}
 					}
@@ -236,14 +226,9 @@ try {
 
 				//객체일 때
 				if(valueType === 'object') {
-					//제이쿼리가 함수일 때
-					if(typeof $ === 'function') {
-						result = $.extend(true, {}, value);
-					}else{
-						for(var i in value) {
-							if(value.hasOwnProperty(i)) {
-								result[i] = _copyType(value[i]);
-							}
+					for(var i in value) {
+						if(value.hasOwnProperty(i)) {
+							result[i] = _copyType(value[i]);
 						}
 					}
 
@@ -721,7 +706,8 @@ try {
 				 * @return {jQueryElement}
 				 */
 				$.responsive = function(options) {
-					var rangeCode = 'var enter = [],\n\texit = [];\n\nif(!_settings.lowIE.run && _isLowIE) {\n\tenter = _settings.lowIE.property;\n}else{\n',
+					var settings = _copyType(options),
+						rangeCode = 'var enter = [],\n\texit = [];\n\nif(!_settings.lowIE.run && _isLowIE) {\n\tenter = _settings.lowIE.property;\n}else{\n',
 						rangeProperty = [],
 						screenWidth = 0,
 						screenHeight = 0,
@@ -741,23 +727,23 @@ try {
 					_$html.addClass(_settings.browser + ' ' + _settings.platform);
 
 					//객체가 아닐 때
-					if(_getType(options) !== 'object') {
-						options = {};
+					if(_getType(settings) !== 'object') {
+						settings = {};
 					}
 
 					//객체가 아닐 때
-					if(_getType(options.lowIE) !== 'object') {
-						options.lowIE = {};
+					if(_getType(settings.lowIE) !== 'object') {
+						settings.lowIE = {};
 					}
 
 					//객체가 아닐 때
-					if(_getType(options.range) !== 'object') {
-						options.range = {};
+					if(_getType(settings.range) !== 'object') {
+						settings.range = {};
 					}
 
-					//options.range에 적은 값을 기준으로 자바스크립트 코드 생성
-					for(var i in options.range) {
-						var rangeI = options.range[i];
+					//자바스크립트 코드 생성
+					for(var i in settings.range) {
+						var rangeI = settings.range[i];
 
 						//필터링
 						if(_getType(rangeI) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie6' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
@@ -799,8 +785,8 @@ try {
 					rangeCode += '}';
 
 					//배열 또는 문자일 때
-					if(typeof options.lowIE.property === 'string' || _getType(options.lowIE.property) === 'array') {
-						_settings.lowIE.property = _removeDuplicate(options.lowIE.property);
+					if(typeof settings.lowIE.property === 'string' || _getType(settings.lowIE.property) === 'array') {
+						_settings.lowIE.property = _removeDuplicate(settings.lowIE.property);
 					}
 					
 					//걸려 나온 게 없을 때
@@ -919,15 +905,13 @@ try {
 				 * @return {boolean || string}
 				 */
 				$.responsive.setState = function(value, day) {
-					var result = false;
-					
-					//분기 이름 필터
-					value = _filter(value, _settings.rangeProperty).truth;
+					var state = _filter(value, _settings.rangeProperty).truth,
+						result = false;
 
 					//적용시킬 상태가 있을 때
-					if(value.length) {
+					if(state.length) {
 						//분기 적용
-						var setState = _setState(value);
+						var setState = _setState(state);
 						
 						//적용시킬 상태가 있을 때
 						if(setState.length) {
@@ -941,7 +925,7 @@ try {
 						//숫자일 때
 						if(_getType(day) === 'number') {
 							//쿠키 적용
-							if(_cookie.set('state', value.join(','), day)) {
+							if(_cookie.set('state', state.join(','), day)) {
 								result = true;
 							}
 
@@ -971,6 +955,6 @@ try {
 			throw '제이쿼리가 없습니다.';
 		}
 	})(window.jQuery);
-}catch(error) {
-	console.error(error);
+}catch(e) {
+	console.error(e);
 }
