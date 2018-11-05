@@ -373,39 +373,19 @@ try {
 				/**
 				 * @name 스크롤바 넓이 구하기
 				 * @since 2017-12-06
-				 * @param {element || jQueryElement} element
-				 * @return {array || number}
+				 * @return {number}
 				 */
-				function _getScrollbarWidth(element) {
-					var $element = $(element),
-						result = [];
+				function _getScrollbarWidth() {
+					var $scrollbar = $('#scrollbar');
 
 					//요소가 없을 때 대체
-					if(!_isElement($element)) {
-						$element = $('#scrollbar');
-						
-						//스크롤바 객체가 없을 때
-						if(!$element.length) {
-							$element = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
-						}
+					if(!$scrollbar.length) {
+						$scrollbar = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
 					}
 					
-					for(var i = 0, elementLength = $element.length; i < elementLength; i++) {
-						var elementI = $element[i];
+					var scrollbar = $scrollbar[0];
 
-						result.push(elementI.offsetWidth - elementI.clientWidth || 0);
-					}
-					
-					//결과가 1개일 때
-					if(result.length === 1) {
-						result = result[0];
-					
-					//결과가 없을 때
-					}else if(!result.length) {
-						result = 0;
-					}
-
-					return result;
+					return scrollbar.offsetWidth - scrollbar.clientWidth;
 				}
 
 				/**
@@ -413,76 +393,59 @@ try {
 				 * @since 2017-12-06
 				 * @param {element || jQueryElement} element
 				 * @param {boolean} isIncludeParents
-				 * @return {object || array}
+				 * @return {object}
 				 */
 				function _hasScrollbar(element, isIncludeParents) {
-					var $element = $(element),
-						result = [];
+					var $element = $(element).first(),
+						result = {
+							horizontal : false,
+							vertical : false
+						};
 					
-					//받은요소 갯수만큼 반복
-					for(var i = 0, elementLength = $element.length; i < elementLength; i++) {
-						var $elementI = $element.eq(i),
-							elementI = $elementI[0],
-							overflow = {
-								x : $elementI.css('overflow-x'),
-								y : $elementI.css('overflow-y')
-							},
-							scrollbar = {
-								horizontal : false,
-								vertical : false
-							};
-					
+					//요소일 때
+					if(_isElement($element)) {
 						//부모까지 조사를 허용했을 때
 						if(isIncludeParents === true) {
-							var $parents = $elementI.add($elementI.parents());
+							var $parents = $element.parents();
 
-							scrollbar.horizontal = [];
-							scrollbar.vertical = [];
+							result.horizontal = [];
+							result.vertical = [];
 							
 							//상위부모 반복
-							for(var j = 0, parentsLength = $parents.length; j < parentsLength; j++) {
-								var hasScrollbar = _hasScrollbar($parents[j]);
+							for(var i = 0, parentsLength = $parents.length; i < parentsLength; i++) {
+								var hasScrollbar = _hasScrollbar($parents[i]);
 
-								scrollbar.horizontal.push(hasScrollbar.horizontal);
-								scrollbar.vertical.push(hasScrollbar.vertical);
+								result.horizontal[i] = hasScrollbar.horizontal;
+								result.vertical[i] = hasScrollbar.vertical;
 							}
 
 							//가로 스크롤바가 하나라도 있을 때
-							if($.inArray(true, scrollbar.horizontal) > -1) {
-								scrollbar.horizontal = true;
+							if($.inArray(true, result.horizontal) > -1) {
+								result.horizontal = true;
 							}else{
-								scrollbar.horizontal = false;
+								result.horizontal = false;
 							}
 							
 							//세로 스크롤바가 하나라도 있을 때
-							if($.inArray(true, scrollbar.vertical) > -1) {
-								scrollbar.vertical = true;
+							if($.inArray(true, result.vertical) > -1) {
+								result.vertical = true;
 							}else{
-								scrollbar.vertical = false;
+								result.vertical = false;
 							}
 						}else{
+							var element = $element[0],
+								css = $element.css(['overflow-x', 'overflow-y']);
+
 							//clineWidth보다 scrollWidth가 더 크면서 overflow-x가 hidden이 아니거나 overflow-x가 scroll 일 때
-							if((elementI.scrollWidth > elementI.clientWidth && overflow.x !== 'hidden') || overflow.x === 'scroll') {
-								scrollbar.horizontal = true;
+							if((element.scrollWidth > element.clientWidth && css['overflow-x'] !== 'hidden') || css['overflow-x'] === 'scroll') {
+								result.horizontal = true;
 							}
 							
 							//clineHeight보다 scrollHeight가 더 크면서 overflow-y가 hidden이 아니거나 overflow-y가 scroll 일 때
-							if((elementI.scrollHeight > elementI.clientHeight && overflow.y !== 'hidden') || overflow.y === 'scroll') {
-								scrollbar.vertical = true;
+							if((element.scrollHeight > element.clientHeight && css['overflow-y'] !== 'hidden') || css['overflow-y'] === 'scroll') {
+								result.vertical = true;
 							}
 						}
-						
-						//결과 기입
-						result.push(scrollbar);
-					}
-					
-					//결과가 1개일 때
-					if(result.length === 1) {
-						result = result[0];
-					
-					//결과가 없을 때
-					}else if(!result.length) {
-						result = 0;
 					}
 
 					return result;
