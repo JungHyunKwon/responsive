@@ -389,7 +389,7 @@ try {
 				}
 
 				/**
-				 * @name 스크롤바 존재여부
+				 * @name 스크롤바 존재 여부
 				 * @since 2017-12-06
 				 * @param {element || jQueryElement} element
 				 * @param {boolean} isIncludeParents
