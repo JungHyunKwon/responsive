@@ -10,6 +10,7 @@ try {
 		if(typeof $ === 'function') {
 			var _$window = $(window),
 				_$html = $('html'),
+				_interval = 250,
 				_connectedState = _getConnectedState(),
 				_isLowIE = _connectedState.browser === 'ie6' || _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
 				_settings = {},
@@ -301,18 +302,17 @@ try {
 				//문자일 때
 				if(typeof value === 'string') {
 					value = [value];
-				
-				//배열이 아닐 때
-				}else if(_getType(value) !== 'array') {
-					value = [];
 				}
-
-				//배열 val에 매개변수 value에 i 번째 값이 없으면 집어넣는다.
-				for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-					var valueI = value[i];
-
-					if($.inArray(valueI, result) === -1) {
-						result.push(valueI);
+				
+				//배열일 때
+				if(_getType(value) === 'array') {
+					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+						var valueI = value[i];
+						
+						//배열 result에 매개변수 value에 i 번째 값이 없으면 집어넣는다.
+						if($.inArray(valueI, result) === -1) {
+							result.push(valueI);
+						}
 					}
 				}
 
@@ -323,34 +323,33 @@ try {
 			 * @name 거르기
 			 * @since 2017-12-06
 			 * @param {array || string} value
-			 * @param {array} standard
+			 * @param {array} array
 			 * @return {object}
 			 */
-			function _filter(value, standard) {
+			function _filter(value, array) {
 				var result = {
 					truth : [],
 					untruth : []
 				};
 				
 				//배열일 때
-				if(_getType(standard) === 'array') {
+				if(_getType(array) === 'array') {
 					//문자일 때
 					if(typeof value === 'string') {
 						value = [value];
-					
-					//배열이 아닐 때
-					}else if(_getType(value) !== 'array') {
-						value = [];
 					}
-
-					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-						var valueI = value[i];
-						
-						//등록된 프로퍼티가 있을 때
-						if($.inArray(valueI, standard) > -1) {
-							result.truth.push(valueI);
-						}else{
-							result.untruth.push(valueI);
+					
+					//배열일 때
+					if(_getType(value) === 'array') {
+						for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+							var valueI = value[i];
+							
+							//등록된 프로퍼티가 있을 때
+							if($.inArray(valueI, array) > -1) {
+								result.truth.push(valueI);
+							}else{
+								result.untruth.push(valueI);
+							}
 						}
 					}
 				}
@@ -498,28 +497,26 @@ try {
 				 * @return {array}
 				 */
 				function _setState(value) {
-					//중복 제거
-					value = _removeDuplicate(value);
-					
-					var nowState = _copyType(_settings.nowState),
-						result = _filter(value, _settings.nowState).untruth;
+					var state = _removeDuplicate(value),
+						nowState = _copyType(_settings.nowState),
+						result = _filter(state, _settings.nowState).untruth;
 
 					//현재상태와 적용시킬 상태가 다를 때
-					if((_copyType(value).sort() + '') !== (nowState.sort() + '')) {
+					if((_copyType(state).sort() + '') !== (nowState.sort() + '')) {
 						//현재 상태 클래스 제거
 						_$html.removeClass(nowState.join(' '));
 
 						//새로운 상태 클래스 추가
-						_$html.addClass(value.join(' '));
+						_$html.addClass(state.join(' '));
 
 						//이전 상태 추가
 						_settings.prevState = nowState;
 
 						//새로운 상태 추가
-						_settings.nowState = value;
+						_settings.nowState = state;
 
 						//console에 상태표기
-						console.log('현재 상태 : ' + value.join(', '));
+						console.log('현재 상태 : ' + state.join(', '));
 					}
 					
 					return result;
@@ -531,27 +528,25 @@ try {
 				 * @param {array || string} value
 				 */
 				function _callEvent(value) {
-					var event = {
+					var state = _removeDuplicate(value),
+						event = {
 							settings : _copyType(_settings)
 						};
 
 					//전역 객체 갱신
 					$.responsive.settings = _copyType(event.settings);
 
-					//중복 제거
-					value = _removeDuplicate(value);
-
-					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-						var valueI = value[i];
+					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
+						var stateI = state[i];
 
 						//분기 값 적용
-						event.state = valueI;
+						event.state = stateI;
 
 						//모든 이벤트 호출
 						_$window.triggerHandler($.Event('responsive', event));
 
 						//필터 이벤트 호출
-						_$window.triggerHandler($.Event('responsive:' + valueI, event));
+						_$window.triggerHandler($.Event('responsive:' + stateI, event));
 					}
 				}
 
@@ -563,18 +558,15 @@ try {
 				function _setScreenInfo(event) {
 					var hasScrollbar = _hasScrollbar(_$html[0]);
 
-					//객체가 아닐 때
-					if(_getType(event) !== 'object') {
-						event = {};
-					}
-
 					//트리거
-					if(event.isTrigger === 2) {
-						_settings.triggerType = 'triggerHandler';
-					}else if(event.isTrigger === 3) {
-						_settings.triggerType = 'trigger';
-					}else{
-						_settings.triggerType = '';
+					if(event instanceof $.Event) {
+						if(event.isTrigger === 2) {
+							_settings.triggerType = 'triggerHandler';
+						}else if(event.isTrigger === 3) {
+							_settings.triggerType = 'trigger';
+						}else{
+							_settings.triggerType = '';
+						}
 					}
 					
 					//가로, 세로 스크롤바 확인
@@ -650,7 +642,7 @@ try {
 						$('#scrollbar').remove();
 						
 						//셋팅 초기화
-						this.settings = _copyType(_initialSetting);
+						$.responsive.settings = _copyType(_initialSetting);
 
 						//실행 플래그 초기화
 						_settings.isRun = false;
@@ -660,7 +652,7 @@ try {
 					}
 
 					return result;
-				};
+				}
 
 				/**
 				 * @name responsive
@@ -671,11 +663,9 @@ try {
 				$.responsive = function(options) {
 					var settings = _copyType(options),
 						rangeCode = 'var enter = [],\n\texit = [];\n\nif(!_settings.lowIE.run && _isLowIE) {\n\tenter = _settings.lowIE.property;\n}else{\n',
-						rangeProperty = [],
-						screenWidth = 0,
-						screenHeight = 0,
-						timer = 0,
-						interval = 250;
+						screenWidth,
+						screenHeight,
+						timer;
 
 					//소멸
 					_destroy();
@@ -705,13 +695,17 @@ try {
 					}
 
 					//자바스크립트 코드 생성
-					for(var i in settings.range) {
-						var rangeI = settings.range[i];
+					var range = settings.range;
+
+					for(var i in range) {
+						var rangeI = range[i];
 
 						//필터링
 						if(_getType(rangeI) === 'object' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie6' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
-							var hasHorizontal = _getType(rangeI.horizontal) === 'object' && _getType(rangeI.horizontal.from) === 'number' && _getType(rangeI.horizontal.to) === 'number', //horizontal이 객체이면서 from, to 프로퍼티가 숫자일 때
-								hasVertical = _getType(rangeI.vertical) === 'object' && _getType(rangeI.vertical.from) === 'number' && _getType(rangeI.vertical.to) === 'number'; //vertical이 객체이면서 from, to 프로퍼티가 숫자일 때
+							var horizontal = rangeI.horizontal,
+								vertical = rangeI.vertical,
+								hasHorizontal = _getType(horizontal) === 'object' && _getType(horizontal.from) === 'number' && _getType(horizontal.to) === 'number', //horizontal이 객체이면서 from, to 프로퍼티가 숫자일 때
+								hasVertical = _getType(vertical) === 'object' && _getType(vertical.from) === 'number' && _getType(vertical.to) === 'number'; //vertical이 객체이면서 from, to 프로퍼티가 숫자일 때
 							
 							//horizontal이 객체이면서 from, to 속성이 숫자이거나 vertical이 객체이면서 from, to 속성이 숫자일 때
 							if(hasHorizontal || hasVertical) {
@@ -719,7 +713,7 @@ try {
 								
 								//horizontal이 객체이면서 from, to 속성이 숫자일 때
 								if(hasHorizontal) {
-									rangeCode += 'screenWidth <= ' + rangeI.horizontal.from + ' && screenWidth >= ' + rangeI.horizontal.to;
+									rangeCode += 'screenWidth <= ' + horizontal.from + ' && screenWidth >= ' + horizontal.to;
 								}
 								
 								//vertical이 객체이면서 from, to 속성이 숫자일 때
@@ -729,7 +723,7 @@ try {
 										rangeCode += ' && ';
 									}
 
-									rangeCode += 'screenHeight <= ' + rangeI.vertical.from + ' && screenHeight >= ' + rangeI.vertical.to;
+									rangeCode += 'screenHeight <= ' + vertical.from + ' && screenHeight >= ' + vertical.to;
 								}
 
 								rangeCode += ') {\n';
@@ -846,7 +840,7 @@ try {
 								_settings.triggerType = '';
 								$.responsive.settings = _copyType(_settings);
 							}
-						}, interval);
+						}, _interval);
 					}).triggerHandler('resize.responsive');
 
 					//요소 반환
