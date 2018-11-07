@@ -255,8 +255,12 @@ try {
 			 * @return {object}
 			 */
 			function _getConnectedState() {
-				var userAgent = navigator.userAgent.toLowerCase(),
-					result = {};
+				var userAgent = window.navigator.userAgent.toLowerCase(),
+					platform = window.navigator.platform.toLowerCase(),
+					platformCases = ['win', 'mac'],
+					result = {
+						platform : 'mobile'
+					};
 
 				if(userAgent.indexOf('msie 6.0') > -1) {
 					result.browser = 'ie6';
@@ -284,10 +288,11 @@ try {
 					result.browser = 'unknown';
 				}
 				
-				if('win|mac'.indexOf(navigator.platform.toLowerCase()) > -1) {
-					result.platform = 'pc';
-				}else{
-					result.platform = 'mobile';
+				for(var i = 0, platformCasesLength = platformCases.length; i < platformCasesLength; i++) {
+					if(platform.indexOf(platformCases[i]) > -1) {
+						result.platform = 'pc';
+						break;
+					}
 				}
 
 				return result;
