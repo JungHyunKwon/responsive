@@ -256,8 +256,6 @@ try {
 			 */
 			function _getConnectedState() {
 				var userAgent = window.navigator.userAgent.toLowerCase(),
-					platform = window.navigator.platform.toLowerCase(),
-					platformCases = ['win', 'mac'],
 					result = {
 						platform : 'mobile'
 					};
@@ -288,11 +286,8 @@ try {
 					result.browser = 'unknown';
 				}
 				
-				for(var i = 0, platformCasesLength = platformCases.length; i < platformCasesLength; i++) {
-					if(platform.indexOf(platformCases[i]) > -1) {
-						result.platform = 'pc';
-						break;
-					}
+				if('win16|win32|win64|macintel|mac'.indexOf(window.navigator.platform.toLowerCase()) > -1) {
+					result.platform = 'pc';
 				}
 
 				return result;
