@@ -284,7 +284,7 @@ try {
 					result.browser = 'unknown';
 				}
 				
-				if(navigator.platform.toLowerCase().indexOf('win|mac') > -1) {
+				if('win|mac'.indexOf(navigator.platform.toLowerCase()) > -1) {
 					result.platform = 'pc';
 				}else{
 					result.platform = 'mobile';
