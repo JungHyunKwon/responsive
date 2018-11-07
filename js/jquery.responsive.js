@@ -397,13 +397,14 @@ try {
 				 */
 				function _hasScrollbar(element, isIncludeParents) {
 					var $element = $(element).first(),
+						element = $element[0],
 						result = {
 							horizontal : false,
 							vertical : false
 						};
 					
 					//요소일 때
-					if(_isElement($element)) {
+					if(_isElement(element)) {
 						//부모까지 조사를 허용했을 때
 						if(isIncludeParents === true) {
 							var $parents = $element.parents();
@@ -433,8 +434,7 @@ try {
 								result.vertical = false;
 							}
 						}else{
-							var element = $element[0],
-								css = $element.css(['overflow-x', 'overflow-y']);
+							var css = $element.css(['overflow-x', 'overflow-y']);
 
 							//clineWidth보다 scrollWidth가 더 크면서 overflow-x가 hidden이 아니거나 overflow-x가 scroll 일 때
 							if((element.scrollWidth > element.clientWidth && css['overflow-x'] !== 'hidden') || css['overflow-x'] === 'scroll') {
