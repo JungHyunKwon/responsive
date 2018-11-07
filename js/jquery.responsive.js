@@ -9,8 +9,8 @@ try {
 		//제이쿼리가 함수일 때
 		if(typeof $ === 'function') {
 			var _$window = $(window),
-				_$html = $('html'),
-				_interval = 250,
+				_html = document.documentElement,
+				_$html = $(_html),
 				_connectedState = _getConnectedState(),
 				_isLowIE = _connectedState.browser === 'ie6' || _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
 				_settings = {},
@@ -19,7 +19,7 @@ try {
 					 * @name 쿠키 사용가능 여부
 					 * @since 2017-01-16
 					 */
-					support : navigator.cookieEnabled,
+					isSupport : navigator.cookieEnabled,
 
 					/**
 					 * @name 쿠키 생성
@@ -142,7 +142,13 @@ try {
 			/**
 			 * @name 요소 확인
 			 * @since 2017-12-06
-			 * @param {object} options element || jQueryElement || {element : element || window || document || jQueryElement || array, isInPage : boolean, isIncludeWindow : boolean, isIncludeDocument : boolean, isMatch : boolean}
+			 * @param {element || array || object} options {
+				   element : element || window || document || object || array,
+				   isInPage : boolean,
+				   isIncludeWindow : boolean,
+				   isIncludeDocument : boolean,
+				   isMatch : boolean
+			   }
 			 * @return {boolean}
 			 */
 			function _isElement(options) {
@@ -250,8 +256,6 @@ try {
 			 */
 			function _getConnectedState() {
 				var userAgent = navigator.userAgent.toLowerCase(),
-					platform = navigator.platform.toLowerCase(),
-					platformCase = ['win16', 'win32', 'win64', 'mac', 'linux'],
 					result = {};
 
 				if(userAgent.indexOf('msie 6.0') > -1) {
@@ -280,8 +284,7 @@ try {
 					result.browser = 'unknown';
 				}
 				
-				//platformCase에 platform이 있을 때
-				if($.inArray(platform, platformCase) > -1) {
+				if(navigator.platform.toLowerCase().indexOf('win|mac') > -1) {
 					result.platform = 'pc';
 				}else{
 					result.platform = 'mobile';
@@ -367,22 +370,20 @@ try {
 			}
 
 			$(function() {
-				var _initialSetting = _getDefaultObject();
-				
 				/**
 				 * @name 스크롤바 넓이 구하기
 				 * @since 2017-12-06
 				 * @return {number}
 				 */
 				function _getScrollbarWidth() {
-					var $scrollbar = $('#scrollbar');
+					var scrollbar = document.getElementById('scrollbar');
 
-					//요소가 없을 때 대체
-					if(!$scrollbar.length) {
-						$scrollbar = $('<div id="scrollbar">&nbsp;</div>').appendTo('body');
+					//요소가 없을 때
+					if(!scrollbar) {
+						scrollbar = document.createElement('div');
+						scrollbar.id = 'scrollbar';
+						document.body.appendChild(scrollbar);
 					}
-					
-					var scrollbar = $scrollbar[0];
 
 					return scrollbar.offsetWidth - scrollbar.clientWidth;
 				}
@@ -456,12 +457,14 @@ try {
 				 * @return {object}
 				 */
 				function _getDefaultObject() {
-					var hasScrollbar = _hasScrollbar(_$html[0]),
+					var hasScrollbar = _hasScrollbar(_html),
 						scrollbarWidth = _getScrollbarWidth(),
-						screenWidth = (hasScrollbar.vertical) ? _$window.width() + scrollbarWidth : _$window.width(),
-						screenHeight = (hasScrollbar.horizontal) ? _$window.height() + scrollbarWidth : _$window.height();
+						windowWidth = _$window.width(),
+						windowHeight = _$window.height(),
+						screenWidth = (hasScrollbar.vertical) ? windowWidth + scrollbarWidth : windowWidth,
+						screenHeight = (hasScrollbar.horizontal) ? windowHeight + scrollbarWidth : windowHeight;
 
-					return _copyType({
+					return {
 						isRun : false,
 						range : {},
 						rangeProperty : [],
@@ -487,7 +490,7 @@ try {
 						isScreenHeightChange : false,
 						isScreenWidthAndHeightChange : false,
 						isScreenChange : false
-					});
+					};
 				}
 
 				/**
@@ -498,11 +501,11 @@ try {
 				 */
 				function _setState(value) {
 					var state = _removeDuplicate(value),
-						nowState = _copyType(_settings.nowState),
-						result = _filter(state, _settings.nowState).untruth;
+						nowState = _settings.nowState,
+						result = _filter(state, nowState).untruth;
 
 					//현재상태와 적용시킬 상태가 다를 때
-					if((_copyType(state).sort() + '') !== (nowState.sort() + '')) {
+					if((_copyType(state).sort() + '') !== (_copyType(nowState).sort() + '')) {
 						//현재 상태 클래스 제거
 						_$html.removeClass(nowState.join(' '));
 
@@ -534,7 +537,7 @@ try {
 						};
 
 					//전역 객체 갱신
-					$.responsive.settings = _copyType(event.settings);
+					$.responsive.settings = event.settings;
 
 					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
 						var stateI = state[i];
@@ -556,7 +559,7 @@ try {
 				 * @param {object} event
 				 */
 				function _setScreenInfo(event) {
-					var hasScrollbar = _hasScrollbar(_$html[0]);
+					var hasScrollbar = _hasScrollbar(_html);
 
 					//트리거
 					if(event instanceof $.Event) {
@@ -642,7 +645,7 @@ try {
 						$('#scrollbar').remove();
 						
 						//셋팅 초기화
-						$.responsive.settings = _copyType(_initialSetting);
+						$.responsive.settings = _getDefaultObject();
 
 						//실행 플래그 초기화
 						_settings.isRun = false;
@@ -657,15 +660,24 @@ try {
 				/**
 				 * @name responsive
 				 * @since 2017-12-06
-				 * @param {object} options {range : {string || number : {from : number, to : number}}, lowIE : {property : array[string] || string}}
+				 * @param {object} options {
+					   range : {
+					       # : {
+						       from : number,
+							   to : number
+						   }
+					   },
+					   lowIE : array || string
+				   }
 				 * @return {jQueryElement}
 				 */
 				$.responsive = function(options) {
 					var settings = _copyType(options),
 						rangeCode = 'var enter = [],\n\texit = [];\n\nif(!_settings.lowIE.run && _isLowIE) {\n\tenter = _settings.lowIE.property;\n}else{\n',
-						screenWidth,
-						screenHeight,
-						timer;
+						screenWidth = 0,
+						screenHeight = 0,
+						timer = 0,
+						interval = 250;
 
 					//소멸
 					_destroy();
@@ -786,8 +798,8 @@ try {
 						//범위 실행
 						eval(rangeCode);
 
-						var beforeState = ['all'],
-							afterState = ['allResized'],
+						var state = ['all'],
+							resizedState = ['allResized'],
 							stateCookie = _getStateCookie();
 
 						//적용시킬 분기가 없을 때
@@ -808,18 +820,18 @@ try {
 							var enterI = enter[i],
 								stateAll = enterI + 'All';
 							
-							beforeState.push(stateAll);
+							state.push(stateAll);
 
 							//적용시킬 상태가 있을 때
 							if($.inArray(enterI, setState) > -1) {
-								beforeState.push(enterI);
+								state.push(enterI);
 							}
 
-							afterState.push(stateAll + 'Resized');
+							resizedState.push(stateAll + 'Resized');
 						}
 
 						//이벤트 실행
-						_callEvent(beforeState);
+						_callEvent(state);
 
 						//돌던 setTimeout이 있으면 중단
 						if(timer) {
@@ -833,14 +845,14 @@ try {
 							_setScreenInfo(event);
 
 							//이벤트 실행
-							_callEvent(afterState);
+							_callEvent(resizedState);
 
 							//트리거 갱신
 							if(_settings.triggerType) {
 								_settings.triggerType = '';
 								$.responsive.settings = _copyType(_settings);
 							}
-						}, _interval);
+						}, interval);
 					}).triggerHandler('resize.responsive');
 
 					//요소 반환
@@ -906,7 +918,7 @@ try {
 				/**
 				 * @description 기본 객체를 사용자에게 제공합니다.
 				 */
-				$.responsive.settings = _copyType(_initialSetting);
+				$.responsive.settings = _getDefaultObject();
 			});
 		}else{
 			throw '제이쿼리가 없습니다.';
