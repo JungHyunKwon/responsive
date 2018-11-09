@@ -251,11 +251,13 @@ try {
 								truth = result.truth,
 								untruth = result.untruth,
 								count = {};
-
+							
+							//기준되는 배열에 담긴 값으로 방 생성
 							for(var i = 0, standardLength = standard.length; i < standardLength; i++) {
 								count[standard[i]] = 0;
 							}
-
+							
+							//값으로 받은 배열에 방이 생성되지 않았다면 거짓으로 추가 방이 있다면 1씩 증가
 							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 								var valueI = value[i];
 
@@ -265,7 +267,8 @@ try {
 									count[valueI]++;
 								}
 							}
-
+							
+							//각 방에 있는 수만큼 truth에 기입 
 							for(var i = 0, standardLength = standard.length; i < standardLength; i++) {
 								var standardI = standard[i],
 									countI = count[standardI];
