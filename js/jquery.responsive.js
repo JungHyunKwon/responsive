@@ -248,11 +248,11 @@ try {
 						//배열일 때
 						if(_isArray(value)) {
 							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-								var valueI = value[i];
-								
-								//등록된 프로퍼티가 있을 때
-								if($.inArray(valueI, array) > -1) {
-									result.truth.push(valueI);
+								var valueI = value[i],
+									index = $.inArray(valueI, array);
+
+								if(index > -1) {
+									result.truth[index] = value[i];
 								}else{
 									result.untruth.push(valueI);
 								}

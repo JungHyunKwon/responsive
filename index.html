@@ -7,7 +7,7 @@
 	<title>responsive</title>
 	<link href="css/common.css" type="text/css" rel="stylesheet" />
 	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-	<script src="js/jquery.responsive.min.js"></script>
+	<script src="js/jquery.responsive.js"></script>
 	<script>
 		var $window = $(window);
 
@@ -56,7 +56,7 @@
 					}
 				},
 				lowIE : {
-					property : 'web'
+					property : ['tablet', 'wide', 'web']
 				}
 			});
 		});
