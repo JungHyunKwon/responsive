@@ -247,14 +247,31 @@ try {
 						
 						//배열일 때
 						if(_isArray(value)) {
-							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-								var valueI = value[i],
-									index = $.inArray(valueI, array);
+							var standard = _removeDuplicate(array),
+								truth = result.truth,
+								untruth = result.untruth,
+								count = {};
 
-								if(index > -1) {
-									result.truth[index] = value[i];
+							for(var i = 0, standardLength = standard.length; i < standardLength; i++) {
+								count[standard[i]] = 0;
+							}
+
+							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+								var valueI = value[i];
+
+								if(count[valueI] === undefined) {
+									untruth.push(valueI);
 								}else{
-									result.untruth.push(valueI);
+									count[valueI]++;
+								}
+							}
+
+							for(var i = 0, standardLength = standard.length; i < standardLength; i++) {
+								var standardI = standard[i],
+									countI = count[standardI];
+
+								for(var j = 0; j < countI; j++) {
+									truth.push(standardI);
 								}
 							}
 						}
