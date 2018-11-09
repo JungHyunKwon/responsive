@@ -149,10 +149,10 @@ try {
 				 * @name 배열 복사
 				 * @since 2017-12-06
 				 * @param {array} value
-				 * @return {object}
+				 * @return {array}
 				 */
 				function _copyArray(value) {
-					return value.slice();
+					return (_isArray(value)) ? value.slice() : value;
 				}
 
 				/**
@@ -358,10 +358,10 @@ try {
 				function _setState(value) {
 					var state = _removeDuplicate(value),
 						nowState = _settings.nowState,
-						result = _filter(state, nowState).untruth;
+						result = _filter(_filter(state, _settings.rangeProperty).truth, nowState).untruth;
 
 					//현재상태와 적용시킬 상태가 다를 때
-					if((_copyArray(state).sort() + '') !== (_copyArray(nowState).sort() + '')) {
+					if(result.length) {
 						//현재 상태 클래스 제거
 						_$html.removeClass(nowState.join(' '));
 
