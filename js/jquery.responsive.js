@@ -289,7 +289,7 @@ try {
 				 * @return {array}
 				 */
 				function _getStateCookie() {
-					return _removeDuplicate(_filter(_cookie.get('state').split(','), _settings.rangeProperty).truth);
+					return _filter(_cookie.get('state').split(','), _settings.rangeProperty).truth;
 				}
 
 				/**
