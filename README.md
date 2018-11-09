@@ -65,7 +65,6 @@ string : {
 * pc
 * mobile
 * scrollbar
-* ie6
 * ie7
 * ie8
 * ie9
@@ -101,7 +100,7 @@ from과 to가 숫자가 아닐 경우 horizontal 또는 vertical은 제외됩니
 값은 숫자만 사용 가능합니다.
 
 #### lowIE
-ie7 또는 ie8에서의 옵션입니다.
+ie7, 8에서의 옵션입니다.
 
 ````javascript
 lowIE : {
@@ -110,8 +109,8 @@ lowIE : {
 ````
 
 ##### property
-* range에서 지정한 분기를 몇 개든 넣으면 ie7, ie8에서 지정한 분기만 보여주게 됩니다.
-* range에 작성한 속성 이름에서 필터링 된 이름에서 없을 경우 ie7 또는 ie8에서 분기 제한이 걸리지 않습니다. 
+* range에서 지정한 분기를 몇 개든 넣으면 ie7, 8에서 지정한 분기만 보여주게 됩니다.
+* range에 작성한 속성 이름에서 필터링 된 이름에서 없을 경우 ie7, 8에서 분기 제한이 걸리지 않습니다. 
 * 중복으로 적은 값은 제거됩니다.
 * 작성 우선순위와 관련 있습니다.
 
@@ -121,7 +120,7 @@ lowIE : {
 | :-- | :---- | :-- | :-- |
 destroy |  | boolean | 플러그인을 소멸시키는 함수입니다.
 setState | array[string] \|\| string, number | boolean \|\| string | state에 지정한 분기를 적용시킬 수 있고 일자를 지정하면 일정 기간 동안 state에 지정한 분기를 볼 수 있습니다.
-getStateCookie | | array | 기간이 등록된 분기를 얻을 수 있습니다.
+getStateCookie | | array | 쿠키에 등록된 분기를 얻을 수 있습니다.
 
 ### $.responsive.settings
 
@@ -134,7 +133,7 @@ isScreenChange | boolean | 화면이 변경되었는지 확인하는 변수입�
 isScreenHeightChange | boolean | 높이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthChange | boolean | 넓이가 변경되었는지 확인하는 변수입니다.
 isScreenWidthAndHeightChange | boolean | 넓이와 높이가 변경되었는지 확인하는 변수입니다.
-lowIE | object | <ul><li>is(boolean) : 브라우저가 ie7 또는 ie8 인지 확인하는 변수입니다.</li><li>property(array) : lowIE에 property에 작성한 값을 토대로 반영된 값입니다.</li><li>run(boolean) :  property가 있으면 false가 나오고 없으면 true로 나옵니다.</li></ul>
+lowIE | object | <ul><li>is(boolean) : 브라우저가 ie7, 8 인지 확인하는 변수입니다.</li><li>property(array) : lowIE에 property에 작성한 값을 토대로 반영된 값입니다.</li><li>run(boolean) :  속성에 적은 값이 있으면서 ie7, 8에서의 동작을 확인하는 변수입니다.</li></ul>
 range | object | property(array) : 플러그인 옵션에서 range에 작성한 값을 토대로 반영된 값입니다.
 rangeProperty | array | 플러그인 옵션에서 range에 작성한 값을 토대로 반영된 속성 이름 입니다.
 exit | array | 분기 범위에서 나간 이름입니다.
@@ -146,7 +145,7 @@ loadedScreenHeight | number | 로드되었을 때 창의 높이입니다.
 screenWidth | number | 창의 넓이입니다.
 screenHeight | number | 창의 높이입니다.
 scrollbarWidth | number | 브라우저 스크롤바 넓이에 대한 값입니다.
-browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie6, ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
+browser | string | 현재 접속한 브라우저가 무엇인지 확인하고 값은 ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 값이 나옵니다. 브라우저를 찾지 못하면 unknown이라는 값이 나오게 됩니다.
 platform | string | 현재 접속한 기기가 무엇인지 확인하고 컴퓨터에서 접속하면 pc가 나오게 되며 그 이외로는 mobile이라는 값이 나오게 됩니다.
 triggerType | string | resize 또는 resize.responsive 이벤트를 trigger 또는 triggerHandler로 호출했을 때 어떤 메서드로 호출했는지 알 수 있는 변수입니다. trigger 또는 triggerHandler에 의한 호출이 아니거나 모든 이벤트의 호출이 끝나면 공백이 나옵니다.
 
@@ -187,11 +186,11 @@ $(window).on('responsive:#', function(event) {
 * #은 range에 적은 속성이 분기 이름 입니다.
 
 ### 클래스
-* 브라우저 : ie6, ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 중에서 해당되는 브라우저로 클래스가 부여됩니다.
+* 브라우저 : ie7, ie8, ie9, ie10, ie11, edge, opera, chrome, firefox, safari, unknown 중에서 해당되는 브라우저로 클래스가 부여됩니다.
   * 브라우저를 찾지 못하면 unknown이라는 클래스가 부여됩니다.
 * 플랫폼 : pc, mobile중에서 접속한 플랫폼으로 클래스가 부여됩니다.
 * 분기 : 플러그인 옵션 중 range에 적은 속성이 클래스로 부여됩니다.
-* 스크롤바 : 스크롤바 넓이가 있으면 scrollbar라는 클래스가 부여됩니다.
+* 스크롤바 : 브라우저의 기본 스크롤바 넓이가 있으면 scrollbar라는 클래스가 부여됩니다.
 * 방향 : 가로, 세로가 같을 때 square가 나오고 세로보다 가로가 더 클 때 landscape가 나오고 가로보다 세로가 더 클 때 portrait라는 값이 부여됩니다.
 
 html에 부여됩니다.
