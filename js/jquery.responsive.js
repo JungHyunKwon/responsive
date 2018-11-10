@@ -149,14 +149,14 @@ try {
 				 * @name 배열 복사
 				 * @since 2017-12-06
 				 * @param {array} value
-				 * @return {array}
+				 * @return {*}
 				 */
 				function _copyArray(value) {
 					return (_isArray(value)) ? value.slice() : value;
 				}
 
 				/**
-				 * @name 접속 상태 가져오기
+				 * @name 접속된 상태 가져오기
 				 * @since 2017-12-06
 				 * @return {object}
 				 */
@@ -197,12 +197,12 @@ try {
 				}
 
 				/**
-				 * @name 배열 중복 값 제거
+				 * @name 중복 제거
 				 * @since 2017-12-06
 				 * @param {array || string} value
 				 * @return {array}
 				 */
-				function _removeDuplicate(value) {
+				function _deduplication(value) {
 					var result = [];
 					
 					//문자일 때
@@ -215,7 +215,7 @@ try {
 						for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 							var valueI = value[i];
 							
-							//배열 result에 매개변수 value에 i 번째 값이 없으면 집어넣는다.
+							//배열에 매개변수 i 번째 값이 없을 때
 							if($.inArray(valueI, result) === -1) {
 								result.push(valueI);
 							}
@@ -247,37 +247,87 @@ try {
 						
 						//배열일 때
 						if(_isArray(value)) {
-							var standard = _removeDuplicate(array),
-								truth = result.truth,
-								untruth = result.untruth,
-								count = {};
+							var truth = result.truth,
+								untruth = result.untruth;
 							
-							//기준되는 배열에 담긴 값으로 방 생성
-							for(var i = 0, standardLength = standard.length; i < standardLength; i++) {
-								count[standard[i]] = 0;
-							}
-							
-							//값으로 받은 배열에 방이 생성되지 않았다면 거짓으로 추가 방이 있다면 1씩 증가
 							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 								var valueI = value[i];
-
-								if(count[valueI] === undefined) {
-									untruth.push(valueI);
+								
+								//결과가 있을 때
+								if($.inArray(valueI, array) > -1) {
+									truth.push(valueI);
 								}else{
-									count[valueI]++;
-								}
-							}
-							
-							//각 방에 있는 수만큼 truth에 기입 
-							for(var i = 0, standardLength = standard.length; i < standardLength; i++) {
-								var standardI = standard[i],
-									countI = count[standardI];
-
-								for(var j = 0; j < countI; j++) {
-									truth.push(standardI);
+									untruth.push(valueI);
 								}
 							}
 						}
+					}
+
+					return result;
+				}
+				
+				/**
+				 * @name 정렬
+				 * @since 2017-12-06
+				 * @param {array || string} value
+				 * @param {array} array
+				 * @return {array}
+				 */
+				function _sort(value, array) {
+					var result = [];
+					
+					//배열일 때
+					if(_isArray(array)) {
+						//문자일 때
+						if(typeof value === 'string') {
+							value = [value];
+						}
+						
+						//배열일 때
+						if(_isArray(value)) {
+							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+								var valueI = value[i],
+									index = $.inArray(valueI, array);
+								
+								//결과가 있을 때
+								if(index > -1) {
+									result[index] = valueI;
+								}
+							}
+
+							for(var i = 0; i < result.length; i++) {
+								//방이 없을 때
+								if(!result.hasOwnProperty(i)) {
+									result.splice(i, 1);
+									i--;
+								}
+							}
+						}
+					}
+
+					return result;
+				}
+
+				/**
+				 * @name 상태 가공
+				 * @since 2017-12-06
+				 * @param {array || string} value
+				 * @return {array}
+				 */
+				function _processState(value) {
+					var result = [];
+					
+					//문자일 때
+					if(typeof value === 'string') {
+						value = [value];
+					}
+					
+					//배열일 때
+					if(_isArray(value)) {
+						var rangeProperty = _settings.rangeProperty;
+
+						//중복 제거 후 분기 값인 것만 걸러서 분기 값 순으로 정렬
+						result = _sort(_filter(_deduplication(value), rangeProperty).truth, rangeProperty);
 					}
 
 					return result;
@@ -289,7 +339,7 @@ try {
 				 * @return {array}
 				 */
 				function _getStateCookie() {
-					return _filter(_cookie.get('state').split(','), _settings.rangeProperty).truth;
+					return _processState(_cookie.get('state').split(','));
 				}
 
 				/**
@@ -376,10 +426,10 @@ try {
 				 * @return {array}
 				 */
 				function _setState(value) {
-					var state = _removeDuplicate(value),
+					var state = _deduplication(value),
 						nowState = _settings.nowState,
-						result = _filter(_filter(state, _settings.rangeProperty).truth, nowState).untruth;
-
+						result = _filter(state, nowState).untruth;
+					
 					//현재상태와 적용시킬 상태가 다를 때
 					if(result.length) {
 						//현재 상태 클래스 제거
@@ -407,7 +457,7 @@ try {
 				 * @param {array || string} value
 				 */
 				function _callEvent(value) {
-					var state = _removeDuplicate(value),
+					var state = _deduplication(value),
 						event = {
 							settings : _copyObject(_settings)
 						};
@@ -585,7 +635,7 @@ try {
 						var rangeI = range[i];
 
 						//필터링
-						if(rangeI && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
+						if(rangeI && i !== 'square' && i.indexOf(',') === -1 && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
 							var horizontal = rangeI.horizontal,
 								horizontalFrom = -1,
 								horizontalTo = -1,
@@ -672,7 +722,7 @@ try {
 
 					//문자 또는 배열일 때
 					if(typeof lowIE.property === 'string' || _isArray(lowIE.property)) {
-						_lowIE.property = _filter(_removeDuplicate(lowIE.property), _settings.rangeProperty).truth;
+						_lowIE.property = _processState(lowIE.property);
 					}
 
 					//ie7, 8이면서 사용할 속성이 있을 때
@@ -791,14 +841,13 @@ try {
 				 * @return {boolean || string}
 				 */
 				$.responsive.setState = function(value, day) {
-					var result = false;
-					
-					value = _filter(value, _settings.rangeProperty).truth;
+					var state = _processState(value),
+						result = false;
 
 					//적용시킬 상태가 있을 때
-					if(value.length) {
+					if(state.length) {
 						//분기 적용
-						var setState = _setState(value);
+						var setState = _setState(state);
 						
 						//적용시킬 상태가 있을 때
 						if(setState.length) {
@@ -812,7 +861,7 @@ try {
 						//숫자일 때
 						if(_isNumber(day)) {
 							//쿠키 적용
-							if(_cookie.set('state', value.join(','), day)) {
+							if(_cookie.set('state', state.join(','), day)) {
 								result = true;
 							}
 
