@@ -146,16 +146,6 @@ try {
 				}
 
 				/**
-				 * @name 배열 복사
-				 * @since 2017-12-06
-				 * @param {array} value
-				 * @return {*}
-				 */
-				function _copyArray(value) {
-					return (_isArray(value)) ? value.slice() : value;
-				}
-
-				/**
 				 * @name 접속된 상태 가져오기
 				 * @since 2017-12-06
 				 * @return {object}
