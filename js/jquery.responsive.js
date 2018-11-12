@@ -132,7 +132,7 @@ try {
 				 * @return {boolean}
 				 */
 				function _isArray(value) {
-					return Object.prototype.toString.call(value).slice(8, -1).toLowerCase() === 'array';
+					return Object.prototype.toString.call(value) === '[object Array]';
 				}
 
 				/**
