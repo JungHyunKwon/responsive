@@ -23,12 +23,6 @@ try {
 					_interval = 250,
 					_cookie = {
 						/**
-						 * @name 쿠키 사용가능 여부
-						 * @since 2017-01-16
-						 */
-						isSupport : navigator.cookieEnabled,
-
-						/**
 						 * @name 쿠키 생성
 						 * @since 2017-01-16
 						 * @param {string} name
