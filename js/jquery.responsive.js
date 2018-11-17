@@ -480,8 +480,6 @@ try {
 							triggerType = 'triggerHandler';
 						}else if(isTrigger === 3) {
 							triggerType = 'trigger';
-						}else{
-							triggerType = '';
 						}
 					}
 					
