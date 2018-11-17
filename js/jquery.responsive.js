@@ -136,16 +136,6 @@ try {
 				}
 
 				/**
-				 * @name 객체 복사
-				 * @since 2017-12-06
-				 * @param {object} value
-				 * @return {object}
-				 */
-				function _copyObject(value) {
-					return $.extend({}, value);
-				}
-
-				/**
 				 * @name 접속된 상태 가져오기
 				 * @since 2017-12-06
 				 * @return {object}
@@ -469,7 +459,7 @@ try {
 				 */
 				function _callEvent(value) {
 					var event = {
-						settings : _copyObject(_settings)
+						settings : $.extend({}, _settings)
 					};
 
 					//전역 객체 갱신
@@ -628,256 +618,258 @@ try {
 				 * @return {jQueryElement}
 				 */
 				$.responsive = function(options) {
-					var settings = _copyObject(options),
-						range = settings.range,
-						lowIE = settings.lowIE,
-						rangeCode = 'var enter = [],\n    exit = [];\n\nif(lowIERun) {\n    enter = lowIEProperty;\n}else{\n',
-						lowIERun = false,
-						screenWidth = 0,
-						screenHeight = 0,
-						timer = 0;
-
-					//소멸
-					_destroy();
-
-					//기본 객체
-					_settings = _getDefaultOptions();
-					
-					//실행 등록
-					_settings.isRun = true;
-
-					//초기화
-					_settings.orientation = undefined;
-					_settings.scrollbarWidth = undefined;
-
-					//브라우저, 플랫폼 클래스 추가
-					_$html.addClass(_browser + ' ' + _platform);
-					
 					//객체일 때
-					if(range) {
-						var rangeProperty = [],
-							filteredRange = {};
+					if(options) {
+						var range = options.range,
+							lowIE = options.lowIE,
+							rangeCode = 'var enter = [],\n    exit = [];\n\nif(lowIERun) {\n    enter = lowIEProperty;\n}else{\n',
+							lowIERun = false,
+							screenWidth = 0,
+							screenHeight = 0,
+							timer = 0;
+
+						//소멸
+						_destroy();
+
+						//기본 객체
+						_settings = _getDefaultOptions();
 						
-						//자바스크립트 코드 생성
-						for(var i in range) {
-							var rangeI = range[i];
+						//실행 등록
+						_settings.isRun = true;
 
-							//필터링
-							if(rangeI && i.indexOf(',') === -1 && i.substr(-3) !== 'all' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i !== 'none' && i !== 'scrollbar' && i !== _platform && i !== _browser) {
-								var horizontal = rangeI.horizontal,
-									horizontalFrom = -1,
-									horizontalTo = -1,
-									hasHorizontal = false,
-									vertical = rangeI.vertical,
-									verticalFrom = -1,
-									verticalTo = -1,
-									hasVertical = false;
-								
-								//객체가 있을 때
-								if(horizontal) {
-									var _horizontalFrom = horizontal.from,
-										_horizontalTo = horizontal.to;
+						//초기화
+						_settings.orientation = undefined;
+						_settings.scrollbarWidth = undefined;
 
-									//숫자일 때
-									if(_isNumber(_horizontalFrom)) {
-										horizontalFrom = _horizontalFrom;
-									}
-									
-									//숫자일 때
-									if(_isNumber(_horizontalTo)) {
-										horizontalTo = _horizontalTo;
-									}
-									
-									//from이 0 이상이면서 to가 0 이상이면서 from보다 to가 이상일 때
-									if(horizontalFrom >= 0 && horizontalTo >= 0 && horizontalFrom >= horizontalTo) {
-										hasHorizontal = true;
-									}
-								}
-								
-								//객체가 있을 때
-								if(vertical) {
-									var _verticalFrom = vertical.from,
-										_verticalTo = vertical.to;
+						//브라우저, 플랫폼 클래스 추가
+						_$html.addClass(_browser + ' ' + _platform);
+						
+						//객체일 때
+						if(range) {
+							var rangeProperty = [],
+								filteredRange = {};
+							
+							//자바스크립트 코드 생성
+							for(var i in range) {
+								var rangeI = range[i];
 
-									//숫자일 때
-									if(_isNumber(_verticalFrom)) {
-										verticalFrom = _verticalFrom;
-									}
+								//필터링
+								if(rangeI && i.indexOf(',') === -1 && i.substr(-3) !== 'all' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i !== 'none' && i !== 'scrollbar' && i !== _platform && i !== _browser) {
+									var horizontal = rangeI.horizontal,
+										horizontalFrom = -1,
+										horizontalTo = -1,
+										hasHorizontal = false,
+										vertical = rangeI.vertical,
+										verticalFrom = -1,
+										verticalTo = -1,
+										hasVertical = false;
 									
-									//숫자일 때
-									if(_isNumber(_verticalTo)) {
-										verticalTo = _verticalTo;
-									}
-									
-									//from이 0 이상이면서 to가 0 이상이면서 from보다 to가 이상일 때
-									if(verticalFrom >= 0 && verticalTo >= 0 && verticalFrom >= verticalTo) {
-										hasVertical = true;
-									}
-								}
+									//객체가 있을 때
+									if(horizontal) {
+										var _horizontalFrom = horizontal.from,
+											_horizontalTo = horizontal.to;
 
-								if(hasHorizontal || hasVertical) {
-									rangeCode += '    if(';
-									
-									//horizontal이 객체이면서 from, to 속성이 숫자일 때
-									if(hasHorizontal) {
-										rangeCode += 'screenWidth <= ' + horizontalFrom + ' && screenWidth >= ' + horizontalTo;
+										//숫자일 때
+										if(_isNumber(_horizontalFrom)) {
+											horizontalFrom = _horizontalFrom;
+										}
+										
+										//숫자일 때
+										if(_isNumber(_horizontalTo)) {
+											horizontalTo = _horizontalTo;
+										}
+										
+										//from이 0 이상이면서 to가 0 이상이면서 from보다 to가 이상일 때
+										if(horizontalFrom >= 0 && horizontalTo >= 0 && horizontalFrom >= horizontalTo) {
+											hasHorizontal = true;
+										}
 									}
 									
-									//vertical이 객체이면서 from, to 속성이 숫자일 때
-									if(hasVertical) {
-										//가로가 있을경우
+									//객체가 있을 때
+									if(vertical) {
+										var _verticalFrom = vertical.from,
+											_verticalTo = vertical.to;
+
+										//숫자일 때
+										if(_isNumber(_verticalFrom)) {
+											verticalFrom = _verticalFrom;
+										}
+										
+										//숫자일 때
+										if(_isNumber(_verticalTo)) {
+											verticalTo = _verticalTo;
+										}
+										
+										//from이 0 이상이면서 to가 0 이상이면서 from보다 to가 이상일 때
+										if(verticalFrom >= 0 && verticalTo >= 0 && verticalFrom >= verticalTo) {
+											hasVertical = true;
+										}
+									}
+
+									if(hasHorizontal || hasVertical) {
+										rangeCode += '    if(';
+										
+										//horizontal이 객체이면서 from, to 속성이 숫자일 때
 										if(hasHorizontal) {
-											rangeCode += ' && ';
+											rangeCode += 'screenWidth <= ' + horizontalFrom + ' && screenWidth >= ' + horizontalTo;
+										}
+										
+										//vertical이 객체이면서 from, to 속성이 숫자일 때
+										if(hasVertical) {
+											//가로가 있을경우
+											if(hasHorizontal) {
+												rangeCode += ' && ';
+											}
+
+											rangeCode += 'screenHeight <= ' + verticalFrom + ' && screenHeight >= ' + verticalTo;
 										}
 
-										rangeCode += 'screenHeight <= ' + verticalFrom + ' && screenHeight >= ' + verticalTo;
+										rangeCode += ') {\n';
+										rangeCode += '        enter.push(\'' + i + '\');\n';
+										rangeCode += '    }else{\n';
+										rangeCode += '        exit.push(\'' + i + '\');\n';
+										rangeCode += '    }\n\n';
+
+										rangeProperty.push(i);
+										filteredRange[i] = rangeI;
 									}
+								}
+							}
+							
+							//마지막 개행 제거
+							rangeCode = rangeCode.replace(/\n$/, '');
 
-									rangeCode += ') {\n';
-									rangeCode += '        enter.push(\'' + i + '\');\n';
-									rangeCode += '    }else{\n';
-									rangeCode += '        exit.push(\'' + i + '\');\n';
-									rangeCode += '    }\n\n';
+							//분기 기입
+							_settings.rangeProperty = rangeProperty;
+							_settings.range = filteredRange;
+						}
+						
+						rangeCode += '}';
+						
+						//객체일 때
+						if(lowIE) {
+							var lowIEProperty = lowIE.property;
+							
+							//프로퍼티가 있을 때
+							if(lowIEProperty) {
+								var _lowIE = _settings.lowIE;
 
-									rangeProperty.push(i);
-									filteredRange[i] = rangeI;
+								//문자 또는 배열일 때
+								if(typeof lowIEProperty === 'string' || _isArray(lowIEProperty)) {
+									lowIEProperty = _processState(lowIEProperty);
+									_lowIE.property = lowIEProperty;
+								}
+
+								//ie7, 8이면서 사용할 속성이 있을 때
+								if(_isLowIE && lowIEProperty.length) {
+									lowIERun = true;
+									_lowIE.run = lowIERun;
 								}
 							}
 						}
-						
-						//마지막 개행 제거
-						rangeCode = rangeCode.replace(/\n$/, '');
 
-						//분기 기입
-						_settings.rangeProperty = rangeProperty;
-						_settings.range = filteredRange;
-					}
-					
-					rangeCode += '}';
-					
-					//객체일 때
-					if(lowIE) {
-						var lowIEProperty = lowIE.property;
-						
-						//프로퍼티가 있을 때
-						if(lowIEProperty) {
-							var _lowIE = _settings.lowIE;
-
-							//문자 또는 배열일 때
-							if(typeof lowIEProperty === 'string' || _isArray(lowIEProperty)) {
-								lowIEProperty = _processState(lowIEProperty);
-								_lowIE.property = lowIEProperty;
-							}
-
-							//ie7, 8이면서 사용할 속성이 있을 때
-							if(_isLowIE && lowIEProperty.length) {
-								lowIERun = true;
-								_lowIE.run = lowIERun;
-							}
-						}
-					}
-
-					_$window.on('resize.responsive', function(event) {
-						//화면 정보 갱신
-						_setScreenInfo(event);
-
-						var _screenWidth = _settings.screenWidth,
-							_screenHeigt = _settings.screenHeight,
-							_triggerType = _settings.triggerType,
-							state = ['all'],
-							resizedState = ['allResized'],
-							stateCookie = _getStateCookie(),
-							isScreenChange = true,
-							isScreenWidthChange = false,
-							isScreenHeightChange = false,
-							isScreenWidthAndHeightChange = false;
-
-						//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 다를 때
-						if(_screenWidth !== screenWidth) {
-							screenWidth = _screenWidth;
-							isScreenWidthChange = true;
-						}
-
-						//기존의 스크린 높이와 새로부여받은 스크린 높이가 다를 때
-						if(_screenHeigt !== screenHeight) {
-							screenHeight = _screenHeigt;
-							isScreenHeightChange = true;
-						}
-
-						//기존 스크린 넓이와 높이가 둘다 변경되었을 때
-						if(isScreenWidthChange && isScreenHeightChange) {
-							isScreenWidthAndHeightChange = true;
-						}
-
-						//trigger로 호출하였을 때
-						if(_triggerType) {
-							isScreenWidthChange = false;
-							isScreenHeightChange = false;
-							isScreenWidthAndHeightChange = false;
-							isScreenChange = false;
-						}
-
-						//화면 상태 기입
-						_settings.isScreenChange = isScreenChange;
-						_settings.isScreenWidthChange = isScreenWidthChange;
-						_settings.isScreenHeightChange = isScreenHeightChange;
-						_settings.isScreenWidthAndHeightChange = isScreenWidthAndHeightChange;
-
-						//범위 실행
-						eval(rangeCode);
-
-						//적용시킬 분기가 없을 때
-						if(!enter.length) {
-							enter[0] = 'none';
-						}
-
-						//적용시킬 쿠키가 있을 때
-						if(stateCookie.length) {
-							enter = stateCookie;
-						}
-						
-						//분기 적용
-						var setState = _setState(enter);
-
-						//분기 분류
-						for(var i = 0, enterLength = enter.length; i < enterLength; i++) {
-							var enterI = enter[i],
-								stateAll = enterI + 'All';
-							
-							state.push(stateAll);
-
-							//적용시킬 상태가 있을 때
-							if($.inArray(enterI, setState) > -1) {
-								state.push(enterI);
-							}
-
-							resizedState.push(stateAll + 'Resized');
-						}
-
-						//이벤트 실행
-						_callEvent(state);
-
-						//돌던 setTimeout이 있으면 중단
-						if(timer) {
-							clearTimeout(timer);
-							timer = 0;
-						}
-
-						//setTimeout 재등록
-						timer = setTimeout(function() {
+						_$window.on('resize.responsive', function(event) {
 							//화면 정보 갱신
 							_setScreenInfo(event);
 
-							//이벤트 실행
-							_callEvent(resizedState);
+							var _screenWidth = _settings.screenWidth,
+								_screenHeigt = _settings.screenHeight,
+								_triggerType = _settings.triggerType,
+								state = ['all'],
+								resizedState = ['allResized'],
+								stateCookie = _getStateCookie(),
+								isScreenChange = true,
+								isScreenWidthChange = false,
+								isScreenHeightChange = false,
+								isScreenWidthAndHeightChange = false;
+
+							//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 다를 때
+							if(_screenWidth !== screenWidth) {
+								screenWidth = _screenWidth;
+								isScreenWidthChange = true;
+							}
+
+							//기존의 스크린 높이와 새로부여받은 스크린 높이가 다를 때
+							if(_screenHeigt !== screenHeight) {
+								screenHeight = _screenHeigt;
+								isScreenHeightChange = true;
+							}
+
+							//기존 스크린 넓이와 높이가 둘다 변경되었을 때
+							if(isScreenWidthChange && isScreenHeightChange) {
+								isScreenWidthAndHeightChange = true;
+							}
 
 							//trigger로 호출하였을 때
 							if(_triggerType) {
-								_settings.triggerType = '';
-								$.responsive.settings.triggerType = '';
+								isScreenWidthChange = false;
+								isScreenHeightChange = false;
+								isScreenWidthAndHeightChange = false;
+								isScreenChange = false;
 							}
-						}, _interval);
-					}).triggerHandler('resize.responsive');
+
+							//화면 상태 기입
+							_settings.isScreenChange = isScreenChange;
+							_settings.isScreenWidthChange = isScreenWidthChange;
+							_settings.isScreenHeightChange = isScreenHeightChange;
+							_settings.isScreenWidthAndHeightChange = isScreenWidthAndHeightChange;
+
+							//범위 실행
+							eval(rangeCode);
+
+							//적용시킬 분기가 없을 때
+							if(!enter.length) {
+								enter[0] = 'none';
+							}
+
+							//적용시킬 쿠키가 있을 때
+							if(stateCookie.length) {
+								enter = stateCookie;
+							}
+							
+							//분기 적용
+							var setState = _setState(enter);
+
+							//분기 분류
+							for(var i = 0, enterLength = enter.length; i < enterLength; i++) {
+								var enterI = enter[i],
+									stateAll = enterI + 'All';
+								
+								state.push(stateAll);
+
+								//적용시킬 상태가 있을 때
+								if($.inArray(enterI, setState) > -1) {
+									state.push(enterI);
+								}
+
+								resizedState.push(stateAll + 'Resized');
+							}
+
+							//이벤트 실행
+							_callEvent(state);
+
+							//돌던 setTimeout이 있으면 중단
+							if(timer) {
+								clearTimeout(timer);
+								timer = 0;
+							}
+
+							//setTimeout 재등록
+							timer = setTimeout(function() {
+								//화면 정보 갱신
+								_setScreenInfo(event);
+
+								//이벤트 실행
+								_callEvent(resizedState);
+
+								//trigger로 호출하였을 때
+								if(_triggerType) {
+									_settings.triggerType = '';
+									$.responsive.settings.triggerType = '';
+								}
+							}, _interval);
+						}).triggerHandler('resize.responsive');
+					}
 
 					//요소 반환
 					return _$html;
