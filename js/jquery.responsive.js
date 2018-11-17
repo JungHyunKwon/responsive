@@ -756,14 +756,12 @@ try {
 
 								//문자 또는 배열일 때
 								if(typeof lowIEProperty === 'string' || _isArray(lowIEProperty)) {
-									lowIEProperty = _processState(lowIEProperty);
-									_lowIE.property = lowIEProperty;
+									_lowIE.property = lowIEProperty = _processState(lowIEProperty);
 								}
 
 								//ie7, 8이면서 사용할 속성이 있을 때
 								if(_isLowIE && lowIEProperty.length) {
-									lowIERun = true;
-									_lowIE.run = lowIERun;
+									_lowIE.run = lowIERun = true;
 								}
 							}
 						}
