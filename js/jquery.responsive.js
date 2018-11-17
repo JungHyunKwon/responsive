@@ -469,19 +469,25 @@ try {
 				 * @param {object} event
 				 */
 				function _setScreenInfo(event) {
-					var hasScrollbar = _hasScrollbar();
+					var hasScrollbar = _hasScrollbar(),
+						triggerType = '';
 
 					//트리거
 					if(event instanceof $.Event) {
-						if(event.isTrigger === 2) {
-							_settings.triggerType = 'triggerHandler';
-						}else if(event.isTrigger === 3) {
-							_settings.triggerType = 'trigger';
+						var isTrigger = event.isTrigger;
+
+						if(isTrigger === 2) {
+							triggerType = 'triggerHandler';
+						}else if(isTrigger === 3) {
+							triggerType = 'trigger';
 						}else{
-							_settings.triggerType = '';
+							triggerType = '';
 						}
 					}
 					
+					//트리거 기입
+					_settings.triggerType = triggerType;
+
 					//가로, 세로 스크롤바 확인
 					_settings.hasVerticalScrollbar = hasScrollbar.vertical;
 					_settings.hasHorizontalScrollbar = hasScrollbar.horizontal;
