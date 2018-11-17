@@ -15,7 +15,10 @@ try {
 					_$html = $(_html),
 					_scrollbar = document.getElementById('scrollbar'),
 					_connectedState = _getConnectedState(),
-					_isLowIE = _connectedState.browser === 'ie7' || _connectedState.browser === 'ie8',
+					_browser = _connectedState.browser,
+					_platform = _connectedState.platform,
+					_isLowIE = _browser === 'ie7' || _browser === 'ie8',
+					_$event = $.Event,
 					_settings = {},
 					_initSettings = {},
 					_loadedScreenWidth = 0,
@@ -65,6 +68,8 @@ try {
 							
 							//문자일 때
 							if(typeof name === 'string') {
+								var valueIndex = name.length + 1;
+
 								for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
 									var cookieI = cookie[i];
 									
@@ -76,7 +81,7 @@ try {
 									
 									//쿠키값이 있을 때
 									if(cookieI.indexOf(name) > -1) {
-										result = unescape(cookieI.substring(name.length + 1, cookieI.length));
+										result = unescape(cookieI.substring(valueIndex, cookieI.length));
 										break;
 									}
 								}
@@ -116,6 +121,7 @@ try {
 				 * @return {boolean}
 				 */
 				function _isNumber(value) {
+					//숫자이면서 NaN이 아니면서 Infinity가 아닐 때
 					return typeof value === 'number' && !isNaN(value) && isFinite(value);
 				}
 
@@ -150,29 +156,49 @@ try {
 							platform : 'mobile',
 							browser : 'unknown'
 						};
-
+					
+					//ie7일 때
 					if(userAgent.indexOf('msie 7.0') > -1) {
 						result.browser = 'ie7';
+					
+					//ie8일 때
 					}else if(userAgent.indexOf('msie 8.0') > -1) {
 						result.browser = 'ie8';
+					
+					//ie9일 때
 					}else if(userAgent.indexOf('msie 9.0') > -1) {
 						result.browser = 'ie9';
+					
+					//ie10일 때
 					}else if(userAgent.indexOf('msie 10.0') > -1) {
 						result.browser = 'ie10';
+					
+					//ie11일 때
 					}else if(userAgent.indexOf('trident/7.0') > -1) {
 						result.browser = 'ie11';
+					
+					//edge일 때
 					}else if(userAgent.indexOf('edge') > -1) {
 						result.browser = 'edge';
+					
+					//opera일 때
 					}else if(userAgent.indexOf('opr') > -1) {
-						result.browser = 'opera'; 
+						result.browser = 'opera';
+					
+					//chrome일 때
 					}else if(userAgent.indexOf('chrome') > -1) {
 						result.browser = 'chrome';
+					
+					//firefox일 때
 					}else if(userAgent.indexOf('firefox') > -1) {
 						result.browser = 'firefox'; 
+					
+					//safari일 때
 					}else if(userAgent.indexOf('safari') > -1) {
 						result.browser = 'safari';
 					}
 					
+					//접속 플랫폼이 win16 또는 win32 또는 win64 또는 macintel 또는 mac일 때
 					if('win16|win32|win64|macintel|mac'.indexOf(window.navigator.platform.toLowerCase()) > -1) {
 						result.platform = 'pc';
 					}
@@ -280,7 +306,7 @@ try {
 							}
 
 							for(var i = 0; i < result.length; i++) {
-								//방이 없을 때
+								//프로퍼티가 없을 때
 								if(!result.hasOwnProperty(i)) {
 									result.splice(i, 1);
 									i--;
@@ -368,11 +394,13 @@ try {
 				 */
 				function _getDefaultOptions() {
 					var hasScrollbar = _hasScrollbar(),
+						hasVerticalScrollbar = hasScrollbar.vertical,
+						hasHorizontalScrollbar = hasScrollbar.horizontal,
 						scrollbarWidth = _getScrollbarWidth(),
 						windowWidth = _$window.width(),
 						windowHeight = _$window.height(),
-						screenWidth = (hasScrollbar.vertical) ? windowWidth + scrollbarWidth : windowWidth,
-						screenHeight = (hasScrollbar.horizontal) ? windowHeight + scrollbarWidth : windowHeight;
+						screenWidth = (hasVerticalScrollbar) ? windowWidth + scrollbarWidth : windowWidth, //세로 스크롤바가 있을 때
+						screenHeight = (hasHorizontalScrollbar) ? windowHeight + scrollbarWidth : windowHeight; //가로 스크롤바가 있을 때
 
 					return {
 						isRun : false,
@@ -386,15 +414,15 @@ try {
 						nowState : [],
 						prevState : [],
 						scrollbarWidth : scrollbarWidth,
-						orientation : (screenWidth === screenHeight) ? 'square' : (screenWidth > screenHeight) ? 'landscape' : 'portrait',
+						orientation : (screenWidth === screenHeight) ? 'square' : (screenWidth > screenHeight) ? 'landscape' : 'portrait', //화면 넓이와 화면 넓이가 같을 때 아니면 화면 넓이가 화면 높이보다 클 때
 						screenWidth : screenWidth,
 						screenHeight : screenHeight,
 						loadedScreenWidth : _loadedScreenWidth,
 						loadedScreenHeight : _loadedScreenHeight,
-						browser : _connectedState.browser,
-						platform : _connectedState.platform,
-						hasVerticalScrollbar : hasScrollbar.vertical,
-						hasHorizontalScrollbar : hasScrollbar.horizontal,
+						browser : _browser,
+						platform : _platform,
+						hasVerticalScrollbar : hasVerticalScrollbar,
+						hasHorizontalScrollbar : hasHorizontalScrollbar,
 						triggerType : '',
 						isScreenWidthChange : false,
 						isScreenHeightChange : false,
@@ -456,10 +484,10 @@ try {
 						event.state = stateI;
 
 						//모든 이벤트 호출
-						_$window.triggerHandler($.Event('responsive', event));
+						_$window.triggerHandler(_$event('responsive', event));
 
 						//필터 이벤트 호출
-						_$window.triggerHandler($.Event('responsive:' + stateI, event));
+						_$window.triggerHandler(_$event('responsive:' + stateI, event));
 					}
 				}
 
@@ -470,14 +498,24 @@ try {
 				 */
 				function _setScreenInfo(event) {
 					var hasScrollbar = _hasScrollbar(),
-						triggerType = '';
+						hasVerticalScrollbar = hasScrollbar.vertical,
+						hasHorizontalScrollbar = hasScrollbar.horizontal,
+						triggerType = '',
+						scrollbarWidth = _getScrollbarWidth(),
+						screenWidth = _$window.width(),
+						screenHeight = _$window.height(),
+						orientation = 'portrait',
+						_orientation = _settings.orientation;
 
-					//트리거
-					if(event instanceof $.Event) {
+					//이벤트가 있을 때
+					if(event instanceof _$event) {
 						var isTrigger = event.isTrigger;
-
+						
+						//triggerHandler일 때
 						if(isTrigger === 2) {
 							triggerType = 'triggerHandler';
+						
+						//trigger일 때
 						}else if(isTrigger === 3) {
 							triggerType = 'trigger';
 						}
@@ -486,57 +524,63 @@ try {
 					//트리거 기입
 					_settings.triggerType = triggerType;
 
-					//가로, 세로 스크롤바 확인
-					_settings.hasVerticalScrollbar = hasScrollbar.vertical;
-					_settings.hasHorizontalScrollbar = hasScrollbar.horizontal;
+					//가로, 세로 스크롤바 여부 기입
+					_settings.hasVerticalScrollbar = hasVerticalScrollbar;
+					_settings.hasHorizontalScrollbar = hasHorizontalScrollbar;
 
-					//화면이 변경되었는지 확인하는 변수
+					//화면 상태 초기화
 					_settings.isScreenWidthChange = false;
 					_settings.isScreenHeightChange = false;
 					_settings.isScreenWidthAndHeightChange = false;
 					_settings.isScreenChange = false;
-
-					//스크롤바 넓이
-					_settings.scrollbarWidth = _getScrollbarWidth();
-
-					//브라우저 스크롤바가 있을 때
-					if(_settings.scrollbarWidth) {
-						_$html.addClass('scrollbar');
-					}else{
-						_$html.removeClass('scrollbar');
+					
+					//기존 스크롤바 넓이와 현재 스크롤바 넓이가 다를 때
+					if(_settings.scrollbarWidth !== scrollbarWidth) {
+						//현재 스크롤바 넓이가 있을 때
+						if(scrollbarWidth) {
+							_$html.addClass('scrollbar');
+						}else{
+							_$html.removeClass('scrollbar');
+						}
 					}
-
-					//화면 넓이, 높이
-					_settings.screenWidth = _$window.width();
-					_settings.screenHeight = _$window.height();
 				
+					//스크롤바 넓이 기입
+					_settings.scrollbarWidth = scrollbarWidth;
+
 					//세로 스크롤바가 있을 때
-					if(_settings.hasVerticalScrollbar) {
-						_settings.screenWidth += _settings.scrollbarWidth;
+					if(hasVerticalScrollbar) {
+						screenWidth += scrollbarWidth;
 					}
 
 					//가로 스크롤바가 있을 때
-					if(_settings.hasHorizontalScrollbar) {
-						_settings.screenHeight += _settings.scrollbarWidth;
+					if(hasHorizontalScrollbar) {
+						screenHeight += scrollbarWidth;
 					}
 
-					//방향
-					_$html.removeClass(_settings.orientation);
+					//화면 넓이, 높이 기입
+					_settings.screenWidth = screenWidth;
+					_settings.screenHeight = screenHeight;
 					
 					//화면이 가로세로가 같을 때
-					if(_settings.screenWidth === _settings.screenHeight) {
-						_settings.orientation = 'square';
+					if(screenWidth === screenHeight) {
+						orientation = 'square';
 					
 					//화면이 세로보다 가로가 클 때
-					}else if(_settings.screenWidth > _settings.screenHeight) {
-						_settings.orientation = 'landscape';
-					
-					//화면이 가로보다 세로가 클 때
-					}else{
-						_settings.orientation = 'portrait';
+					}else if(screenWidth > screenHeight) {
+						orientation = 'landscape';
 					}
+					
+					//기존 화면 방향과 현재 화면 방향이 다를 때
+					if(_orientation !== orientation) {
+						//기존 화면 방향 클래스 제거
+						_$html.removeClass(_orientation);
 
-					_$html.addClass(_settings.orientation);
+						//현재 화면 방향 추가
+						_settings.orientation = orientation;
+
+						//화면 방향 클래스 추가
+						_$html.addClass(orientation);
+					}
 				}
 
 				/**
@@ -553,7 +597,7 @@ try {
 						_$window.off('resize.responsive');
 
 						//클래스 제거
-						_$html.removeClass('scrollbar ' + _settings.browser + ' ' + _settings.platform + ' ' + _settings.nowState.join(' ') + ' ' + _settings.orientation);
+						_$html.removeClass('scrollbar ' + _browser + ' ' + _platform + ' ' + _settings.nowState.join(' ') + ' ' + _settings.orientation);
 						
 						//스크롤바 요소 제거
 						$(_scrollbar).remove();
@@ -587,6 +631,10 @@ try {
 				 */
 				$.responsive = function(options) {
 					var settings = _copyObject(options),
+						range = settings.range,
+						lowIE = settings.lowIE,
+						rangeCode = 'var enter = [],\n    exit = [];\n\nif(lowIERun) {\n    enter = lowIEProperty;\n}else{\n',
+						lowIERun = false,
 						screenWidth = 0,
 						screenHeight = 0,
 						timer = 0;
@@ -596,164 +644,186 @@ try {
 
 					//기본 객체
 					_settings = _getDefaultOptions();
-
+					
 					//실행 등록
 					_settings.isRun = true;
 
+					//초기화
+					_settings.orientation = undefined;
+					_settings.scrollbarWidth = undefined;
+
 					//브라우저, 플랫폼 클래스 추가
-					_$html.addClass(_settings.browser + ' ' + _settings.platform);
-
-					//객체가 아닐 때
-					if(!settings.lowIE) {
-						settings.lowIE = {};
-					}
+					_$html.addClass(_browser + ' ' + _platform);
 					
-					//객체가 아닐 때
-					if(!settings.range) {
-						settings.range = {};
-					}
+					//객체일 때
+					if(range) {
+						var rangeProperty = [],
+							filteredRange = {};
+						
+						//자바스크립트 코드 생성
+						for(var i in range) {
+							var rangeI = range[i];
 
-					//자바스크립트 코드 생성
-					var _lowIE = _settings.lowIE,
-						lowIE = settings.lowIE,
-						lowIEProperty = lowIE.property,
-						range = settings.range,
-						rangeCode = 'var enter = [],\n\texit = [];\n\nif(_lowIE.run) {\n\tenter = _lowIE.property;\n}else{\n';
+							//필터링
+							if(rangeI && i.indexOf(',') === -1 && i.substr(-3) !== 'all' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'square' && i !== 'portrait' && i !== 'landscape' && i !== 'none' && i !== 'scrollbar' && i !== _platform && i !== _browser) {
+								var horizontal = rangeI.horizontal,
+									horizontalFrom = -1,
+									horizontalTo = -1,
+									hasHorizontal = false,
+									vertical = rangeI.vertical,
+									verticalFrom = -1,
+									verticalTo = -1,
+									hasVertical = false;
+								
+								//객체가 있을 때
+								if(horizontal) {
+									var _horizontalFrom = horizontal.from,
+										_horizontalTo = horizontal.to;
 
-					for(var i in range) {
-						var rangeI = range[i];
-
-						//필터링
-						if(rangeI && i !== 'square' && i.indexOf(',') === -1 && i !== 'portrait' && i !== 'landscape' && i.substr(-3) !== 'All' && i.substr(-7) !== 'Resized' && i !== 'none' && i.substr(-3) !== 'all' && i !== 'mobile' && i !== 'pc' && i !== 'ie7' && i !== 'ie8' && i !== 'ie9' && i !== 'ie10' && i !== 'ie11' && i !== 'scrollbar' && i !== 'edge' && i !== 'opera' && i !== 'chrome' && i !== 'firefox' && i !== 'safari' && i !== 'unknown') {
-							var horizontal = rangeI.horizontal,
-								horizontalFrom = -1,
-								horizontalTo = -1,
-								hasHorizontal = false,
-								vertical = rangeI.vertical,
-								verticalFrom = -1,
-								verticalTo = -1,
-								hasVertical = false;
-							
-							//객체가 있을 때
-							if(horizontal) {
-								var _horizontalFrom = horizontal.from,
-									_horizontalTo = horizontal.to;
-
-								//숫자일 때
-								if(_isNumber(_horizontalFrom)) {
-									horizontalFrom = _horizontalFrom;
+									//숫자일 때
+									if(_isNumber(_horizontalFrom)) {
+										horizontalFrom = _horizontalFrom;
+									}
+									
+									//숫자일 때
+									if(_isNumber(_horizontalTo)) {
+										horizontalTo = _horizontalTo;
+									}
+									
+									//from이 0 이상이면서 to가 0 이상이면서 from보다 to가 이상일 때
+									if(horizontalFrom >= 0 && horizontalTo >= 0 && horizontalFrom >= horizontalTo) {
+										hasHorizontal = true;
+									}
 								}
 								
-								//숫자일 때
-								if(_isNumber(_horizontalTo)) {
-									horizontalTo = _horizontalTo;
-								}
-								
-								//from이 0 이상이면서 to가 0 이상이면서 from보다 to가 이상일 때
-								if(horizontalFrom >= 0 && horizontalTo >= 0 && horizontalFrom >= horizontalTo) {
-									hasHorizontal = true;
-								}
-							}
-							
-							//객체가 있을 때
-							if(vertical) {
-								var _verticalFrom = vertical.from,
-									_verticalTo = vertical.to;
+								//객체가 있을 때
+								if(vertical) {
+									var _verticalFrom = vertical.from,
+										_verticalTo = vertical.to;
 
-								//숫자일 때
-								if(_isNumber(_verticalFrom)) {
-									verticalFrom = _verticalFrom;
+									//숫자일 때
+									if(_isNumber(_verticalFrom)) {
+										verticalFrom = _verticalFrom;
+									}
+									
+									//숫자일 때
+									if(_isNumber(_verticalTo)) {
+										verticalTo = _verticalTo;
+									}
+									
+									//from이 0 이상이면서 to가 0 이상이면서 from보다 to가 이상일 때
+									if(verticalFrom >= 0 && verticalTo >= 0 && verticalFrom >= verticalTo) {
+										hasVertical = true;
+									}
 								}
-								
-								//숫자일 때
-								if(_isNumber(_verticalTo)) {
-									verticalTo = _verticalTo;
-								}
-								
-								//from이 0 이상이면서 to가 0 이상이면서 from보다 to가 이상일 때
-								if(verticalFrom >= 0 && verticalTo >= 0 && verticalFrom >= verticalTo) {
-									hasVertical = true;
-								}
-							}
 
-							if(hasHorizontal || hasVertical) {
-								rangeCode += '\tif(';
-								
-								//horizontal이 객체이면서 from, to 속성이 숫자일 때
-								if(hasHorizontal) {
-									rangeCode += 'screenWidth <= ' + horizontalFrom + ' && screenWidth >= ' + horizontalTo;
-								}
-								
-								//vertical이 객체이면서 from, to 속성이 숫자일 때
-								if(hasVertical) {
-									//가로가 있을경우
+								if(hasHorizontal || hasVertical) {
+									rangeCode += '    if(';
+									
+									//horizontal이 객체이면서 from, to 속성이 숫자일 때
 									if(hasHorizontal) {
-										rangeCode += ' && ';
+										rangeCode += 'screenWidth <= ' + horizontalFrom + ' && screenWidth >= ' + horizontalTo;
+									}
+									
+									//vertical이 객체이면서 from, to 속성이 숫자일 때
+									if(hasVertical) {
+										//가로가 있을경우
+										if(hasHorizontal) {
+											rangeCode += ' && ';
+										}
+
+										rangeCode += 'screenHeight <= ' + verticalFrom + ' && screenHeight >= ' + verticalTo;
 									}
 
-									rangeCode += 'screenHeight <= ' + verticalFrom + ' && screenHeight >= ' + verticalTo;
+									rangeCode += ') {\n';
+									rangeCode += '        enter.push(\'' + i + '\');\n';
+									rangeCode += '    }else{\n';
+									rangeCode += '        exit.push(\'' + i + '\');\n';
+									rangeCode += '    }\n\n';
+
+									rangeProperty.push(i);
+									filteredRange[i] = rangeI;
 								}
-
-								rangeCode += ') {\n';
-								rangeCode += '\t\tenter.push(\'' + i + '\');\n';
-								rangeCode += '\t}else{\n';
-								rangeCode += '\t\texit.push(\'' + i + '\');\n';
-								rangeCode += '\t}\n\n';
-
-								_settings.rangeProperty.push(i);
-								_settings.range[i] = rangeI;
 							}
 						}
-					}
+						
+						//마지막 개행 제거
+						rangeCode = rangeCode.replace(/\n$/, '');
 
-					rangeCode = rangeCode.replace(/\n$/, '');
+						//분기 기입
+						_settings.rangeProperty = rangeProperty;
+						_settings.range = filteredRange;
+					}
+					
 					rangeCode += '}';
+					
+					//객체일 때
+					if(lowIE) {
+						var lowIEProperty = lowIE.property;
+						
+						//프로퍼티가 있을 때
+						if(lowIEProperty) {
+							var _lowIE = _settings.lowIE;
 
-					//문자 또는 배열일 때
-					if(typeof lowIEProperty === 'string' || _isArray(lowIEProperty)) {
-						_lowIE.property = _processState(lowIEProperty);
-					}
+							//문자 또는 배열일 때
+							if(typeof lowIEProperty === 'string' || _isArray(lowIEProperty)) {
+								lowIEProperty = _processState(lowIEProperty);
+								_lowIE.property = lowIEProperty;
+							}
 
-					//ie7, 8이면서 사용할 속성이 있을 때
-					if(_isLowIE && _lowIE.property.length) {
-						_lowIE.run = true;
+							//ie7, 8이면서 사용할 속성이 있을 때
+							if(_isLowIE && lowIEProperty.length) {
+								lowIERun = true;
+								_lowIE.run = lowIERun;
+							}
+						}
 					}
 
 					_$window.on('resize.responsive', function(event) {
-						var state = ['all'],
-							resizedState = ['allResized'],
-							stateCookie = _getStateCookie();
-
 						//화면 정보 갱신
 						_setScreenInfo(event);
 
-						//화면이 변경되었을 때
-						_settings.isScreenChange = true;
+						var _screenWidth = _settings.screenWidth,
+							_screenHeigt = _settings.screenHeight,
+							_triggerType = _settings.triggerType,
+							state = ['all'],
+							resizedState = ['allResized'],
+							stateCookie = _getStateCookie(),
+							isScreenChange = true,
+							isScreenWidthChange = false,
+							isScreenHeightChange = false,
+							isScreenWidthAndHeightChange = false;
 
 						//기존의 스크린 넓이와 새로부여받은 스크린 넓이가 다를 때
-						if(_settings.screenWidth !== screenWidth) {
-							screenWidth = _settings.screenWidth;
-							_settings.isScreenWidthChange = true;
+						if(_screenWidth !== screenWidth) {
+							screenWidth = _screenWidth;
+							isScreenWidthChange = true;
 						}
 
 						//기존의 스크린 높이와 새로부여받은 스크린 높이가 다를 때
-						if(_settings.screenHeight !== screenHeight) {
-							screenHeight = _settings.screenHeight;
-							_settings.isScreenHeightChange = true;
+						if(_screenHeigt !== screenHeight) {
+							screenHeight = _screenHeigt;
+							isScreenHeightChange = true;
 						}
 
 						//기존 스크린 넓이와 높이가 둘다 변경되었을 때
-						if(_settings.isScreenWidthChange && _settings.isScreenHeightChange) {
-							_settings.isScreenWidthAndHeightChange = true;
+						if(isScreenWidthChange && isScreenHeightChange) {
+							isScreenWidthAndHeightChange = true;
 						}
 
 						//trigger로 호출하였을 때
-						if(_settings.triggerType) {
-							_settings.isScreenWidthChange = false;
-							_settings.isScreenHeightChange = false;
-							_settings.isScreenWidthAndHeightChange = false;
-							_settings.isScreenChange = false;
+						if(_triggerType) {
+							isScreenWidthChange = false;
+							isScreenHeightChange = false;
+							isScreenWidthAndHeightChange = false;
+							isScreenChange = false;
 						}
+
+						//화면 상태 기입
+						_settings.isScreenChange = isScreenChange;
+						_settings.isScreenWidthChange = isScreenWidthChange;
+						_settings.isScreenHeightChange = isScreenHeightChange;
+						_settings.isScreenWidthAndHeightChange = isScreenWidthAndHeightChange;
 
 						//범위 실행
 						eval(rangeCode);
@@ -794,7 +864,7 @@ try {
 							clearTimeout(timer);
 							timer = 0;
 						}
-						
+
 						//setTimeout 재등록
 						timer = setTimeout(function() {
 							//화면 정보 갱신
@@ -802,13 +872,19 @@ try {
 
 							//이벤트 실행
 							_callEvent(resizedState);
+
+							//trigger로 호출하였을 때
+							if(_triggerType) {
+								_settings.triggerType = '';
+								$.responsive.settings.triggerType = '';
+							}
 						}, _interval);
 					}).triggerHandler('resize.responsive');
 
 					//요소 반환
 					return _$html;
 				};
-				
+
 				/**
 				 * @name 소멸
 				 * @since 2017-12-06
