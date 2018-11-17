@@ -122,7 +122,7 @@ try {
 				 */
 				function _isNumber(value) {
 					//숫자이면서 NaN이 아니면서 Infinity가 아닐 때
-					return typeof value === 'number' && !isNaN(value) && isFinite(value);
+					return typeof value === 'number' && !window.isNaN(value) && window.isFinite(value);
 				}
 
 				/**
