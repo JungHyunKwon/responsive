@@ -434,13 +434,12 @@ try {
 				/**
 				 * @name 상태 적용
 				 * @since 2017-12-06
-				 * @param {array || string} value
+				 * @param {array} value
 				 * @return {array}
 				 */
 				function _setState(value) {
-					var state = _deduplication(value),
-						nowState = _settings.nowState,
-						result = _filter(state, nowState).untruth;
+					var nowState = _settings.nowState,
+						result = _filter(value, nowState).untruth;
 					
 					//현재상태와 적용시킬 상태가 다를 때
 					if(result.length) {
@@ -448,16 +447,16 @@ try {
 						_$html.removeClass(nowState.join(' '));
 
 						//새로운 상태 클래스 추가
-						_$html.addClass(state.join(' '));
+						_$html.addClass(value.join(' '));
 
 						//이전 상태 추가
 						_settings.prevState = nowState;
 
 						//새로운 상태 추가
-						_settings.nowState = state;
+						_settings.nowState = value;
 
 						//console에 상태표기
-						console.log('현재 상태 : ' + state.join(', '));
+						console.log('현재 상태 : ' + value.join(', '));
 					}
 					
 					return result;
@@ -466,28 +465,27 @@ try {
 				/**
 				 * @name 분기 이벤트 실행
 				 * @since 2017-12-06
-				 * @param {array || string} value
+				 * @param {array} value
 				 */
 				function _callEvent(value) {
-					var state = _deduplication(value),
-						event = {
-							settings : _copyObject(_settings)
-						};
+					var event = {
+						settings : _copyObject(_settings)
+					};
 
 					//전역 객체 갱신
 					$.responsive.settings = event.settings;
 
-					for(var i = 0, stateLength = state.length; i < stateLength; i++) {
-						var stateI = state[i];
+					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+						var valueI = value[i];
 
 						//분기 값 적용
-						event.state = stateI;
+						event.state = valueI;
 
 						//모든 이벤트 호출
 						_$window.triggerHandler(_$event('responsive', event));
 
 						//필터 이벤트 호출
-						_$window.triggerHandler(_$event('responsive:' + stateI, event));
+						_$window.triggerHandler(_$event('responsive:' + valueI, event));
 					}
 				}
 
