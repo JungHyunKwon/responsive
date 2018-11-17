@@ -612,6 +612,7 @@ try {
 					//자바스크립트 코드 생성
 					var _lowIE = _settings.lowIE,
 						lowIE = settings.lowIE,
+						lowIEProperty = lowIE.property,
 						range = settings.range,
 						rangeCode = 'var enter = [],\n\texit = [];\n\nif(_lowIE.run) {\n\tenter = _lowIE.property;\n}else{\n';
 
@@ -705,8 +706,8 @@ try {
 					rangeCode += '}';
 
 					//문자 또는 배열일 때
-					if(typeof lowIE.property === 'string' || _isArray(lowIE.property)) {
-						_lowIE.property = _processState(lowIE.property);
+					if(typeof lowIEProperty === 'string' || _isArray(lowIEProperty)) {
+						_lowIE.property = _processState(lowIEProperty);
 					}
 
 					//ie7, 8이면서 사용할 속성이 있을 때
