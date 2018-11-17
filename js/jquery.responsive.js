@@ -798,12 +798,6 @@ try {
 
 							//이벤트 실행
 							_callEvent(resizedState);
-
-							//트리거 갱신
-							if(_settings.triggerType) {
-								_settings.triggerType = '';
-								$.responsive.settings = _copyObject(_settings);
-							}
 						}, _interval);
 					}).triggerHandler('resize.responsive');
 
