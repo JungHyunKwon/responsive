@@ -5,7 +5,7 @@
 try {
 	'use strict';
 
-	(function($) {
+	(function($, isNaN, isFinite, toString) {
 		//제이쿼리가 함수일 때
 		if(typeof $ === 'function') {
 			$(function() {
@@ -122,7 +122,7 @@ try {
 				 */
 				function _isNumber(value) {
 					//숫자이면서 NaN이 아니면서 Infinity가 아닐 때
-					return typeof value === 'number' && !window.isNaN(value) && window.isFinite(value);
+					return typeof value === 'number' && !isNaN(value) && isFinite(value);
 				}
 
 				/**
@@ -132,7 +132,7 @@ try {
 				 * @return {boolean}
 				 */
 				function _isArray(value) {
-					return Object.prototype.toString.call(value) === '[object Array]';
+					return toString.call(value) === '[object Array]';
 				}
 
 				/**
@@ -936,7 +936,7 @@ try {
 		}else{
 			throw '제이쿼리가 없습니다.';
 		}
-	})(window.jQuery);
+	})(window.jQuery, window.isNaN, window.isFinite, Object.prototype.toString);
 }catch(e) {
 	console.error(e);
 }
