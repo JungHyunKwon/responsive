@@ -617,11 +617,10 @@ try {
 				   }
 				 * @return {jQueryElement}
 				 */
-				$.responsive = function(options) {
+				var responsive = $.responsive = function(options) {
 					//객체일 때
 					if(options) {
-						var responsive = this.responsive,
-							range = options.range,
+						var range = options.range,
 							lowIE = options.lowIE,
 							rangeCode = 'var enter = [],\n    exit = [];\n\nif(lowIERun) {\n    enter = lowIEProperty;\n}else{\n',
 							lowIERun = false,
