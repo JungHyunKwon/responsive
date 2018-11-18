@@ -41,8 +41,8 @@ try {
 							
 							//문자일 때
 							if(typeof name === 'string' && typeof value === 'string') {
-								//숫자가 아닐 때
-								if(!_isInteger(day)) {
+								//정수가 아닐 때
+								if(!_isInt(day)) {
 									day = -1;
 								}
 
@@ -172,7 +172,7 @@ try {
 				 * @param {*} value
 				 * @return {boolean}
 				 */
-				function _isInteger(value) {
+				function _isInt(value) {
 					return typeof value === 'number' && !isNaN(value) && isFinite(value);
 				}
 
@@ -660,12 +660,12 @@ try {
 											_horizontalTo = horizontal.to;
 
 										//숫자일 때
-										if(_isInteger(_horizontalFrom)) {
+										if(_isInt(_horizontalFrom)) {
 											horizontalFrom = _horizontalFrom;
 										}
 										
 										//숫자일 때
-										if(_isInteger(_horizontalTo)) {
+										if(_isInt(_horizontalTo)) {
 											horizontalTo = _horizontalTo;
 										}
 										
@@ -681,12 +681,12 @@ try {
 											_verticalTo = vertical.to;
 
 										//숫자일 때
-										if(_isInteger(_verticalFrom)) {
+										if(_isInt(_verticalFrom)) {
 											verticalFrom = _verticalFrom;
 										}
 										
 										//숫자일 때
-										if(_isInteger(_verticalTo)) {
+										if(_isInt(_verticalTo)) {
 											verticalTo = _verticalTo;
 										}
 										
@@ -895,7 +895,7 @@ try {
 						}
 						
 						//숫자일 때
-						if(_isInteger(day)) {
+						if(_isInt(day)) {
 							//쿠키 적용
 							if(_cookie.set('state', state.join(','), day)) {
 								result = true;
