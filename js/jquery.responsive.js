@@ -5,13 +5,13 @@
 try {
 	'use strict';
 
-	(function($, isNaN, isFinite, toString) {
+	(function($, isNaN, isFinite, toString, getComputedStyle) {
 		//제이쿼리가 함수일 때
 		if(typeof $ === 'function') {
 			$(function() {
 				var _$window = $(window),
 					_html = document.documentElement,
-					_htmlCSS = _html.currentStyle || window.getComputedStyle(_html),
+					_htmlCSS = _html.currentStyle || getComputedStyle(_html),
 					_$html = $(_html),
 					_scrollbar = document.getElementById('scrollbar'),
 					_navigator = window.navigator,
@@ -927,7 +927,7 @@ try {
 		}else{
 			throw '제이쿼리가 없습니다.';
 		}
-	})(window.jQuery, window.isNaN, window.isFinite, Object.prototype.toString);
+	})(window.jQuery, window.isNaN, window.isFinite, Object.prototype.toString, window.getComputedStyle);
 }catch(e) {
 	console.error(e);
 }
