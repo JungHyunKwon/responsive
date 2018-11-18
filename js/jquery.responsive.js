@@ -42,7 +42,7 @@ try {
 							//문자일 때
 							if(typeof name === 'string' && typeof value === 'string') {
 								//숫자가 아닐 때
-								if(!_isNumber(day)) {
+								if(!_isInteger(day)) {
 									day = -1;
 								}
 
@@ -167,12 +167,12 @@ try {
 				_initSettings.loadedScreenHeight = _loadedScreenHeight;
 
 				/**
-				 * @name 숫자 확인
+				 * @name 정수 확인
 				 * @since 2017-12-06
 				 * @param {*} value
 				 * @return {boolean}
 				 */
-				function _isNumber(value) {
+				function _isInteger(value) {
 					//숫자이면서 NaN이 아니면서 Infinity가 아닐 때
 					return typeof value === 'number' && !isNaN(value) && isFinite(value);
 				}
@@ -661,12 +661,12 @@ try {
 											_horizontalTo = horizontal.to;
 
 										//숫자일 때
-										if(_isNumber(_horizontalFrom)) {
+										if(_isInteger(_horizontalFrom)) {
 											horizontalFrom = _horizontalFrom;
 										}
 										
 										//숫자일 때
-										if(_isNumber(_horizontalTo)) {
+										if(_isInteger(_horizontalTo)) {
 											horizontalTo = _horizontalTo;
 										}
 										
@@ -682,12 +682,12 @@ try {
 											_verticalTo = vertical.to;
 
 										//숫자일 때
-										if(_isNumber(_verticalFrom)) {
+										if(_isInteger(_verticalFrom)) {
 											verticalFrom = _verticalFrom;
 										}
 										
 										//숫자일 때
-										if(_isNumber(_verticalTo)) {
+										if(_isInteger(_verticalTo)) {
 											verticalTo = _verticalTo;
 										}
 										
@@ -896,7 +896,7 @@ try {
 						}
 						
 						//숫자일 때
-						if(_isNumber(day)) {
+						if(_isInteger(day)) {
 							//쿠키 적용
 							if(_cookie.set('state', state.join(','), day)) {
 								result = true;
