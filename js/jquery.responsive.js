@@ -14,11 +14,13 @@ try {
 					_htmlCSS = _html.currentStyle || window.getComputedStyle(_html),
 					_$html = $(_html),
 					_scrollbar = document.getElementById('scrollbar'),
-					_connectedState = _getConnectedState(),
-					_browser = _connectedState.browser,
-					_platform = _connectedState.platform,
-					_isLowIE = _browser === 'ie7' || _browser === 'ie8',
+					_navigator = window.navigator,
+					_userAgent = _navigator.userAgent.toLowerCase(),
+					_platform = _navigator.platform.toLowerCase(),
+					_browser = 'unknown',
 					_$event = $.Event,
+					_$extend = $.extend,
+					_$inArray = $.inArray,
 					_settings = {},
 					_initSettings = {},
 					_loadedScreenWidth = 0,
@@ -91,6 +93,56 @@ try {
 						}
 					};
 
+				//ie7일 때
+				if(_userAgent.indexOf('msie 7.0') > -1) {
+					_browser = 'ie7';
+				
+				//ie8일 때
+				}else if(_userAgent.indexOf('msie 8.0') > -1) {
+					_browser = 'ie8';
+				
+				//ie9일 때
+				}else if(_userAgent.indexOf('msie 9.0') > -1) {
+					_browser = 'ie9';
+				
+				//ie10일 때
+				}else if(_userAgent.indexOf('msie 10.0') > -1) {
+					_browser = 'ie10';
+				
+				//ie11일 때
+				}else if(_userAgent.indexOf('trident/7.0') > -1) {
+					_browser = 'ie11';
+				
+				//edge일 때
+				}else if(_userAgent.indexOf('edge') > -1) {
+					_browser = 'edge';
+				
+				//opera일 때
+				}else if(_userAgent.indexOf('opr') > -1) {
+					_browser = 'opera';
+				
+				//chrome일 때
+				}else if(_userAgent.indexOf('chrome') > -1) {
+					_browser = 'chrome';
+				
+				//firefox일 때
+				}else if(_userAgent.indexOf('firefox') > -1) {
+					_browser = 'firefox'; 
+				
+				//safari일 때
+				}else if(_userAgent.indexOf('safari') > -1) {
+					_browser = 'safari';
+				}
+				
+				var _isLowIE = _browser === 'ie7' || _browser === 'ie8';
+
+				//접속 플랫폼이 win16 또는 win32 또는 win64 또는 macintel 또는 mac일 때
+				if('win16|win32|win64|macintel|mac'.indexOf(_platform) > -1) {
+					_platform = 'pc';
+				}else{
+					_platform = 'mobile';
+				}
+
 				//요소가 없을 때
 				if(!_scrollbar) {
 					_scrollbar = document.createElement('div');
@@ -136,67 +188,6 @@ try {
 				}
 
 				/**
-				 * @name 접속된 상태 가져오기
-				 * @since 2017-12-06
-				 * @return {object}
-				 */
-				function _getConnectedState() {
-					var userAgent = window.navigator.userAgent.toLowerCase(),
-						result = {
-							platform : 'mobile',
-							browser : 'unknown'
-						};
-					
-					//ie7일 때
-					if(userAgent.indexOf('msie 7.0') > -1) {
-						result.browser = 'ie7';
-					
-					//ie8일 때
-					}else if(userAgent.indexOf('msie 8.0') > -1) {
-						result.browser = 'ie8';
-					
-					//ie9일 때
-					}else if(userAgent.indexOf('msie 9.0') > -1) {
-						result.browser = 'ie9';
-					
-					//ie10일 때
-					}else if(userAgent.indexOf('msie 10.0') > -1) {
-						result.browser = 'ie10';
-					
-					//ie11일 때
-					}else if(userAgent.indexOf('trident/7.0') > -1) {
-						result.browser = 'ie11';
-					
-					//edge일 때
-					}else if(userAgent.indexOf('edge') > -1) {
-						result.browser = 'edge';
-					
-					//opera일 때
-					}else if(userAgent.indexOf('opr') > -1) {
-						result.browser = 'opera';
-					
-					//chrome일 때
-					}else if(userAgent.indexOf('chrome') > -1) {
-						result.browser = 'chrome';
-					
-					//firefox일 때
-					}else if(userAgent.indexOf('firefox') > -1) {
-						result.browser = 'firefox'; 
-					
-					//safari일 때
-					}else if(userAgent.indexOf('safari') > -1) {
-						result.browser = 'safari';
-					}
-					
-					//접속 플랫폼이 win16 또는 win32 또는 win64 또는 macintel 또는 mac일 때
-					if('win16|win32|win64|macintel|mac'.indexOf(window.navigator.platform.toLowerCase()) > -1) {
-						result.platform = 'pc';
-					}
-
-					return result;
-				}
-
-				/**
 				 * @name 중복 제거
 				 * @since 2017-12-06
 				 * @param {array || string} value
@@ -216,7 +207,7 @@ try {
 							var valueI = value[i];
 							
 							//배열에 매개변수 i 번째 값이 없을 때
-							if($.inArray(valueI, result) === -1) {
+							if(_$inArray(valueI, result) === -1) {
 								result.push(valueI);
 							}
 						}
@@ -254,7 +245,7 @@ try {
 								var valueI = value[i];
 								
 								//결과가 있을 때
-								if($.inArray(valueI, array) > -1) {
+								if(_$inArray(valueI, array) > -1) {
 									truth.push(valueI);
 								}else{
 									untruth.push(valueI);
@@ -287,7 +278,7 @@ try {
 						if(_isArray(value)) {
 							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 								var valueI = value[i],
-									index = $.inArray(valueI, array);
+									index = _$inArray(valueI, array);
 								
 								//결과가 있을 때
 								if(index > -1) {
@@ -459,11 +450,11 @@ try {
 				 */
 				function _callEvent(value) {
 					var event = {
-						settings : $.extend({}, _settings)
+						settings : _$extend({}, _settings)
 					};
 
 					//전역 객체 갱신
-					$.responsive.settings = event.settings;
+					_$responsive.settings = event.settings;
 
 					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 						var valueI = value[i];
@@ -591,7 +582,7 @@ try {
 						$(_scrollbar).remove();
 						
 						//셋팅 초기화
-						$.responsive.settings = _getDefaultOptions();
+						_$responsive.settings = _getDefaultOptions();
 
 						//실행 플래그 초기화
 						_settings.isRun = false;
@@ -836,7 +827,7 @@ try {
 								state.push(stateAll);
 
 								//적용시킬 상태가 있을 때
-								if($.inArray(enterI, setState) > -1) {
+								if(_$inArray(enterI, setState) > -1) {
 									state.push(enterI);
 								}
 
@@ -877,7 +868,7 @@ try {
 				 * @since 2017-12-06
 				 * @return {boolean}
 				 */
-				$.responsive.destroy = _destroy;
+				_$responsive.destroy = _destroy;
 
 				/**
 				 * @name 분기 적용
@@ -886,7 +877,7 @@ try {
 				 * @param {number} day
 				 * @return {boolean || string}
 				 */
-				$.responsive.setState = function(value, day) {
+				_$responsive.setState = function(value, day) {
 					var state = _processState(value),
 						result = false;
 
@@ -926,12 +917,12 @@ try {
 				 * @since 2017-12-06
 				 * @return {array}
 				 */
-				$.responsive.getStateCookie = _getStateCookie;
+				_$responsive.getStateCookie = _getStateCookie;
 
 				/**
 				 * @description 기본 옵션을 사용자에게 제공합니다.
 				 */
-				$.responsive.settings = _initSettings;
+				_$responsive.settings = _initSettings;
 			});
 		}else{
 			throw '제이쿼리가 없습니다.';
