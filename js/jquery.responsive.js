@@ -617,7 +617,7 @@ try {
 				   }
 				 * @return {jQueryElement}
 				 */
-				var responsive = $.responsive = function(options) {
+				var _$responsive = $.responsive = function(options) {
 					//객체일 때
 					if(options) {
 						var range = options.range,
@@ -862,7 +862,7 @@ try {
 
 								//trigger로 호출하였을 때
 								if(_triggerType) {
-									_settings.triggerType = responsive.settings.triggerType = '';
+									_settings.triggerType = _$responsive.settings.triggerType = '';
 								}
 							}, _interval);
 						}).triggerHandler('resize.responsive');
