@@ -620,7 +620,8 @@ try {
 				$.responsive = function(options) {
 					//객체일 때
 					if(options) {
-						var range = options.range,
+						var responsive = this.responsive,
+							range = options.range,
 							lowIE = options.lowIE,
 							rangeCode = 'var enter = [],\n    exit = [];\n\nif(lowIERun) {\n    enter = lowIEProperty;\n}else{\n',
 							lowIERun = false,
@@ -862,8 +863,7 @@ try {
 
 								//trigger로 호출하였을 때
 								if(_triggerType) {
-									_settings.triggerType = '';
-									$.responsive.settings.triggerType = '';
+									_settings.triggerType = responsive.settings.triggerType = '';
 								}
 							}, _interval);
 						}).triggerHandler('resize.responsive');
@@ -913,7 +913,7 @@ try {
 							}
 
 							//0 이하일 때
-							if(day <= 0) {
+							if(day < 1) {
 								result = 'delete';
 							}
 						}
