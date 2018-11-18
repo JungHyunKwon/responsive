@@ -173,7 +173,6 @@ try {
 				 * @return {boolean}
 				 */
 				function _isInteger(value) {
-					//숫자이면서 NaN이 아니면서 Infinity가 아닐 때
 					return typeof value === 'number' && !isNaN(value) && isFinite(value);
 				}
 
