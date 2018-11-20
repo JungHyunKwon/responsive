@@ -909,7 +909,7 @@ try {
 		}else{
 			throw '제이쿼리가 없습니다.';
 		}
-	})(window.jQuery);
+	})(jQuery);
 }catch(e) {
 	console.error(e);
 }
