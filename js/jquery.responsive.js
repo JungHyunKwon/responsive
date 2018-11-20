@@ -5,143 +5,258 @@
 try {
 	'use strict';
 
-	(function($, isNaN, isFinite, toString, getComputedStyle) {
+	(function($) {
 		//제이쿼리가 함수일 때
 		if(typeof $ === 'function') {
-			$(function() {
-				var _$window = $(window),
-					_html = document.documentElement,
-					_htmlCSS = _html.currentStyle || getComputedStyle(_html),
-					_$html = $(_html),
-					_scrollbar = document.getElementById('scrollbar'),
-					_navigator = window.navigator,
-					_userAgent = _navigator.userAgent.toLowerCase(),
-					_platform = _navigator.platform.toLowerCase(),
-					_browser = 'unknown',
-					_$event = $.Event,
-					_$extend = $.extend,
-					_$inArray = $.inArray,
-					_settings = {},
-					_initSettings = {},
-					_loadedScreenWidth = 0,
-					_loadedScreenHeight = 0,
-					_interval = 250,
-					_cookie = {
-						/**
-						 * @name 쿠키 생성
-						 * @since 2017-01-16
-						 * @param {string} name
-						 * @param {string} value
-						 * @param {number} day
-						 * @return {boolean}
-						 */
-						set : function(name, value, day) {
-							var date = new Date(),
-								result = false;
-							
-							//문자일 때
-							if(typeof name === 'string' && typeof value === 'string') {
-								//정수가 아닐 때
-								if(!_isInt(day)) {
-									day = -1;
-								}
-
-								date.setDate(date.getDate() + day);
-								document.cookie = name + '=' + escape(value) + '; expires=' + date.toUTCString() + '; path=/;';
-
-								//쿠키생성 후 확인해서 있으면
-								if(this.get(name) === value) {
-									result = true;
-								}
+			var _$window = $(window),
+				_html = document.documentElement,
+				_htmlCSS = _html.currentStyle || getComputedStyle(_html),
+				_$html = $(_html),
+				_platform = navigator.platform.toLowerCase(),
+				_browser = navigator.userAgent.toLowerCase(),
+				_$event = $.Event,
+				_$extend = $.extend,
+				_$inArray = $.inArray,
+				_toString = Object.prototype.toString,
+				_settings = {},
+				_initSettings = {},
+				_loadedScreenWidth = 0,
+				_loadedScreenHeight = 0,
+				_interval = 250,
+				_cookie = {
+					/**
+					 * @name 쿠키 생성
+					 * @since 2017-01-16
+					 * @param {string} name
+					 * @param {string} value
+					 * @param {number} day
+					 * @return {boolean}
+					 */
+					set : function(name, value, day) {
+						var date = new Date(),
+							result = false;
+						
+						//문자일 때
+						if(typeof name === 'string' && typeof value === 'string') {
+							//정수가 아닐 때
+							if(!_isInt(day)) {
+								day = -1;
 							}
 
-							return result;
-						},
+							date.setDate(date.getDate() + day);
+							document.cookie = name + '=' + escape(value) + '; expires=' + date.toUTCString() + '; path=/;';
 
-						/**
-						 * @name 쿠키 값 얻기
-						 * @since 2017-01-16
-						 * @param {string} name
-						 * @return {string}
-						 */
-						get : function(name) {
-							var cookie = document.cookie.split(';'),
-								result = '';
-							
-							//문자일 때
-							if(typeof name === 'string') {
-								var valueIndex = name.length + 1;
-
-								for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
-									var cookieI = cookie[i];
-									
-									//첫번째 글자가 공백일 때
-									while(cookieI.charAt(0) === ' ') {
-										cookieI = cookieI.substring(1);
-										break;
-									}
-									
-									//쿠키값이 있을 때
-									if(cookieI.indexOf(name) > -1) {
-										result = unescape(cookieI.substring(valueIndex, cookieI.length));
-										break;
-									}
-								}
+							//쿠키생성 후 확인해서 있으면
+							if(this.get(name) === value) {
+								result = true;
 							}
-
-							return result;
 						}
-					};
 
-				//ie7일 때
-				if(_userAgent.indexOf('msie 7.0') > -1) {
-					_browser = 'ie7';
-				
-				//ie8일 때
-				}else if(_userAgent.indexOf('msie 8.0') > -1) {
-					_browser = 'ie8';
-				
-				//ie9일 때
-				}else if(_userAgent.indexOf('msie 9.0') > -1) {
-					_browser = 'ie9';
-				
-				//ie10일 때
-				}else if(_userAgent.indexOf('msie 10.0') > -1) {
-					_browser = 'ie10';
-				
-				//ie11일 때
-				}else if(_userAgent.indexOf('trident/7.0') > -1) {
-					_browser = 'ie11';
-				
-				//edge일 때
-				}else if(_userAgent.indexOf('edge') > -1) {
-					_browser = 'edge';
-				
-				//opera일 때
-				}else if(_userAgent.indexOf('opr') > -1) {
-					_browser = 'opera';
-				
-				//chrome일 때
-				}else if(_userAgent.indexOf('chrome') > -1) {
-					_browser = 'chrome';
-				
-				//firefox일 때
-				}else if(_userAgent.indexOf('firefox') > -1) {
-					_browser = 'firefox'; 
-				
-				//safari일 때
-				}else if(_userAgent.indexOf('safari') > -1) {
-					_browser = 'safari';
-				}
-				
-				var _isLowIE = _browser === 'ie7' || _browser === 'ie8';
+						return result;
+					},
 
-				//접속 플랫폼이 win16 또는 win32 또는 win64 또는 macintel 또는 mac일 때
-				if('win16|win32|win64|macintel|mac'.indexOf(_platform) > -1) {
-					_platform = 'pc';
-				}else{
-					_platform = 'mobile';
+					/**
+					 * @name 쿠키 값 얻기
+					 * @since 2017-01-16
+					 * @param {string} name
+					 * @return {string}
+					 */
+					get : function(name) {
+						var cookie = document.cookie.split(';'),
+							result = '';
+						
+						//문자일 때
+						if(typeof name === 'string') {
+							var valueIndex = name.length + 1;
+
+							for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
+								var cookieI = cookie[i];
+								
+								//첫번째 글자가 공백일 때
+								while(cookieI.charAt(0) === ' ') {
+									cookieI = cookieI.substring(1);
+									break;
+								}
+								
+								//쿠키값이 있을 때
+								if(cookieI.indexOf(name) > -1) {
+									result = unescape(cookieI.substring(valueIndex, cookieI.length));
+									break;
+								}
+							}
+						}
+
+						return result;
+					}
+				};
+
+			/**
+			 * @name 정수 확인
+			 * @since 2017-12-06
+			 * @param {*} value
+			 * @return {boolean}
+			 */
+			function _isInt(value) {
+				return typeof value === 'number' && !isNaN(value) && isFinite(value);
+			}
+
+			/**
+			 * @name 배열 확인
+			 * @since 2017-12-06
+			 * @param {*} value
+			 * @return {boolean}
+			 */
+			function _isArray(value) {
+				return _toString.call(value) === '[object Array]';
+			}
+
+			/**
+			 * @name 중복 제거
+			 * @since 2017-12-06
+			 * @param {array} value
+			 * @return {array}
+			 */
+			function _deduplication(value) {
+				var result = [];
+				
+				//배열일 때
+				if(_isArray(value)) {
+					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+						var valueI = value[i];
+						
+						//배열에 매개변수 i 번째 값이 없을 때
+						if(_$inArray(valueI, result) === -1) {
+							result.push(valueI);
+						}
+					}
 				}
+
+				return result;
+			}
+
+			/**
+			 * @name 거르기
+			 * @since 2017-12-06
+			 * @param {array} value
+			 * @param {array} array
+			 * @return {object}
+			 */
+			function _filter(value, array) {
+				var result = {
+					truth : [],
+					untruth : []
+				};
+				
+				//배열일 때
+				if(_isArray(array) && _isArray(value)) {
+					var truth = result.truth,
+						untruth = result.untruth;
+					
+					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+						var valueI = value[i];
+						
+						//결과가 있을 때
+						if(_$inArray(valueI, array) > -1) {
+							truth.push(valueI);
+						}else{
+							untruth.push(valueI);
+						}
+					}
+				}
+
+				return result;
+			}
+			
+			/**
+			 * @name 정렬
+			 * @since 2017-12-06
+			 * @param {array} value
+			 * @param {array} array
+			 * @return {array}
+			 */
+			function _sort(value, array) {
+				var result = [];
+				
+				//배열일 때
+				if(_isArray(array) && _isArray(value)) {
+					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+						var valueI = value[i],
+							index = _$inArray(valueI, array);
+						
+						//결과가 있을 때
+						if(index > -1) {
+							result[index] = valueI;
+						}
+					}
+
+					for(var i = 0; i < result.length; i++) {
+						//프로퍼티가 없을 때
+						if(!result.hasOwnProperty(i)) {
+							result.splice(i, 1);
+							i--;
+						}
+					}
+				}
+
+				return result;
+			}
+
+			//ie7일 때
+			if(_browser.indexOf('msie 7.0') > -1) {
+				_browser = 'ie7';
+			
+			//ie8일 때
+			}else if(_browser.indexOf('msie 8.0') > -1) {
+				_browser = 'ie8';
+			
+			//ie9일 때
+			}else if(_browser.indexOf('msie 9.0') > -1) {
+				_browser = 'ie9';
+			
+			//ie10일 때
+			}else if(_browser.indexOf('msie 10.0') > -1) {
+				_browser = 'ie10';
+			
+			//ie11일 때
+			}else if(_browser.indexOf('trident/7.0') > -1) {
+				_browser = 'ie11';
+			
+			//edge일 때
+			}else if(_browser.indexOf('edge') > -1) {
+				_browser = 'edge';
+			
+			//opera일 때
+			}else if(_browser.indexOf('opr') > -1) {
+				_browser = 'opera';
+			
+			//chrome일 때
+			}else if(_browser.indexOf('chrome') > -1) {
+				_browser = 'chrome';
+			
+			//firefox일 때
+			}else if(_browser.indexOf('firefox') > -1) {
+				_browser = 'firefox'; 
+			
+			//safari일 때
+			}else if(_browser.indexOf('safari') > -1) {
+				_browser = 'safari';
+			
+			//아무것도 발견하지 못했을 때
+			}else{
+				_browser = 'unknown';
+			}
+			
+			var _isLowIE = _browser === 'ie7' || _browser === 'ie8';
+
+			//접속 플랫폼이 win16 또는 win32 또는 win64 또는 macintel 또는 mac일 때
+			if('win16|win32|win64|macintel|mac'.indexOf(_platform) > -1) {
+				_platform = 'pc';
+			}else{
+				_platform = 'mobile';
+			}
+
+			$(function() {
+				var _scrollbar = document.getElementById('scrollbar');
 
 				//요소가 없을 때
 				if(!_scrollbar) {
@@ -165,138 +280,6 @@ try {
 				
 				//초기 셋팅에 로드된 화면 높이 갱신
 				_initSettings.loadedScreenHeight = _loadedScreenHeight;
-
-				/**
-				 * @name 정수 확인
-				 * @since 2017-12-06
-				 * @param {*} value
-				 * @return {boolean}
-				 */
-				function _isInt(value) {
-					return typeof value === 'number' && !isNaN(value) && isFinite(value);
-				}
-
-				/**
-				 * @name 배열 확인
-				 * @since 2017-12-06
-				 * @param {*} value
-				 * @return {boolean}
-				 */
-				function _isArray(value) {
-					return toString.call(value) === '[object Array]';
-				}
-
-				/**
-				 * @name 중복 제거
-				 * @since 2017-12-06
-				 * @param {array || string} value
-				 * @return {array}
-				 */
-				function _deduplication(value) {
-					var result = [];
-					
-					//문자일 때
-					if(typeof value === 'string') {
-						value = [value];
-					}
-					
-					//배열일 때
-					if(_isArray(value)) {
-						for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-							var valueI = value[i];
-							
-							//배열에 매개변수 i 번째 값이 없을 때
-							if(_$inArray(valueI, result) === -1) {
-								result.push(valueI);
-							}
-						}
-					}
-
-					return result;
-				}
-
-				/**
-				 * @name 거르기
-				 * @since 2017-12-06
-				 * @param {array || string} value
-				 * @param {array} array
-				 * @return {object}
-				 */
-				function _filter(value, array) {
-					var result = {
-						truth : [],
-						untruth : []
-					};
-					
-					//배열일 때
-					if(_isArray(array)) {
-						//문자일 때
-						if(typeof value === 'string') {
-							value = [value];
-						}
-						
-						//배열일 때
-						if(_isArray(value)) {
-							var truth = result.truth,
-								untruth = result.untruth;
-							
-							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-								var valueI = value[i];
-								
-								//결과가 있을 때
-								if(_$inArray(valueI, array) > -1) {
-									truth.push(valueI);
-								}else{
-									untruth.push(valueI);
-								}
-							}
-						}
-					}
-
-					return result;
-				}
-				
-				/**
-				 * @name 정렬
-				 * @since 2017-12-06
-				 * @param {array || string} value
-				 * @param {array} array
-				 * @return {array}
-				 */
-				function _sort(value, array) {
-					var result = [];
-					
-					//배열일 때
-					if(_isArray(array)) {
-						//문자일 때
-						if(typeof value === 'string') {
-							value = [value];
-						}
-						
-						//배열일 때
-						if(_isArray(value)) {
-							for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-								var valueI = value[i],
-									index = _$inArray(valueI, array);
-								
-								//결과가 있을 때
-								if(index > -1) {
-									result[index] = valueI;
-								}
-							}
-
-							for(var i = 0; i < result.length; i++) {
-								//프로퍼티가 없을 때
-								if(!result.hasOwnProperty(i)) {
-									result.splice(i, 1);
-									i--;
-								}
-							}
-						}
-					}
-
-					return result;
-				}
 
 				/**
 				 * @name 상태 가공
@@ -926,7 +909,7 @@ try {
 		}else{
 			throw '제이쿼리가 없습니다.';
 		}
-	})(window.jQuery, window.isNaN, window.isFinite, Object.prototype.toString, window.getComputedStyle);
+	})(window.jQuery);
 }catch(e) {
 	console.error(e);
 }
