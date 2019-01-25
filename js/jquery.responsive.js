@@ -431,24 +431,27 @@ try {
 				 * @param {array} value
 				 */
 				function _callEvent(value) {
-					var event = {
-						settings : _$extend({}, _settings)
-					};
+					//배열일 때
+					if(_isArray(value)) {
+						var event = {
+							settings : _$extend({}, _settings)
+						};
 
-					//전역 객체 갱신
-					_$responsive.settings = event.settings;
+						//전역 객체 갱신
+						_$responsive.settings = event.settings;
 
-					for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-						var valueI = value[i];
+						for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+							var valueI = value[i];
 
-						//분기 값 적용
-						event.state = valueI;
+							//분기 값 적용
+							event.state = valueI;
 
-						//모든 이벤트 호출
-						_$window.triggerHandler(_$event('responsive', event));
+							//모든 이벤트 호출
+							_$window.triggerHandler(_$event('responsive', event));
 
-						//필터 이벤트 호출
-						_$window.triggerHandler(_$event('responsive:' + valueI, event));
+							//필터 이벤트 호출
+							_$window.triggerHandler(_$event('responsive:' + valueI, event));
+						}
 					}
 				}
 
