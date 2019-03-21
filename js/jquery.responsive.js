@@ -39,7 +39,7 @@ try {
 						//문자일 때
 						if(typeof name === 'string' && typeof value === 'string') {
 							//숫자가 아닐 때
-							if(!_isNumber(day)) {
+							if(!_isNumeric(day)) {
 								day = -1;
 							}
 
@@ -62,25 +62,27 @@ try {
 					 * @return {string}
 					 */
 					get : function(name) {
-						var cookie = document.cookie.split(';'),
-							result = '';
+						var result = '';
 						
 						//문자일 때
 						if(typeof name === 'string') {
-							var valueIndex = name.length + 1;
+							name += '=';
 
-							for(var i = 0, cookieLength = cookie.length; i < cookieLength; i++) {
-								var cookieI = cookie[i];
+							var nameLength = name.length,
+								splitCookie = document.cookie.split(';');
+
+							for(var i = 0, splitCookieLength = splitCookie.length; i < splitCookieLength; i++) {
+								var splitCookieI = splitCookie[i];
 								
 								//첫번째 글자가 공백일 때
-								while(cookieI.charAt(0) === ' ') {
-									cookieI = cookieI.substring(1);
-									break;
+								while(splitCookieI.charAt(0) === ' ') {
+									splitCookieI = splitCookieI.substring(1);
 								}
-								
+
 								//쿠키값이 있을 때
-								if(cookieI.indexOf(name) > -1) {
-									result = unescape(cookieI.substring(valueIndex, cookieI.length));
+								if(splitCookieI.indexOf(name) === 0) {
+									result = unescape(splitCookieI.substring(nameLength, splitCookieI.length));
+
 									break;
 								}
 							}
@@ -96,7 +98,7 @@ try {
 			 * @param {*} value
 			 * @return {boolean}
 			 */
-			function _isNumber(value) {
+			function _isNumeric(value) {
 				return typeof value === 'number' && !isNaN(value) && isFinite(value);
 			}
 
@@ -646,12 +648,12 @@ try {
 											_horizontalTo = horizontal.to;
 
 										//숫자일 때
-										if(_isNumber(_horizontalFrom)) {
+										if(_isNumeric(_horizontalFrom)) {
 											horizontalFrom = _horizontalFrom;
 										}
 										
 										//숫자일 때
-										if(_isNumber(_horizontalTo)) {
+										if(_isNumeric(_horizontalTo)) {
 											horizontalTo = _horizontalTo;
 										}
 										
@@ -667,12 +669,12 @@ try {
 											_verticalTo = vertical.to;
 
 										//숫자일 때
-										if(_isNumber(_verticalFrom)) {
+										if(_isNumeric(_verticalFrom)) {
 											verticalFrom = _verticalFrom;
 										}
 										
 										//숫자일 때
-										if(_isNumber(_verticalTo)) {
+										if(_isNumeric(_verticalTo)) {
 											verticalTo = _verticalTo;
 										}
 										
@@ -881,7 +883,7 @@ try {
 						}
 						
 						//숫자일 때
-						if(_isNumber(day)) {
+						if(_isNumeric(day)) {
 							//쿠키 적용
 							if(_cookie.set('state', state.join(','), day)) {
 								result = true;
