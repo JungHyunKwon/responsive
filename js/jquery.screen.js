@@ -11,11 +11,11 @@ try {
 			var _$window = $(window),
 				_html = document.documentElement,
 				_htmlCss = _getCss(_html),
-				_$Event = $.Event,
-				_$extend = $.extend,
-				_$inArray = $.inArray,
-				_$isNumeric = $.isNumeric,
-				_$isArray = $.isArray,
+				_Event = $.Event,
+				_extend = $.extend,
+				_inArray = $.inArray,
+				_isNumeric = $.isNumeric,
+				_isArray = $.isArray,
 				_element = document.getElementById('screen'),
 				_settings = {};
 
@@ -59,7 +59,7 @@ try {
 					var element = value[i];
 
 					//값이 없을 때
-					if(_$inArray(element, result) === -1) {
+					if(_inArray(element, result) === -1) {
 						result.push(element);
 					}
 				}
@@ -86,7 +86,7 @@ try {
 					var element = value[i];
 
 					//값이 있을 때
-					if(_$inArray(element, array) > -1) {
+					if(_inArray(element, array) > -1) {
 						truth.push(element);
 					}else{
 						untruth.push(element);
@@ -108,7 +108,7 @@ try {
 
 				for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 					var element = value[i],
-						index = _$inArray(element, array);
+						index = _inArray(element, array);
 
 					//값이 있을 때
 					if(index > -1) {
@@ -166,7 +166,7 @@ try {
 				}
 
 				//배열일 때
-				if(_$isArray(value)) {
+				if(_isArray(value)) {
 					var name = _settings.name;
 
 					//중복 제거 후 이름 값인 것만 걸러서 이름 순으로 정렬
@@ -242,10 +242,10 @@ try {
 			 * @param {array} value
 			 */
 			function _event(value) {
-				var event = _$Event();
+				var event = _Event();
 
 				//설정 지정
-				_$screen.settings = _$extend(_$screen.settings, _settings);
+				_$screen.settings = _extend(_$screen.settings, _settings);
 
 				for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 					var state = value[i];
@@ -320,7 +320,7 @@ try {
 					_html.appendChild(_element);
 
 					//배열일 때
-					if(_$isArray(state)) {
+					if(_isArray(state)) {
 						for(var i = 0, stateLength = state.length; i < stateLength; i++) {
 							var value = state[i];
 
@@ -341,12 +341,12 @@ try {
 											horizontalTo = horizontal.to;
 
 										//숫자가 아닐 때
-										if(!_$isNumeric(horizontalFrom)) {
+										if(!_isNumeric(horizontalFrom)) {
 											horizontalFrom = -1;
 										}
 
 										//숫자가 아닐 때
-										if(!_$isNumeric(horizontalTo)) {
+										if(!_isNumeric(horizontalTo)) {
 											horizontalTo = -1;
 										}
 
@@ -361,12 +361,12 @@ try {
 											verticalTo = vertical.to;
 
 										//숫자가 아닐 때
-										if(!_$isNumeric(verticalFrom)) {
+										if(!_isNumeric(verticalFrom)) {
 											verticalFrom = -1;
 										}
 
 										//숫자가 아닐 때
-										if(!_$isNumeric(verticalTo)) {
+										if(!_isNumeric(verticalTo)) {
 											verticalTo = -1;
 										}
 
@@ -416,7 +416,7 @@ try {
 							resizedState = [],
 							isChangedWidth = false,
 							isChangedHeight = false,
-							isTrigger = (event instanceof _$Event) ? event.isTrigger : false;
+							isTrigger = (event instanceof _Event) ? event.isTrigger : false;
 
 						//현재 화면 넓이와 새로운 넓이가 다를 때
 						if(screenWidth !== width) {
@@ -450,31 +450,28 @@ try {
 							inState[0] = 'none';
 						}
 
+						var setState = _setState(inState),
+							activeState = setState.activeState;
+
 						//트리거가 아닐 때
 						if(!isTrigger) {
 							resizeState[0] = 'resize';
 							resizedState[0] = 'resized';
-						}
 
-						var setState = _setState(inState),
-							activeState = setState.activeState;
+							for(var i = 0, inStateLength = inState.length; i < inStateLength; i++) {
+								var value = inState[i];
 
-						for(var i = 0, inStateLength = inState.length; i < inStateLength; i++) {
-							var value = inState[i];
-
-							//트리거가 아닐 때
-							if(!isTrigger) {
 								//리사이즈 상태 기입
 								resizeState.push('resize:' + value);
 
+								//적용시킨 상태가 있을 때
+								if(_inArray(value, activeState) > -1) {
+									//활성화 상태 기입
+									resizeState.push(value);
+								}
+
 								//리사이즈 종료 상태 기입
 								resizedState.push('resized:' + value);
-							}
-
-							//적용시킨 상태가 있을 때
-							if(_$inArray(value, activeState) > -1) {
-								//활성화 상태 기입
-								resizeState.push(value);
 							}
 						}
 

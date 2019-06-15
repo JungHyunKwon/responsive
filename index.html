@@ -9,20 +9,6 @@
 	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script src="js/jquery.screen.min.js"></script>
 	<script>
-		var $window = $(window);
-
-		//console.log($.screen.settings);
-
-		$window.on('screen', function(event) {
-			//console.log(event);
-			//console.log(event.state);
-		});
-
-		$window.on('screen:wide', function(event) {
-			//console.log(event);
-			//console.log(event.state);
-		});
-
 		$.screen({
 			state : [{
 				name : 'wide',
@@ -49,7 +35,13 @@
 					to : 0
 				}
 			}]
+		}).on('screen', function(event) {
+			//console.log(event.state);
+		}).on('screen:wide', function(event) {
+			//console.log(event.state);
 		});
+
+		//console.log($.screen.settings);
 	</script>
 </head>
 <body>
