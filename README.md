@@ -1,31 +1,31 @@
 # screen v1.0.0
 ````javascript
 $.screen({
-	state : [{
-		name : 'wide',
-		horizontal : {
-			from : 9999,
-			to : 1201
-		}
-	}, {
-		name : 'web',
-		horizontal : {
-			from : 1200,
-			to : 1001
-		}
-	}, {
-		name : 'tablet',
-		horizontal : {
-			from : 1000,
-			to : 641
-		}
-	}, {
-		name : 'phone',
-		horizontal : {
-			from : 640,
-			to : 0
-		}
-	}]
+    state : [{
+        name : 'wide',
+        horizontal : {
+            from : 9999,
+            to : 1201
+        }
+    }, {
+        name : 'web',
+        horizontal : {
+            from : 1200,
+            to : 1001
+        }
+    }, {
+        name : 'tablet',
+        horizontal : {
+            from : 1000,
+            to : 641
+        }
+    }, {
+        name : 'phone',
+        horizontal : {
+            from : 640,
+            to : 0
+        }
+    }]
 });
 ````
 
@@ -69,7 +69,7 @@ width | number | 화면 넓이
 height | number | 화면 높이
 state | array | 상태
 name | array | 이름
-					
+                    
 ## 상태
 1. resize : 리사이즈 했을 때
 2. resize:# : 리사이즈 했을 때 + 상태
