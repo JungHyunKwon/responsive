@@ -4,61 +4,51 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
-	<title>responsive</title>
-	<link href="css/common.css" type="text/css" rel="stylesheet" />
+	<title>screen</title>
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
 	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-	<script src="js/jquery.responsive.min.js"></script>
+	<script src="js/jquery.screen.min.js"></script>
 	<script>
 		var $window = $(window);
 
-		$(function() {
-			//console.log($.responsive.settings);
+		//console.log($.screen.settings);
 
-			$window.on('responsive.responsive', function(event) {
-				//console.log(event);
-				//console.log(event.state);
-				//console.log(event.settings);
-			});
-
-			$window.on('responsive:wide.responsive', function(event) {
-				//console.log(event);
-				//console.log(event.state);
-				//console.log(event.settings);
-			});
+		$window.on('screen', function(event) {
+			//console.log(event);
+			//console.log(event.state);
 		});
 
-		$(document).on('ready.responsive', function(event) {
-			$.responsive({
-				range : {
-					wide : {
-						horizontal : {
-							from : 9999,
-							to : 1201
-						}
-					},
-					web : {
-						horizontal : {
-							from : 1200,
-							to : 1001
-						}
-					},
-					tablet : {
-						horizontal : {
-							from : 1000,
-							to : 641
-						}
-					},
-					phone : {
-						horizontal : {
-							from : 640,
-							to : 0
-						}
-					}
-				},
-				lowIE : {
-					property : 'web'
+		$window.on('screen:wide', function(event) {
+			//console.log(event);
+			//console.log(event.state);
+		});
+
+		$.screen({
+			state : [{
+				name : 'wide',
+				horizontal : {
+					from : 9999,
+					to : 1201
 				}
-			});
+			}, {
+				name : 'web',
+				horizontal : {
+					from : 1200,
+					to : 1001
+				}
+			}, {
+				name : 'tablet',
+				horizontal : {
+					from : 1000,
+					to : 641
+				}
+			}, {
+				name : 'phone',
+				horizontal : {
+					from : 640,
+					to : 0
+				}
+			}]
 		});
 	</script>
 </head>
