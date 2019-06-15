@@ -79,13 +79,13 @@ name | array | 이름
 
 위 우선순위로 출력 됩니다.
 
-## event
+## 이벤트
 
 이름 | 형태 | 설명
 | :-- | :-- | :-- |
 state | string | 상태
 
-### 이벤트
+### 기본
 ````javascript
 $(window).on('screen', function(event) {
      console.log(event);
@@ -93,7 +93,7 @@ $(window).on('screen', function(event) {
 });
 ````
 
-### 필터 이벤트
+### 필터
 ````javascript
 $(window).on('screen:#', function(event) {
      console.log(event);
