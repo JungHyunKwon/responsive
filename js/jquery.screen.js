@@ -242,7 +242,7 @@ try {
 			 * @param {array} value
 			 */
 			function _event(value) {
-				var event = _Event();
+				var event = new _Event;
 
 				//설정 지정
 				_$screen.settings = _extend(_$screen.settings, _settings);
