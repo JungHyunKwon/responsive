@@ -457,21 +457,24 @@ try {
 						if(!isTrigger) {
 							resizeState[0] = 'resize';
 							resizedState[0] = 'resized';
+						}
 
-							for(var i = 0, inStateLength = inState.length; i < inStateLength; i++) {
-								var value = inState[i];
+						for(var i = 0, inStateLength = inState.length; i < inStateLength; i++) {
+							var value = inState[i];
 
+							//트리거가 아닐 때
+							if(!isTrigger) {
 								//리사이즈 상태 기입
 								resizeState.push('resize:' + value);
 
-								//적용시킨 상태가 있을 때
-								if(_inArray(value, activeState) > -1) {
-									//활성화 상태 기입
-									resizeState.push(value);
-								}
-
 								//리사이즈 종료 상태 기입
 								resizedState.push('resized:' + value);
+							}
+
+							//적용시킨 상태가 있을 때
+							if(_inArray(value, activeState) > -1) {
+								//활성화 상태 기입
+								resizeState.push(value);
 							}
 						}
 
