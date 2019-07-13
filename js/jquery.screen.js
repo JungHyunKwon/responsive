@@ -250,7 +250,7 @@
 	 */
 	function _destroy() {
 		//이벤트 제거
-		_$window.off('resize.screen');
+		_$window.off('.screen');
 
 		//상태 초기화
 		_settings.state = [];
