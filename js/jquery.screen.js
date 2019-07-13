@@ -35,7 +35,7 @@
 		try {
 			result = element.currentStyle || getComputedStyle(element);
 		}catch(e) {
-			//throw e;
+			//console.error(e);
 		}
 
 		return result;
