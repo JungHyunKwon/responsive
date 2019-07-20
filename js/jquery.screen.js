@@ -26,7 +26,7 @@
 	/**
 	 * @name getCss
 	 * @since 2019-01-18
-	 * @param {element} element
+	 * @param {object} element
 	 * @return {object}
 	 */
 	function _getCss(element) {
