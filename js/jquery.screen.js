@@ -193,9 +193,9 @@
 			screenHeight += scrollbarSize;
 		}
 
-		_settings.hasHorizontalScrollbar = hasHorizontalScrollbar;
+		_settings.horizontalScrollbar = hasHorizontalScrollbar;
 
-		_settings.hasVerticalScrollbar = hasVerticalScrollbar;
+		_settings.verticalScrollbar = hasVerticalScrollbar;
 
 		_settings.scrollbarSize = scrollbarSize;
 
@@ -434,8 +434,8 @@
 				}
 
 				//화면 변화 기입
-				_settings.isChangedWidth = isChangedWidth;
-				_settings.isChangedHeight = isChangedHeight;
+				_settings.changedWidth = isChangedWidth;
+				_settings.changedHeight = isChangedHeight;
 
 				//코드 실행
 				eval(code);
@@ -488,8 +488,8 @@
 					_setScreen();
 
 					//화면 변화 초기화
-					_settings.isChangedWidth = false;
-					_settings.isChangedHeight = false;
+					_settings.changedWidth = false;
+					_settings.changedHeight = false;
 
 					//이벤트 호출
 					_event(resizedState);
