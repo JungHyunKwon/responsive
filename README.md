@@ -60,13 +60,13 @@ setState | array \|\| string | boolean | 상태를 적용할 수 있습니다.
 
 이름 | 형태 | 설명
 | :-- | :-- | :-- |
-horizontalScrollbar | boolean | 가로 스크롤바 여부
-verticalScrollbar | boolean | 세로 스크롤바 여부
+horizontalScrollbar | boolean | 가로 스크롤바
+verticalScrollbar | boolean | 세로 스크롤바
 scrollbarSize | number | 스크롤바 크기
-changedWidth | boolean | 화면 넓이 변경 여부
-changedHeight | boolean | 화면 높이 변경 여부
-width | number | 화면 넓이
-height | number | 화면 높이
+widthChange | boolean | 넓이 변경
+heightChange | boolean | 높이 변경
+width | number | 넓이
+height | number | 높이
 state | array | 상태
 name | array | 이름
                     

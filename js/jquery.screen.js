@@ -306,7 +306,7 @@
 				width = 0,
 				height = 0,
 				timer = 0,
-				code = 'var inState = [],\n    outState = [];\n\n';
+				code = 'var inState = [];\n\n';
 
 			//소멸
 			_destroy();
@@ -387,8 +387,6 @@
 
 								code += ') {\n';
 								code += '    inState.push(\'' + stateName + '\');\n';
-								code += '}else{\n';
-								code += '    outState.push(\'' + stateName + '\');\n';
 								code += '}\n\n';
 
 								name.push(stateName);
@@ -409,33 +407,33 @@
 					screenHeight = _settings.height,
 					resizeState = [],
 					resizedState = [],
-					isChangedWidth = false,
-					isChangedHeight = false,
+					isWidthChange = false,
+					isHeightChange = false,
 					isTrigger = (event instanceof _$Event) ? event.isTrigger : false;
 
 				//현재 화면 넓이와 새로운 넓이가 다를 때
 				if(screenWidth !== width) {
 					width = screenWidth;
 
-					isChangedWidth = true;
+					isWidthChange = true;
 				}
 
 				//현재 화면 높이와 새로운 높이가 다를 때
 				if(screenHeight !== height) {
 					height = screenHeight;
 
-					isChangedHeight = true;
+					isHeightChange = true;
 				}
 
 				//트리거일 때
 				if(isTrigger) {
-					isChangedWidth = false;
-					isChangedHeight = false;
+					isWidthChange = false;
+					isHeightChange = false;
 				}
 
 				//화면 변화 기입
-				_settings.changedWidth = isChangedWidth;
-				_settings.changedHeight = isChangedHeight;
+				_settings.widthChange = isWidthChange;
+				_settings.heightChange = isHeightChange;
 
 				//코드 실행
 				eval(code);
@@ -488,8 +486,8 @@
 					_setScreen();
 
 					//화면 변화 초기화
-					_settings.changedWidth = false;
-					_settings.changedHeight = false;
+					_settings.widthChange = false;
+					_settings.heightChange = false;
 
 					//이벤트 호출
 					_event(resizedState);
