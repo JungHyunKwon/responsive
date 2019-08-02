@@ -232,11 +232,11 @@
 	}
 
 	/**
-	 * @name 이벤트
+	 * @name 트리거 핸들러
 	 * @since 2017-12-06
 	 * @param {array} value
 	 */
-	function _event(value) {
+	function _triggerHandler(value) {
 		var event = new _$Event;
 
 		//설정 지정
@@ -472,7 +472,7 @@
 				}
 
 				//이벤트 호출
-				_event(resizeState);
+				_triggerHandler(resizeState);
 
 				//타이머가 있을 때
 				if(timer) {
@@ -490,7 +490,7 @@
 					_settings.heightChange = false;
 
 					//이벤트 호출
-					_event(resizedState);
+					_triggerHandler(resizedState);
 				}, 250);
 			}).triggerHandler('resize.screen');
 		}
@@ -524,7 +524,7 @@
 			//활성화 상태가 있거나 비활성화 상태가 있을 때
 			if(activeState.length || setState.deactiveState.length) {
 				//활성화 이벤트 호출
-				_event(activeState);
+				_triggerHandler(activeState);
 
 				//결과 기입
 				result = true;
