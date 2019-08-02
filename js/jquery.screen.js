@@ -16,10 +16,8 @@
 
 	//요소가 없을 때
 	if(!_element) {
-		//요소 기입
 		_element = document.createElement('div');
 
-		//요소 아이디 기입
 		_element.id = 'screen';
 	}
 
@@ -164,7 +162,6 @@
 		if(_$isArray(value)) {
 			var name = _settings.name;
 
-			//중복 제거 후 이름 값인 것만 걸러서 이름 순으로 정렬
 			result = _sortArray(_filterArray(_deduplicateArray(value), name).truth, name);
 		}
 
@@ -218,10 +215,8 @@
 
 		//활성화 상태가 있거나 비활성화 상태가 있을 때
 		if(activeState.length || deactiveState.length) {
-			//상태 기입
 			_settings.state = value;
 
-			//상태 표기
 			console.log('상태 : ' + value.join(', '));
 		}
 
@@ -245,16 +240,13 @@
 		for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 			var state = value[i];
 
-			//이벤트 유형 기입
 			event.type = 'screen';
 
-			//상태 기입
 			event.state = state;
 
 			//이벤트 호출
 			_$window.triggerHandler(event);
 
-			//필터 이벤트 유형 기입
 			event.type += ':' + state;
 
 			//필터 이벤트 호출
@@ -267,16 +259,12 @@
 	 * @since 2017-12-06
 	 */
 	function _destroy() {
-		//이벤트 제거
 		_$window.off('.screen');
 
-		//상태 초기화
 		_settings.state = [];
 
-		//설정 초기화
 		_$screen.settings = undefined;
 
-		//요소 제거
 		$(_element).remove();
 	}
 
@@ -308,10 +296,8 @@
 				timer = 0,
 				code = 'var inState = [];\n\n';
 
-			//소멸
 			_destroy();
 
-			//요소 추가
 			_html.appendChild(_element);
 
 			//배열일 때
@@ -351,6 +337,7 @@
 								}
 							}
 
+							//객체일 때
 							if(vertical) {
 								var verticalFrom = vertical.from,
 									verticalTo = vertical.to;
@@ -365,28 +352,37 @@
 									verticalTo = -1;
 								}
 
+								//0 이상이면서 from이 to 이상으로 클 때
 								if(verticalFrom >= 0 && verticalTo >= 0 && verticalFrom >= verticalTo) {
 									hasVertical = true;
 								}
 							}
 
+							//수평 또는 수직이 있을 때
 							if(hasHorizontal || hasVertical) {
 								code += 'if(';
 
+								//수평이 있을 때
 								if(hasHorizontal) {
+									//넓이보다 수평의 시작 값이 크거나 같으면서 넓이보다 수평의 끝 값이 크거나 같을 때
 									code += 'width <= ' + horizontalFrom + ' && width >= ' + horizontalTo;
 								}
 
+								//수직이 있을 때
 								if(hasVertical) {
+									//수평이 있을 때
 									if(hasHorizontal) {
 										code += ' && ';
 									}
 
+									//높이보다 수직의 값이 크거나 같으면서 높이보다 수평의 끝 값이 크거나 같을 때
 									code += 'height <= ' + verticalFrom + ' && height >= ' + verticalTo;
 								}
 
 								code += ') {\n';
+
 								code += '    inState.push(\'' + stateName + '\');\n';
+								
 								code += '}\n\n';
 
 								name.push(stateName);
@@ -396,11 +392,9 @@
 				}
 			}
 
-			//이름 기입
 			_settings.name = name;
 
 			_$window.on('resize.screen', function(event) {
-				//화면 설정
 				_setScreen();
 
 				var screenWidth = _settings.width,
@@ -431,11 +425,9 @@
 					isHeightChange = false;
 				}
 
-				//화면 변화 기입
 				_settings.widthChange = isWidthChange;
 				_settings.heightChange = isHeightChange;
 
-				//코드 실행
 				eval(code);
 
 				//적용시킬 상태가 없을 때
@@ -457,21 +449,17 @@
 
 					//트리거가 아닐 때
 					if(!isTrigger) {
-						//리사이즈 상태 기입
 						resizeState.push('resize:' + value);
 
-						//리사이즈 종료 상태 기입
 						resizedState.push('resized:' + value);
 					}
 
 					//적용시킨 상태가 있을 때
 					if(_$inArray(value, activeState) > -1) {
-						//활성화 상태 기입
 						resizeState.push(value);
 					}
 				}
 
-				//이벤트 호출
 				_triggerHandler(resizeState);
 
 				//타이머가 있을 때
@@ -482,20 +470,16 @@
 				}
 
 				timer = setTimeout(function() {
-					//화면 설정
 					_setScreen();
 
-					//화면 변화 초기화
 					_settings.widthChange = false;
 					_settings.heightChange = false;
 
-					//이벤트 호출
 					_triggerHandler(resizedState);
 				}, 250);
 			}).triggerHandler('resize.screen');
 		}
 
-		//요소 반환
 		return _$window;
 	};
 
@@ -523,10 +507,8 @@
 
 			//활성화 상태가 있거나 비활성화 상태가 있을 때
 			if(activeState.length || setState.deactiveState.length) {
-				//활성화 이벤트 호출
 				_triggerHandler(activeState);
 
-				//결과 기입
 				result = true;
 			}
 		}
