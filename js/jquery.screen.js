@@ -235,7 +235,7 @@
 		var event = new _$Event;
 
 		//설정 지정
-		_$screen.settings = _$extend(_$screen.settings, _settings);
+		_$screen.settings = _$extend(true, _$screen.settings, _settings);
 
 		for(var i = 0, valueLength = value.length; i < valueLength; i++) {
 			var state = value[i];
