@@ -10,6 +10,7 @@
 		_$extend = $.extend,
 		_$inArray = $.inArray,
 		_$isNumeric = $.isNumeric,
+		_$trim = $.trim,
 		_$isArray = $.isArray,
 		_element = document.getElementById('screen'),
 		_settings = {};
@@ -307,10 +308,10 @@
 
 					//객체일 때
 					if(value) {
-						var stateName = value.name;
+						var stateName = _$trim(value.name);
 
-						//문자일 때
-						if(typeof stateName === 'string') {
+						//문자가 있을 때
+						if(stateName.length) {
 							var horizontal = value.horizontal,
 								hasHorizontal = false,
 								vertical = value.vertical,
