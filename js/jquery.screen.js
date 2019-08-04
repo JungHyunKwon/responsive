@@ -5,7 +5,7 @@
 (function($) {
 	var _$window = $(window),
 		_html = document.documentElement,
-		_htmlCss = _getCss(_html),
+		_htmlCss = _getCss(_html) || {},
 		_$Event = $.Event,
 		_$extend = $.extend,
 		_$inArray = $.inArray,
@@ -25,10 +25,10 @@
 	 * @name getCss
 	 * @since 2019-01-18
 	 * @param {object} element
-	 * @return {object}
+	 * @return {object || undefined}
 	 */
 	function _getCss(element) {
-		var result = {};
+		var result;
 
 		try {
 			result = element.currentStyle || getComputedStyle(element);
