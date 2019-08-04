@@ -311,7 +311,7 @@
 						var stateName = _$trim(value.name);
 
 						//문자가 있을 때
-						if(stateName.length) {
+						if(stateName) {
 							var horizontal = value.horizontal,
 								hasHorizontal = false,
 								vertical = value.vertical,
