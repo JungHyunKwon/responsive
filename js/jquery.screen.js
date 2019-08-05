@@ -308,85 +308,90 @@
 
 					//객체일 때
 					if(value) {
-						var stateName = _$trim(value.name);
+						var stateName = value.name;
 
-						//문자가 있을 때
-						if(stateName) {
-							var horizontal = value.horizontal,
-								hasHorizontal = false,
-								vertical = value.vertical,
-								hasVertical = false;
+						//문자일 때
+						if(typeof stateName === 'string') {
+							stateName = _$trim(stateName);
 
-							//객체일 때
-							if(horizontal) {
-								var horizontalFrom = horizontal.from,
-									horizontalTo = horizontal.to;
+							//문자가 있을 때
+							if(stateName) {
+								var horizontal = value.horizontal,
+									hasHorizontal = false,
+									vertical = value.vertical,
+									hasVertical = false;
 
-								//숫자가 아닐 때
-								if(!_$isNumeric(horizontalFrom)) {
-									horizontalFrom = -1;
-								}
+								//객체일 때
+								if (horizontal) {
+									var horizontalFrom = horizontal.from,
+										horizontalTo = horizontal.to;
 
-								//숫자가 아닐 때
-								if(!_$isNumeric(horizontalTo)) {
-									horizontalTo = -1;
-								}
-
-								//0 이상이면서 from이 to 이상으로 클 때
-								if(horizontalFrom >= 0 && horizontalTo >= 0 && horizontalFrom >= horizontalTo) {
-									hasHorizontal = true;
-								}
-							}
-
-							//객체일 때
-							if(vertical) {
-								var verticalFrom = vertical.from,
-									verticalTo = vertical.to;
-
-								//숫자가 아닐 때
-								if(!_$isNumeric(verticalFrom)) {
-									verticalFrom = -1;
-								}
-
-								//숫자가 아닐 때
-								if(!_$isNumeric(verticalTo)) {
-									verticalTo = -1;
-								}
-
-								//0 이상이면서 from이 to 이상으로 클 때
-								if(verticalFrom >= 0 && verticalTo >= 0 && verticalFrom >= verticalTo) {
-									hasVertical = true;
-								}
-							}
-
-							//수평 또는 수직이 있을 때
-							if(hasHorizontal || hasVertical) {
-								code += 'if(';
-
-								//수평이 있을 때
-								if(hasHorizontal) {
-									//넓이보다 수평의 시작 값이 크거나 같으면서 넓이보다 수평의 끝 값이 크거나 같을 때
-									code += 'width <= ' + horizontalFrom + ' && width >= ' + horizontalTo;
-								}
-
-								//수직이 있을 때
-								if(hasVertical) {
-									//수평이 있을 때
-									if(hasHorizontal) {
-										code += ' && ';
+									//숫자가 아닐 때
+									if (!_$isNumeric(horizontalFrom)) {
+										horizontalFrom = -1;
 									}
 
-									//높이보다 수직의 값이 크거나 같으면서 높이보다 수평의 끝 값이 크거나 같을 때
-									code += 'height <= ' + verticalFrom + ' && height >= ' + verticalTo;
+									//숫자가 아닐 때
+									if (!_$isNumeric(horizontalTo)) {
+										horizontalTo = -1;
+									}
+
+									//0 이상이면서 from이 to 이상으로 클 때
+									if (horizontalFrom >= 0 && horizontalTo >= 0 && horizontalFrom >= horizontalTo) {
+										hasHorizontal = true;
+									}
 								}
 
-								code += ') {\n';
+								//객체일 때
+								if (vertical) {
+									var verticalFrom = vertical.from,
+										verticalTo = vertical.to;
 
-								code += '    inState.push(\'' + stateName + '\');\n';
-								
-								code += '}\n\n';
+									//숫자가 아닐 때
+									if (!_$isNumeric(verticalFrom)) {
+										verticalFrom = -1;
+									}
 
-								name.push(stateName);
+									//숫자가 아닐 때
+									if (!_$isNumeric(verticalTo)) {
+										verticalTo = -1;
+									}
+
+									//0 이상이면서 from이 to 이상으로 클 때
+									if (verticalFrom >= 0 && verticalTo >= 0 && verticalFrom >= verticalTo) {
+										hasVertical = true;
+									}
+								}
+
+								//수평 또는 수직이 있을 때
+								if (hasHorizontal || hasVertical) {
+									code += 'if(';
+
+									//수평이 있을 때
+									if (hasHorizontal) {
+										//넓이보다 수평의 시작 값이 크거나 같으면서 넓이보다 수평의 끝 값이 크거나 같을 때
+										code += 'width <= ' + horizontalFrom + ' && width >= ' + horizontalTo;
+									}
+
+									//수직이 있을 때
+									if (hasVertical) {
+										//수평이 있을 때
+										if (hasHorizontal) {
+											code += ' && ';
+										}
+
+										//높이보다 수직의 값이 크거나 같으면서 높이보다 수평의 끝 값이 크거나 같을 때
+										code += 'height <= ' + verticalFrom + ' && height >= ' + verticalTo;
+									}
+
+									code += ') {\n';
+
+									code += '    inState.push(\'' + stateName + '\');\n';
+
+									code += '}\n\n';
+
+									name.push(stateName);
+								}
 							}
 						}
 					}
