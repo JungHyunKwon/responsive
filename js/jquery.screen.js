@@ -5,7 +5,7 @@
 (function($) {
 	var _$window = $(window),
 		_html = document.documentElement,
-		_htmlCss = _getCss(_html) || {},
+		_htmlCss = _getCss(_html),
 		_$Event = $.Event,
 		_$extend = $.extend,
 		_$inArray = $.inArray,
