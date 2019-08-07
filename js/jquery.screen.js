@@ -98,9 +98,11 @@
 	 * @return {array}
 	 */
 	function _sortArray(value, array) {
-		var result = [];
+		var result = [],
+			i = 0,
+			valueLength = value.length;
 
-		for(var i = 0, valueLength = value.length; i < valueLength; i++) {
+		for(; i < valueLength; i++) {
 			var element = value[i],
 				index = _$inArray(element, array);
 
