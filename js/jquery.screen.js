@@ -114,6 +114,7 @@
 			//속성이 없을 때
 			if(!result.hasOwnProperty(i)) {
 				result.splice(i, 1);
+
 				i--;
 			}
 		}
@@ -245,12 +246,10 @@
 
 			event.state = state;
 
-			//이벤트 호출
 			_$window.triggerHandler(event);
 
 			event.type += ':' + state;
 
-			//필터 이벤트 호출
 			_$window.triggerHandler(event);
 		}
 	}
