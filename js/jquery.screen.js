@@ -149,12 +149,12 @@
 	}
 
 	/**
-	 * @name 상태 거르기
+	 * @name 화면 상태 거르기
 	 * @since 2017-12-06
 	 * @param {array || string} value
 	 * @return {array}
 	 */
-	function _filterState(value) {
+	function _filterScreenState(value) {
 		var result = [];
 
 		//문자일 때
@@ -206,12 +206,12 @@
 	}
 
 	/**
-	 * @name 상태 지정
+	 * @name 화면 상태 지정
 	 * @since 2017-12-06
 	 * @param {array} value
 	 * @return {object}
 	 */
-	function _setState(value) {
+	function _setScreenState(value) {
 		var state = _settings.state,
 			filterState = _filterArray(value, state),
 			activeState = filterState.untruth,
@@ -231,11 +231,11 @@
 	}
 
 	/**
-	 * @name 트리거 핸들러
+	 * @name 화면 이벤트 호출
 	 * @since 2017-12-06
 	 * @param {array} value
 	 */
-	function _triggerHandler(value) {
+	function _callScreenEvent(value) {
 		var event = new _$Event;
 
 		//설정 지정
@@ -257,10 +257,10 @@
 	}
 
 	/**
-	 * @name 소멸
+	 * @name 화면 소멸
 	 * @since 2017-12-06
 	 */
-	function _destroy() {
+	function _destroyScreen() {
 		_$window.off('.screen');
 
 		_settings.state = [];
@@ -298,7 +298,7 @@
 				timer = 0,
 				code = 'var inState = [];\n\n';
 
-			_destroy();
+			_destroyScreen();
 
 			_html.appendChild(_element);
 
@@ -442,7 +442,7 @@
 					inState[0] = 'none';
 				}
 
-				var setState = _setState(inState),
+				var setState = _setScreenState(inState),
 					activeState = setState.activeState;
 
 				//트리거가 아닐 때
@@ -467,7 +467,7 @@
 					}
 				}
 
-				_triggerHandler(resizeState);
+				_callScreenEvent(resizeState);
 
 				//타이머가 있을 때
 				if(timer) {
@@ -482,7 +482,7 @@
 					_settings.widthChange = false;
 					_settings.heightChange = false;
 
-					_triggerHandler(resizedState);
+					_callScreenEvent(resizedState);
 				}, 250);
 			}).triggerHandler('resize.screen');
 		}
@@ -495,7 +495,7 @@
 	 * @since 2017-12-06
 	 * @return {boolean}
 	 */
-	_$screen.destroy = _destroy;
+	_$screen.destroy = _destroyScreen;
 
 	/**
 	 * @name 상태 지정
@@ -504,17 +504,17 @@
 	 * @return {boolean}
 	 */
 	_$screen.setState = function(value) {
-		var state = _filterState(value),
+		var state = _filterScreenState(value),
 			result = false;
 
 		//적용시킬 상태가 있을 때
 		if(state.length) {
-			var setState = _setState(state),
+			var setState = _setScreenState(state),
 				activeState = setState.activeState;
 
 			//활성화 상태가 있거나 비활성화 상태가 있을 때
 			if(activeState.length || setState.deactiveState.length) {
-				_triggerHandler(activeState);
+				_callScreenEvent(activeState);
 
 				result = true;
 			}
