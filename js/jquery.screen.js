@@ -23,7 +23,7 @@
 	}
 
 	/**
-	 * @name getCss
+	 * @name css 얻기
 	 * @since 2019-01-18
 	 * @param {object} element
 	 * @return {object || undefined}
