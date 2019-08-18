@@ -173,10 +173,10 @@
 	}
 
 	/**
-	 * @name 화면 설정
+	 * @name 화면 정보 지정
 	 * @since 2017-12-06
 	 */
-	function _setScreen() {
+	function _setScreenInfo() {
 		var hasScrollbar = _hasScrollbar(),
 			hasHorizontalScrollbar = hasScrollbar.horizontal,
 			hasVerticalScrollbar = hasScrollbar.vertical,
@@ -211,7 +211,7 @@
 	 * @param {array} value
 	 * @return {object}
 	 */
-	function _setScreenState(value) {
+	function _setScreenInfoState(value) {
 		var state = _settings.state,
 			filterState = _filterArray(value, state),
 			activeState = filterState.untruth,
@@ -402,7 +402,7 @@
 			_settings.name = name;
 
 			_$window.on('resize.screen', function(event) {
-				_setScreen();
+				_setScreenInfo();
 
 				var screenWidth = _settings.width,
 					screenHeight = _settings.height,
@@ -442,7 +442,7 @@
 					inState[0] = 'none';
 				}
 
-				var setState = _setScreenState(inState),
+				var setState = _setScreenInfoState(inState),
 					activeState = setState.activeState;
 
 				//트리거가 아닐 때
@@ -477,7 +477,7 @@
 				}
 
 				timer = setTimeout(function() {
-					_setScreen();
+					_setScreenInfo();
 
 					_settings.widthChange = false;
 					_settings.heightChange = false;
@@ -509,7 +509,7 @@
 
 		//적용시킬 상태가 있을 때
 		if(state.length) {
-			var setState = _setScreenState(state),
+			var setState = _setScreenInfoState(state),
 				activeState = setState.activeState;
 
 			//활성화 상태가 있거나 비활성화 상태가 있을 때
