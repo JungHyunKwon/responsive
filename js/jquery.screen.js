@@ -62,13 +62,13 @@
 	}
 
 	/**
-	 * @name 배열 거르기
+	 * @name 배열 비교
 	 * @since 2017-12-06
 	 * @param {array} value
 	 * @param {array} array
 	 * @return {object}
 	 */
-	function _filterArray(value, array) {
+	function _compareArray(value, array) {
 		var truth = [],
 			untruth = [],
 			result = {
@@ -166,7 +166,7 @@
 		if(_$isArray(value)) {
 			var name = _settings.name;
 
-			result = _sortArray(_filterArray(_deduplicateArray(value), name).truth, name);
+			result = _sortArray(_compareArray(_deduplicateArray(value), name).truth, name);
 		}
 
 		return result;
@@ -213,9 +213,9 @@
 	 */
 	function _setScreenInfoState(value) {
 		var state = _settings.state,
-			filterState = _filterArray(value, state),
+			filterState = _compareArray(value, state),
 			activeState = filterState.untruth,
-			deactiveState = _filterArray(state, filterState.truth).untruth;
+			deactiveState = _compareArray(state, filterState.truth).untruth;
 
 		//활성화 상태가 있거나 비활성화 상태가 있을 때
 		if(activeState.length || deactiveState.length) {
