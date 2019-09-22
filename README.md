@@ -87,15 +87,15 @@ state | string | 상태
 
 ### 기본
 ````javascript
-$(window).on('screen', function(event) {
-     console.log(event.state);
+$(window).on('screen', function(event, state) {
+     console.log(state);
 });
 ````
 
 ### 필터
 ````javascript
-$(window).on('screen:#', function(event) {
-     console.log(event.state);
+$(window).on('screen:#', function(event, state) {
+     console.log(state);
 });
 ````
 

@@ -35,10 +35,10 @@
 					to : 0
 				}
 			}]
-		}).on('screen', function(event) {
-			//console.log(event.state);
-		}).on('screen:wide', function(event) {
-			//console.log(event.state);
+		}).on('screen', function(event, state) {
+			//console.log(state);
+		}).on('screen:wide', function(event, state) {
+			//console.log(state);
 		});
 
 		//console.log($.screen.settings);

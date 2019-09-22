@@ -6,7 +6,6 @@
 	var _$window = $(window),
 		_html = document.documentElement,
 		_htmlCss = _getCss(_html),
-		_$Event = $.Event,
 		_$extend = $.extend,
 		_$inArray = $.inArray,
 		_$isNumeric = $.isNumeric,
@@ -236,23 +235,17 @@
 	 * @param {array} value
 	 */
 	function _callScreenEvent(value) {
-		var event = new _$Event;
-
-		//설정 지정
 		_$screen.settings = _$extend(true, _$screen.settings, _settings);
 
 		for(var i = 0, valueLength = value.length; i < valueLength; i++) {
-			var state = value[i];
+			var type = 'screen',
+				state = value[i];
 
-			event.type = 'screen';
+			_$window.triggerHandler(type, state);
 
-			event.state = state;
+			type += ':' + state;
 
-			_$window.triggerHandler(event);
-
-			event.type += ':' + state;
-
-			_$window.triggerHandler(event);
+			_$window.triggerHandler(type, state);
 		}
 	}
 
@@ -410,7 +403,7 @@
 					resizedState = [],
 					isWidthChange = false,
 					isHeightChange = false,
-					isTrigger = (event instanceof _$Event) ? event.isTrigger : false;
+					isTrigger = event.isTrigger;
 
 				//현재 화면 넓이와 새로운 넓이가 다를 때
 				if(screenWidth !== width) {
