@@ -72,10 +72,10 @@ name | array | 이름
                     
 ## 상태
 1. resize : 리사이즈 했을 때
-2. resize.# : 리사이즈 했을 때 + 상태
+2. resize:# : 리사이즈 했을 때 + 상태
 3. \# : 상태
 4. resized  : 리사이즈가 끝났을 때
-5. resized.# : 리사이즈가 끝났을 때 + 상태
+5. resized:# : 리사이즈가 끝났을 때 + 상태
 
 위 우선순위로 출력 됩니다.
 
@@ -94,7 +94,7 @@ $(window).on('screen', function(event, state) {
 
 ### 필터
 ````javascript
-$(window).on('screen.#', function(event, state) {
+$(window).on('screen:#', function(event, state) {
      console.log(state);
 });
 ````
