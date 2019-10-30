@@ -241,9 +241,7 @@
 
 			_$window.triggerHandler(type, state);
 
-			type += ':' + state;
-
-			_$window.triggerHandler(type, state);
+			_$window.triggerHandler(type + ':' + state, state);
 		}
 	}
 
