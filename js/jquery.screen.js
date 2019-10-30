@@ -219,8 +219,6 @@
 		//활성화 상태가 있거나 비활성화 상태가 있을 때
 		if(activeState.length || deactiveState.length) {
 			_settings.state = value;
-
-			console.log('상태 : ' + value.join(', '));
 		}
 
 		return {
@@ -243,7 +241,7 @@
 
 			_$window.triggerHandler(type, state);
 
-			type += ':' + state;
+			type += '.' + state;
 
 			_$window.triggerHandler(type, state);
 		}
@@ -441,6 +439,7 @@
 				//트리거가 아닐 때
 				if(!isTrigger) {
 					resizeState[0] = 'resize';
+
 					resizedState[0] = 'resized';
 				}
 
@@ -449,9 +448,9 @@
 
 					//트리거가 아닐 때
 					if(!isTrigger) {
-						resizeState.push('resize:' + value);
+						resizeState.push('resize.' + value);
 
-						resizedState.push('resized:' + value);
+						resizedState.push('resized.' + value);
 					}
 
 					//적용시킨 상태가 있을 때
