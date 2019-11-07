@@ -511,4 +511,4 @@
 
 		return result;
 	};
-})(jQuery);
+})(window.jQuery);
